@@ -58,15 +58,13 @@ int main(int argc, char* argv[]) {
     auto v2_iter = v2.begin();
     auto const v2_end = v2.end();
 
-    bool proceed = true;
-
     bool shouldRun = true;
 
     while (shouldRun) {
 
         Sprite& current = sprite;
-        if ((proceed |= v1_iter != v1_end)) ++v1_iter;
-        if ((proceed |= v2_iter != v2_end)) ++v2_iter;
+        if (v1_iter != v1_end) ++v1_iter;
+        if (v2_iter != v2_end) ++v2_iter;
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
