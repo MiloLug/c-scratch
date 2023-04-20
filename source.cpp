@@ -12,8 +12,8 @@
 Sprite sprite2 = {
     .name = "sprite2",
     .pos = {
-        .x = (WIDTH - 95) / 2 + -130,
-        .y = (HEIGHT - 100) / 2 - -67,
+        .x = (WINDOW_WIDTH - 95) / 2 + -130,
+        .y = (WINDOW_HEIGHT - 100) / 2 - -67,
         .w = 95,
         .h = 100
     },
@@ -27,8 +27,8 @@ Sprite sprite2 = {
 Sprite sprite = {
     .name = "sprite",
     .pos = {
-        .x = (WIDTH - 95) / 2 + 50,
-        .y = (HEIGHT - 100) / 2 - 68,
+        .x = (WINDOW_WIDTH - 95) / 2 + 50,
+        .y = (WINDOW_HEIGHT - 100) / 2 - 68,
         .w = 95,
         .h = 100
     },

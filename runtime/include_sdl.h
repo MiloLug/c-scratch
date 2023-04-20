@@ -13,7 +13,4 @@
     #include <SDL2/SDL_image.h>
 #endif
 
-#define WIDTH 480
-#define HEIGHT 360
-
 #endif

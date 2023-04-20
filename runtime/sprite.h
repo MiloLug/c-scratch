@@ -1,11 +1,12 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "include_sdl.h"
 #include <filesystem>
 #include <vector>
 #include <thread>
 #include <cmath>
+#include "include_sdl.h"
+#include "config.h"
 
 
 const std::filesystem::path spritesBaseDirectory = "sprites/";
@@ -26,18 +27,18 @@ public:
     std::vector<SDL_Texture*> textures = {};
 
     inline void setX(float _x) {
-        pos.x = (WIDTH - this->pos.w) / 2.0 + _x;
+        pos.x = (WINDOW_WIDTH - this->pos.w) / 2.0 + _x;
         x = _x;
     }
 
     inline void setY(float _y) {
-        pos.y = (HEIGHT - this->pos.h) / 2.0 + _y;
+        pos.y = (WINDOW_HEIGHT - this->pos.h) / 2.0 + _y;
         y = _y;
     }
 
     inline void goXY(float _x, float _y) {
-        pos.x = (WIDTH - pos.w) / 2.0 + x;
-        pos.y = (HEIGHT - pos.h) / 2.0 + y;
+        pos.x = (WINDOW_WIDTH - pos.w) / 2.0 + x;
+        pos.y = (WINDOW_HEIGHT - pos.h) / 2.0 + y;
         x = _x;
         y = _y;
     }
