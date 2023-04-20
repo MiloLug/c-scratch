@@ -4,26 +4,27 @@
 #include "runtime/sprite.h"
 
 
-Sprite sprite2 = {
-    .name = "sprite2",
-    .pos = {
-        .x = (WINDOW_WIDTH - 95) / 2 + -130,
-        .y = (WINDOW_HEIGHT - 100) / 2 - -67,
-        .w = 95,
-        .h = 100
-    },
-    .direction = 0,
-    .costumeNumber = 0,
-    .size = 100,
-    .visible = true,
-    .layerOrder = 1
-};
-
 Sprite sprite = {
     .name = "sprite",
     .pos = {
-        .x = (WINDOW_WIDTH - 95) / 2 + 50,
-        .y = (WINDOW_HEIGHT - 100) / 2 - 68,
+        .x = (WINDOW_WIDTH - 95) / 2 + 100,
+        .y = (WINDOW_HEIGHT - 100) / 2 - 0,
+        .w = 95,
+        .h = 100
+    },
+    .direction = 45,
+    .costumeNumber = 0,
+    .size = 100,
+    .visible = true,
+    .layerOrder = 1,
+    .textures = {}
+};
+
+Sprite sprite2 = {
+    .name = "sprite2",
+    .pos = {
+        .x = (WINDOW_WIDTH - 95) / 2 + -79,
+        .y = (WINDOW_HEIGHT - 100) / 2 - -27,
         .w = 95,
         .h = 100
     },
@@ -31,7 +32,8 @@ Sprite sprite = {
     .costumeNumber = 0,
     .size = 100,
     .visible = true,
-    .layerOrder = 1
+    .layerOrder = 1,
+    .textures = {}
 };
 
 Sprite * const sprites[] = {

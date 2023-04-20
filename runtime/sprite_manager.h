@@ -20,6 +20,10 @@ inline void initSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
     int i = 0;
     while ((sprite = sprites[i++]) != NULL) {
         sprite->init(window.renderer);
+        
+        #ifdef DEBUG
+            printf("initSprites: initialized %s\n", sprite->name);
+        #endif
     }
 }
 

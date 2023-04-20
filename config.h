@@ -2,6 +2,8 @@
 #define C_SCRATCH_CONFIG_H
 
 
+#define DEBUG
+
 #define WINDOW_WIDTH 480
 #define WINDOW_HEIGHT 360
 
