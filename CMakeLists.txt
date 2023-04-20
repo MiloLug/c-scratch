@@ -20,9 +20,12 @@ add_executable(app
   scripts.h
   source.cpp
 )
-file(COPY sprites DESTINATION ${CMAKE_BINARY_DIR})
 
 target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 
-target_link_libraries(app SDL2 SDL2_image)
+target_link_libraries(app SDL2 SDL2main SDL2_image)
+
+# Assets
+file(COPY sprites DESTINATION ${CMAKE_BINARY_DIR})
+
