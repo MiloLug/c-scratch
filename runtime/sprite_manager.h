@@ -15,14 +15,6 @@ inline void renderSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
     SDL_RenderPresent(window.renderer);
 }
 
-inline void setCanMove(Sprite * const sprites[], bool value) {
-    Sprite * sprite;
-    int i = 0;
-    while ((sprite = sprites[i++]) != NULL) {
-        sprite->canMove = value;
-    }
-}
-
 inline void initSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
     Sprite * sprite;
     int i = 0;

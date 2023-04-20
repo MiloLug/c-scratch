@@ -16,8 +16,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 find_library(SDL2 SDL2_image)
 
 add_executable(app
+  config.h
+  scripts.h
   source.cpp
 )
+file(COPY sprites DESTINATION ${CMAKE_BINARY_DIR})
 
 target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")

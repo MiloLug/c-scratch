@@ -12,123 +12,72 @@ const std::filesystem::path spritesBaseDirectory = "sprites/";
 
 
 class Sprite {
+protected:
 public:
     const char * name;
     SDL_FRect pos;
-    double direction;
+    float direction;
     int costumeNumber;
-    double size;
+    float size;
     int visible;
     int layerOrder;
+    float x;
+    float y;
     std::vector<SDL_Texture*> textures = {};
-    std::atomic<bool> canMove = true;
 
-
-    inline void setX(double x) {
-        #ifdef ENABLE_TURBO
-            this->pos.x = (WIDTH - this->pos.w) / 2.0 + x;
-        #else
-            if (canMove) {
-                this->pos.x = (WIDTH - this->pos.w) / 2.0 + x;
-                canMove = false;
-            }
-        #endif
+    inline void setX(float _x) {
+        pos.x = (WIDTH - this->pos.w) / 2.0 + _x;
+        x = _x;
     }
 
-    inline void setY(double y) {
-        #ifdef ENABLE_TURBO
-            this->pos.y = (HEIGHT - this->pos.h) / 2.0 + y;
-        #else
-            if (canMove) {
-                this->pos.y = (HEIGHT - this->pos.h) / 2.0 + y;
-                canMove = false;
-            }
-        #endif
+    inline void setY(float _y) {
+        pos.y = (HEIGHT - this->pos.h) / 2.0 + _y;
+        y = _y;
     }
 
-    inline void goXY(double x, double y) {
-        #ifdef ENABLE_TURBO
-            pos.x = (WIDTH - pos.w) / 2.0 + x;
-            pos.y = (HEIGHT - pos.h) / 2.0 + y;
-        #else
-            if (canMove) {
-                pos.x = (WIDTH - pos.w) / 2.0 + x;
-                pos.y = (HEIGHT - pos.h) / 2.0 + y;
-                canMove = false;
-            }
-        #endif
+    inline void goXY(float _x, float _y) {
+        pos.x = (WIDTH - pos.w) / 2.0 + x;
+        pos.y = (HEIGHT - pos.h) / 2.0 + y;
+        x = _x;
+        y = _y;
     }
 
-    inline void changeX(double value) {
-        #ifdef ENABLE_TURBO
-            pos.x += value;
-        #else
-            if (canMove) {
-                pos.x += value;
-                canMove = false;
-            }
-        #endif
+    inline void changeX(float offset) {
+        pos.x += offset;
+        x += offset;
     }
 
-    inline void changeY(double value) {
-        #ifdef ENABLE_TURBO
-            pos.y -= value;
-        #else
-            if (canMove) {
-                pos.y -= value;
-                canMove = false;
-            }
-        #endif
+    inline void changeY(float offset) {
+        pos.y -= offset;
+        y -= offset;
     }
 
-    inline void turnRight(double value) {
-        #ifdef ENABLE_TURBO
-            direction += value;
-            direction = fmod(direction, 360.0);
-        #else
-            if (canMove) {
-                direction += value;
-                direction = fmod(direction, 360.0);
-                canMove = false;
-            }
-        #endif
+    inline void turnRight(float angle) {
+        direction += angle;
+        direction = fmod(direction, 360.0);
     }
 
-    inline void turnLeft(double value) {
-        #ifdef ENABLE_TURBO
-            direction -= value;
-            direction = fmod(direction, 360.0);
-        #else
-            if (canMove) {
-                direction -= value;
-                direction = fmod(direction, 360.0);
-                canMove = false;
-            }
-        #endif
+    inline void turnLeft(float angle) {
+        direction -= angle;
+        direction = fmod(direction, 360.0);
     }
 
-    inline void point(double value) {
-        #ifdef ENABLE_TURBO
-            direction = fmod(value - 90.0, 360.0);
-        #else
-            if (canMove) {
-                direction = fmod(value - 90.0, 360.0);
-                canMove = false;
-            }
-        #endif
+    inline void point(float angle) {
+        direction = fmod(angle - 90.0, 360.0);
     }
 
-    inline void move(double value) {
-        #ifdef ENABLE_TURBO
-            pos.x += value * cos(direction * M_PI / 180.0);
-            pos.y += value * sin(direction * M_PI / 180.0);
-        #else
-            if (canMove) {
-                pos.x += value * cos(direction * M_PI / 180.0);
-                pos.y += value * sin(direction * M_PI / 180.0);
-                canMove = false;
-            }
-        #endif
+    inline void move(float distance) {
+        float dX = distance * cos(direction * M_PI / 180.0);
+        float dY = distance * sin(direction * M_PI / 180.0);
+
+        pos.x += dX;
+        pos.y += dY;
+        x += dX;
+        y += dY;
+    }
+
+    inline float getDirection() {
+        return fmod(direction + 90.0, 360.0);
     }
 
 
