@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <atomic>
 #include "include_sdl.h"
-#include "config.h"
+#include "../config.h"
 
 
 extern std::atomic<const Uint8 *> keyState;

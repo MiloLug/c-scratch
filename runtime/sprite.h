@@ -6,7 +6,7 @@
 #include <thread>
 #include <cmath>
 #include "include_sdl.h"
-#include "config.h"
+#include "../config.h"
 
 
 const std::filesystem::path spritesBaseDirectory = "sprites/";
