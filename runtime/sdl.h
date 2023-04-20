@@ -7,7 +7,7 @@
 #include "../config.h"
 
 
-extern std::atomic<const Uint8 *> keyState;
+extern const Uint8 * keyPressed;
 
 
 class ScratchSDLWindow {

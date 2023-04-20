@@ -28,4 +28,3 @@ target_link_libraries(app SDL2 SDL2main SDL2_image)
 
 # Assets
 file(COPY sprites DESTINATION ${CMAKE_BINARY_DIR})
-

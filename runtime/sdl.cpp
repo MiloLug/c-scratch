@@ -1,4 +1,4 @@
 #include "sdl.h"
 
 
-std::atomic<const Uint8 *> keyState = SDL_GetKeyboardState(nullptr);
+const Uint8 * keyPressed = SDL_GetKeyboardState(nullptr);
