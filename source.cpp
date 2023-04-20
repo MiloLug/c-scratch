@@ -1,84 +1,163 @@
-
 #include <stdio.h>
-#include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <vector>
-#include <cmath>
-#include <coroutine>
-#include <filesystem>
-#include <string>
-#include "unique_generator.h"
-#include "scripts.h"
-#include "motion.h"
+#include <thread>
 
-#define WIDTH 480
-#define HEIGHT 360
+#define ENABLE_TURBO
+
+#include "runtime/sprite.h"
+#include "runtime/sdl.h"
+#include "runtime/unique_generator.h"
+#include "runtime/sprite_manager.h"
 
 
-Sprite sprite = {
-            .pos = {
-                .x = (WIDTH - 95) / 2,
-                .y = (HEIGHT - 100) / 2,
-                .w = 95,
-                .h = 100
-            },
-            .direction = 0,
-            .costumeNumber = 0,
-            .size = 100,
-            .visible = 1,
-            .layerOrder = 1,
-            .textures = {}
+Sprite sprite2 = {
+    .name = "sprite2",
+    .pos = {
+        .x = (WIDTH - 95) / 2 + -130,
+        .y = (HEIGHT - 100) / 2 - -67,
+        .w = 95,
+        .h = 100
+    },
+    .direction = 0,
+    .costumeNumber = 0,
+    .size = 100,
+    .visible = true,
+    .layerOrder = 1
 };
 
-int main(int argc, char* argv[]) {
-    
+Sprite sprite = {
+    .name = "sprite",
+    .pos = {
+        .x = (WIDTH - 95) / 2 + 50,
+        .y = (HEIGHT - 100) / 2 - 68,
+        .w = 95,
+        .h = 100
+    },
+    .direction = 0,
+    .costumeNumber = 0,
+    .size = 100,
+    .visible = true,
+    .layerOrder = 1
+};
+
+Sprite * const sprites[] = {
+    &sprite2,
+    &sprite,
+    NULL
+};
 
 
-    SDL_Window* window = SDL_CreateWindow("SDL", 100, 100, WIDTH, HEIGHT, 0);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    
-    const std::filesystem::path spritepath{ "sprites/sprite/costumes" };
-
-    for (auto const& dir_entry : std::filesystem::directory_iterator{ spritepath })
-    {
-        sprite.textures.push_back(IMG_LoadTexture(renderer, dir_entry.path().string().c_str()));
+unique_generator<void*> sprite2Script1(Sprite * sprite) {
+    co_yield NULL;
+    // forever
+    while (1) {
+        if (keyState[SDL_SCANCODE_W]) {
+            // change y by 1
+            sprite->changeY(1);
+        };
+        
+        if (keyState[SDL_SCANCODE_S]) {
+            // change y by -1
+            sprite->changeY(-1);
+            
+        };
+        
+        if (keyState[SDL_SCANCODE_D]) {
+            // change x by 1
+            sprite->changeX(1);
+            
+        };
+        
+        if (keyState[SDL_SCANCODE_A]) {
+            // change x by -1
+            sprite->changeX(-1);
+            
+        };
+        
+        co_yield NULL;
     };
+    
+};
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-        return 1;
+unique_generator<void*> spriteScript1(Sprite * sprite) {
+    co_yield NULL;
+    // go to x: 0, y: 0
+    sprite->goXY(0, 0);
+    
+    co_yield NULL;
+    // forever
+    while (1) {
+        if (keyState[SDL_SCANCODE_UP]) {
+            // change y by 1
+            sprite->changeY(1);
+        };
+        
+        if (keyState[SDL_SCANCODE_DOWN]) {
+            // change y by -1
+            sprite->changeY(-1);
+            
+        };
+        
+        if (keyState[SDL_SCANCODE_RIGHT]) {
+            // change x by 1
+            sprite->changeX(1);
+            
+        };
+        
+        if (keyState[SDL_SCANCODE_LEFT]) {
+            // change x by -1
+            sprite->changeX(-1);
+            
+        };
+        
+        co_yield NULL;
+    };
+    
+};
 
-    auto v1 = coro1();
-    auto v1_iter = v1.begin();
-    auto const v1_end = v1.end();
 
-    auto v2 = coro2();
-    auto v2_iter = v2.begin();
-    auto const v2_end = v2.end();
+std::atomic<bool> shouldRun = true;
 
-    bool shouldRun = true;
-
+void sdl_loop(ScratchSDLWindow * window) {
     while (shouldRun) {
-
-        Sprite& current = sprite;
-        if (v1_iter != v1_end) ++v1_iter;
-        if (v2_iter != v2_end) ++v2_iter;
-
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT)
                 shouldRun = false;
         }
 
-        SDL_RenderClear(renderer);
-        SDL_RenderCopyExF(renderer, sprite.textures[sprite.costumeNumber], NULL, &sprite.pos, sprite.direction, NULL, SDL_FLIP_NONE);
-        SDL_RenderPresent(renderer);
+        #ifndef ENABLE_TURBO
+            setCanMove(sprites, true);
+        #endif
+
+        renderSprites(*window, sprites);
+    }
+}
+
+int main(int argc, char* argv[]) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL initialization error\n");
+        return 1;
     }
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    ScratchSDLWindow window{"c scratch 0.1"};
+
+    initSprites(window, sprites);
+    std::thread sdl_loop_thread(sdl_loop, &window);
+
+    auto sprite2Coro1 = sprite2Script1(&sprite2);
+    auto sprite2Coro1_iter = sprite2Coro1.begin();
+    auto const sprite2Coro1_end = sprite2Coro1.end();
+
+    auto spriteCoro1 = spriteScript1(&sprite);
+    auto spriteCoro1_iter = spriteCoro1.begin();
+    auto const spriteCoro1_end = spriteCoro1.end();
+
+    while (shouldRun) {
+        if (sprite2Coro1_iter != sprite2Coro1_end) ++sprite2Coro1_iter;
+        if (spriteCoro1_iter != spriteCoro1_end) ++spriteCoro1_iter;
+    }
+    
+    sdl_loop_thread.join();
 
     return 0;
 }
