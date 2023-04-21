@@ -36,22 +36,9 @@ int main(int argc, char* argv[]) {
     std::thread sdl_loop_thread(sdl_loop, &window);
 
     auto spriteCoro1 = spriteScript1(&sprite);
-    auto spriteCoro1_iter = spriteCoro1.begin();
-    auto const spriteCoro1_end = spriteCoro1.end();
-
     auto spriteCoro2 = spriteScript2(&sprite);
-    auto spriteCoro2_iter = spriteCoro2.begin();
-    auto const spriteCoro2_end = spriteCoro2.end();
-
     auto sprite2Coro1 = sprite2Script1(&sprite2);
-    auto sprite2Coro1_iter = sprite2Coro1.begin();
-    auto const sprite2Coro1_end = sprite2Coro1.end();
-
-
     auto sprite2Coro2 = testCoro(&sprite2);
-    auto sprite2Coro2_iter = sprite2Coro2.begin();
-    auto const sprite2Coro2_end = sprite2Coro2.end();
-    
 
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
@@ -65,10 +52,10 @@ int main(int argc, char* argv[]) {
             previous_time = std::clock();
         #endif
 
-        if (spriteCoro1_iter != spriteCoro1_end) ++spriteCoro1_iter;
-        if (spriteCoro2_iter != spriteCoro2_end) ++spriteCoro2_iter;
-        if (sprite2Coro1_iter != sprite2Coro1_end) ++sprite2Coro1_iter;
-        if (sprite2Coro2_iter != sprite2Coro2_end) ++sprite2Coro2_iter;
+        if (!spriteCoro1.done()) spriteCoro1.resume();
+        if (!spriteCoro2.done()) spriteCoro2.resume();
+        if (!sprite2Coro1.done()) sprite2Coro1.resume();
+        if (!sprite2Coro2.done()) sprite2Coro2.resume();
     }
     
     sdl_loop_thread.join();

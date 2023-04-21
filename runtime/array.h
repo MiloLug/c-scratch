@@ -17,9 +17,10 @@ public:
     uint64_t capacity = ARRAY_INITIAL_SIZE;  // how much it can hold
     uint64_t length = 0;  // how much it actually holds
     Value * * data = NULL;
-    Value nullValue {.number = 0, .string = String::create(L"")};
+    Value nullValue = {0, L""};
 
-    void push(const Value &value) {
+    template<typename Tv>
+    void push(Tv value) {
         if (data == NULL) {
             data = (Value * *) malloc(capacity * sizeof(Value *));
         }
@@ -28,21 +29,13 @@ public:
             data = (Value * *) realloc(data, capacity * sizeof(Value *));
         }
 
-        data[length] = Value::copy(value);
+        data[length] = Value::create(value);
         length++;
     }
 
-    inline void push(const wchar_t * value) {
-        return push({.string = String::create(value)});
-    }
-
-    inline void push(const double value) {
-        push({.number = value});
-    }
-
-    template<typename T>
-    inline void set(const uint64_t i, T value) {
-        if (i < length) data[i]->set(value);
+    template<typename Tv>
+    inline void set(uint64_t i, Tv value) {
+        if (i < length) *data[i] = value;
     }
 
     inline Value * get(const uint64_t i) {

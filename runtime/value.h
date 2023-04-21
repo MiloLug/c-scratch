@@ -65,18 +65,32 @@ public:
     double number = 0;
     String * string = NULL;
 
-    static inline Value * copy(const Value &origin) {
+    template<typename Tv>
+    static inline Value * create(Tv value) {
+        Value * self = (Value*) malloc(sizeof(Value));
+        self->string = NULL;
+        *self = value;
+        return self;
+    }
+
+    inline Value * copy() const {
         Value * copy = (Value*) malloc(sizeof(Value));
 
-        copy->number = origin.number;
-        if ((copy->string = origin.string)) {
-            copy->string = origin.string->copy();
+        copy->number = number;
+        if ((copy->string = string)) {
+            copy->string = string->copy();
         }
 
         return copy;
     }
 
-    inline void set(const Value &origin) {
+    inline Value(double nValue, const wchar_t * sValue): number(nValue), string(String::create(sValue)) {}
+    inline Value(double value): number(value) {}
+    inline Value(int value): number(value) {}
+    inline Value(const wchar_t * value): string(String::create(value)) {}
+    inline Value(const Value &origin): number(origin.number), string(origin.string->copy()) {}
+
+    inline Value &operator=(const Value &origin) {
         number = origin.number;
 
         if (string) {
@@ -90,23 +104,42 @@ public:
         } else if (origin.string) {
             string = origin.string->copy();
         }
+
+        return *this;
     }
 
-    inline void set(const wchar_t * value) {
+    inline Value &operator=(const wchar_t * value) {
         number = 0;
         if (string)
             string->set(value);
         else
             string = String::create(value);
+
+        return *this;
     }
 
-    inline void set(const double value) {
+    inline Value &operator=(double value) {
         if (string) {
             string->clean();
             free(string);
             string = NULL;
         }
         number = value;
+
+        return *this;
+    }
+
+    inline Value &operator=(int value) {
+        return this->operator=(static_cast<double>(value));
+    }
+
+    inline operator double() const {
+        return number;
+    }
+
+    inline Value &operator++(int) {
+        number++;
+        return *this;
     }
 
     inline void clean() {
