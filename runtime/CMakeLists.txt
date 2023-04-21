@@ -4,8 +4,8 @@ target_sources(app PRIVATE
   sdl.cpp
   sprite.h
   sprite_manager.h
-  unique_generator.h
   value.h
   array.h
   math.h
+  coroutines.h
 )
