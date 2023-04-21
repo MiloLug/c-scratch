@@ -3,7 +3,8 @@
 #include "runtime/sdl.h"
 
 
-unique_generator<void*> spriteScript1(Sprite * sprite) {    co_yield NULL;
+unique_generator<void*> spriteScript1(Sprite * sprite) {
+    co_yield NULL;
     // go to x: 50, y: 0
     sprite->goXY(50, 0);
     
@@ -18,7 +19,8 @@ unique_generator<void*> spriteScript1(Sprite * sprite) {    co_yield NULL;
     
 };
 
-unique_generator<void*> spriteScript2(Sprite * sprite) {    co_yield NULL;
+unique_generator<void*> spriteScript2(Sprite * sprite) {
+    co_yield NULL;
     // forever
     while (1) {
         if (keyPressed[SDL_SCANCODE_UP]) {
@@ -50,7 +52,8 @@ unique_generator<void*> spriteScript2(Sprite * sprite) {    co_yield NULL;
     
 };
 
-unique_generator<void*> sprite2Script1(Sprite * sprite) {    co_yield NULL;
+unique_generator<void*> sprite2Script1(Sprite * sprite) {
+    co_yield NULL;
     // forever
     while (1) {
         if (keyPressed[SDL_SCANCODE_W]) {
