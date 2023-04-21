@@ -7,15 +7,16 @@
 #include <cmath>
 #include "include_sdl.h"
 #include "../config.h"
+#include <cwchar>
 
 
-const std::filesystem::path spritesBaseDirectory = "sprites/";
+const std::filesystem::path spritesBaseDirectory = L"sprites/";
 
 
 class Sprite {
 protected:
 public:
-    const char * name;
+    const wchar_t * name;
     SDL_FRect pos;
     float direction;
     int costumeNumber;
@@ -85,7 +86,7 @@ public:
     inline void init(SDL_Renderer * renderer) {
         const std::filesystem::path spritePath = spritesBaseDirectory / name;
 
-        for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / "costumes" })
+        for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / L"costumes" })
         {
             textures.push_back(IMG_LoadTexture(renderer, dir_entry.path().string().c_str()));
         }

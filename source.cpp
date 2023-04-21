@@ -26,7 +26,7 @@ void sdl_loop(ScratchSDLWindow * window) {
 
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL initialization error\n");
+        wprintf(L"SDL initialization error\n");
         return 1;
     }
 
@@ -47,6 +47,12 @@ int main(int argc, char* argv[]) {
     auto sprite2Coro1_iter = sprite2Coro1.begin();
     auto const sprite2Coro1_end = sprite2Coro1.end();
 
+
+    auto sprite2Coro2 = testCoro(&sprite2);
+    auto sprite2Coro2_iter = sprite2Coro2.begin();
+    auto const sprite2Coro2_end = sprite2Coro2.end();
+    
+
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
         std::clock_t previous_time = std::clock();
@@ -61,7 +67,9 @@ int main(int argc, char* argv[]) {
 
         if (spriteCoro1_iter != spriteCoro1_end) ++spriteCoro1_iter;
         if (spriteCoro2_iter != spriteCoro2_end) ++spriteCoro2_iter;
-        if (sprite2Coro1_iter != sprite2Coro1_end) ++sprite2Coro1_iter;}
+        if (sprite2Coro1_iter != sprite2Coro1_end) ++sprite2Coro1_iter;
+        if (sprite2Coro2_iter != sprite2Coro2_end) ++sprite2Coro2_iter;
+    }
     
     sdl_loop_thread.join();
 

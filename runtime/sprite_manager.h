@@ -22,7 +22,7 @@ inline void initSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
         sprite->init(window.renderer);
         
         #ifdef DEBUG
-            printf("initSprites: initialized %s\n", sprite->name);
+            wprintf(L"initSprites: initialized %ls\n", sprite->name);
         #endif
     }
 }

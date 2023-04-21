@@ -5,7 +5,7 @@
 
 
 Sprite sprite = {
-    .name = "sprite",
+    .name = L"sprite",
     .pos = {
         .x = (WINDOW_WIDTH - 95) / 2 + 100,
         .y = (WINDOW_HEIGHT - 100) / 2 - 0,
@@ -21,7 +21,7 @@ Sprite sprite = {
 };
 
 Sprite sprite2 = {
-    .name = "sprite2",
+    .name = L"sprite2",
     .pos = {
         .x = (WINDOW_WIDTH - 95) / 2 + -79,
         .y = (WINDOW_HEIGHT - 100) / 2 - -27,

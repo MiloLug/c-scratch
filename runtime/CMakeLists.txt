@@ -5,4 +5,7 @@ target_sources(app PRIVATE
   sprite.h
   sprite_manager.h
   unique_generator.h
+  value.h
+  array.h
+  math.h
 )

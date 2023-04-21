@@ -16,7 +16,7 @@ public:
     SDL_Renderer* renderer;
 
     ScratchSDLWindow(const char * name) {
-        window = SDL_CreateWindow(name, 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+        window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");

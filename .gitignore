@@ -50,3 +50,7 @@ app.elf
 # vscode
 .vscode
 /build
+
+# valgrind
+/vgcore.*
+/*.out.*
