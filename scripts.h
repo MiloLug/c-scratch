@@ -22,23 +22,36 @@ VoidCoroutine spriteScript1(Sprite * sprite) {
 };
 
 VoidCoroutine testCoro(Sprite * sprite) {
-    wprintf(L"A 1\n");
-    ValueArray arr1;
+    Value x = sprite->x;
+    Value y = sprite->y;
+    Value angle = 0;
 
-    for (Value i = 0; i < 10000000; i++) {
-        arr1.push(10);
+    while(1) {
+        angle = fmod(angle + 0.00001, 360.0);
+        sprite->goXY(
+            30.0 * mSin(angle) + x,
+            30.0 * mCos(angle) + y
+        );
         co_yield NULL;
     }
-    wprintf(L"A 2\n");
 
-    for (Value t = 0; t < 10; t+=1) {
-        for (Value i = 0; i < arr1.length; i++) {
-            arr1.set(i, *arr1.get(i) + mSin(mRandInRange(0, 360)));
-            co_yield NULL;
-        }
-        co_yield NULL;
-    }
-    wprintf(L"A 3\n");
+    // wprintf(L"A 1\n");
+    // ValueArray arr1;
+
+    // for (Value i = 0; i < 10000000; i++) {
+    //     arr1.push(10);
+    //     co_yield NULL;
+    // }
+    // wprintf(L"A 2\n");
+
+    // for (Value t = 0; t < 10; t+=1) {
+    //     for (Value i = 0; i < arr1.length; i++) {
+    //         arr1.set(i, *arr1.get(i) + mSin(mRandInRange(0, 360)));
+    //         co_yield NULL;
+    //     }
+    //     co_yield NULL;
+    // }
+    // wprintf(L"A 3\n");
 }
 
 VoidCoroutine spriteScript2(Sprite * sprite) {

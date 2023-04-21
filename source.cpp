@@ -49,13 +49,13 @@ int main(int argc, char* argv[]) {
         #ifndef ENABLE_TURBO
             if (int(std::clock() - previous_time) < clocks_per_frame)
                 continue;
-            previous_time = std::clock();
+            previous_time += clocks_per_frame;
         #endif
 
-        // if (!spriteCoro1.done()) spriteCoro1.resume();
-        // if (!spriteCoro2.done()) spriteCoro2.resume();
-        // if (!sprite2Coro1.done()) sprite2Coro1.resume();
-        if (shouldRun = !sprite2Coro2.done()) sprite2Coro2.resume();
+        if (!spriteCoro1.done()) spriteCoro1.resume();
+        if (!spriteCoro2.done()) spriteCoro2.resume();
+        if (!sprite2Coro1.done()) sprite2Coro1.resume();
+        if (!sprite2Coro2.done()) sprite2Coro2.resume();
     }
     
     sdl_loop_thread.join();
