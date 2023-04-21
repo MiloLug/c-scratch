@@ -44,8 +44,8 @@ public:
 
     inline void clean() {
         for (int64_t i = 0; i < this->length; i++) {
-            this->data[i]->clean();
-            free(this->data[i]);
+            data[i]->clean();
+            free(data[i]);
         }
 
         free(this->data);

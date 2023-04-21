@@ -129,6 +129,17 @@ public:
         return *this;
     }
 
+    inline Value &operator+=(double value) {
+        if (string) {
+            string->clean();
+            free(string);
+            string = NULL;
+        }
+        number += value;
+
+        return *this;
+    }
+
     inline Value &operator=(int value) {
         return this->operator=(static_cast<double>(value));
     }

@@ -5,7 +5,7 @@
 #include "sprite.h"
 
 
-inline void renderSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
+static inline void renderSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
     SDL_RenderClear(window.renderer);
     const Sprite * sprite;
     int i = 0;
@@ -15,7 +15,7 @@ inline void renderSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
     SDL_RenderPresent(window.renderer);
 }
 
-inline void initSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
+static inline void initSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
     Sprite * sprite;
     int i = 0;
     while ((sprite = sprites[i++]) != NULL) {

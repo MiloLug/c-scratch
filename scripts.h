@@ -21,22 +21,24 @@ VoidCoroutine spriteScript1(Sprite * sprite) {
     
 };
 
-VoidCoroutine testCoro(Sprite * sprite) { 
+VoidCoroutine testCoro(Sprite * sprite) {
+    wprintf(L"A 1\n");
     ValueArray arr1;
-    Value rad90 = 90.0 * (MPI / 180.0);
 
     for (Value i = 0; i < 10000000; i++) {
         arr1.push(10);
         co_yield NULL;
     }
+    wprintf(L"A 2\n");
 
-    for (Value t = 0; t < 10; t++) {
+    for (Value t = 0; t < 10; t+=1) {
         for (Value i = 0; i < arr1.length; i++) {
-            arr1.set(i, *arr1.get(i) + sin(rad90 * (double)rand() / RAND_MAX));
+            arr1.set(i, *arr1.get(i) + mSin(mRandInRange(0, 360)));
             co_yield NULL;
         }
         co_yield NULL;
     }
+    wprintf(L"A 3\n");
 }
 
 VoidCoroutine spriteScript2(Sprite * sprite) {
