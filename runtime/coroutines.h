@@ -15,24 +15,46 @@
 
 struct BasePromise;
 
-struct VoidCoroutine : std::coroutine_handle<BasePromise>
+
+struct Coroutine : std::coroutine_handle<BasePromise>
 {
     using promise_type = ::BasePromise;
 
-    ~VoidCoroutine() {
+    ~Coroutine() {
         destroy();
     }
+
+    void resume() const;
 };
+
 
 struct BasePromise
 {
-    VoidCoroutine get_return_object() { return {VoidCoroutine::from_promise(*this)}; }
+public:
+    const Coroutine * subCoro = NULL;
+
+    Coroutine get_return_object() { return {Coroutine::from_promise(*this)}; }
     std::suspend_always initial_suspend() noexcept { return {}; }
     std::suspend_always final_suspend() noexcept { return {}; }
     void return_void() {}
     void unhandled_exception() {}
     std::suspend_always yield_value(void *) { return {}; }
+    std::suspend_always yield_value(const Coroutine &_subCoro) { 
+        subCoro = &_subCoro;
+        return {};
+    }
 };
+
+
+inline void Coroutine::resume() const {
+    auto subCoro = promise().subCoro;
+    if (subCoro && !subCoro->done()) {
+        subCoro->resume();
+    } else {
+        promise().subCoro = NULL;
+        std::coroutine_handle<BasePromise>::resume();
+    }
+}
 
 
 #endif

@@ -1,6 +1,7 @@
 target_sources(app PRIVATE
-  trig.h
-  trig.cpp
+  const.h
+  sin_cos.h
+  sin_cos.cpp
   sign.h
   rand.h
 )

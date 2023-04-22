@@ -5,7 +5,7 @@
 #include "runtime/coroutines.h"
 
 
-VoidCoroutine spriteScript1(Sprite * sprite) {
+Coroutine spriteScript1(Sprite * sprite) {
     co_yield NULL;
     // go to x: 50, y: 0
     sprite->goXY(50, 0);
@@ -21,12 +21,13 @@ VoidCoroutine spriteScript1(Sprite * sprite) {
     
 };
 
-VoidCoroutine testCoro(Sprite * sprite) {
+Coroutine test1(Sprite * sprite) {
     Value x = sprite->x;
     Value y = sprite->y;
     Value angle = 0;
 
-    while(1) {
+    int i = 100000000;
+    while(i--) {
         angle = fmod(angle + 0.00001, 360.0);
         sprite->goXY(
             30.0 * mSin(angle) + x,
@@ -34,7 +35,12 @@ VoidCoroutine testCoro(Sprite * sprite) {
         );
         co_yield NULL;
     }
+}
 
+Coroutine testCoro(Sprite * sprite) {
+    co_yield test1(sprite);
+    wprintf(L"asdsadsadsad\n");
+    co_yield NULL;
     // wprintf(L"A 1\n");
     // ValueArray arr1;
 
@@ -54,7 +60,7 @@ VoidCoroutine testCoro(Sprite * sprite) {
     // wprintf(L"A 3\n");
 }
 
-VoidCoroutine spriteScript2(Sprite * sprite) {
+Coroutine spriteScript2(Sprite * sprite) {
     co_yield NULL;
     // forever
     while (1) {
@@ -87,7 +93,7 @@ VoidCoroutine spriteScript2(Sprite * sprite) {
     
 };
 
-VoidCoroutine sprite2Script1(Sprite * sprite) {
+Coroutine sprite2Script1(Sprite * sprite) {
     co_yield NULL;
     // forever
     while (1) {
