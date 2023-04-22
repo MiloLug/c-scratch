@@ -54,3 +54,6 @@ app.elf
 # valgrind
 /vgcore.*
 /*.out.*
+
+# automation
+zip_npm_tmp
