@@ -15,8 +15,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: sudo apt-get install zip
       - run: ./collect_npm_zip.sh
-      - run: cd zip_npm_tmp
-      - run: npm version patch --force
-      - run: npm publish
+      - name: Patch and Publish
+        working-directory: ./zip_npm_tmp
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm version patch --force
+          npm publish
