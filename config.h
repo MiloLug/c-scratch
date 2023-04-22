@@ -12,7 +12,7 @@
 #define WINDOW_HEIGHT 360
 
 /**** ARRAYS ****/
-// In C we have to allocate space before inserting the items
+// In C we have to allocate some space before inserting the items
 // So this is by what multiply an array's size each time it reaches its bounds
 #define ARRAY_AHEAD_ALLOCATION_MULTIPLIER 1.5
 #define ARRAY_INITIAL_SIZE 4
