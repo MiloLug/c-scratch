@@ -17,4 +17,5 @@ mkdir -p "$destination/dist/project"
 mkdir -p "$destination/dist/project/sprites"
 
 cp -r runtime .gitignore CMakeLists.txt config.h "$destination/dist/project/"
-zip -r "$destination/dist/project.zip" "$destination/dist/project/"*
+cd "$destination/dist/project"
+zip -r ../project.zip *
