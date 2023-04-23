@@ -192,6 +192,10 @@ public:
         return string ? getStrNumber() : number;
     }
 
+    inline operator const wchar_t *() {
+        return string ? string->data : getNumberStr();
+    }
+
     inline void clean() {
         if (string) {
             string->clean();

@@ -15,12 +15,25 @@ public:
     static String * create(const wchar_t * value) {
         String * self = (String *) malloc(sizeof(String));
         self->length = wcslen(value);
-        self->size = (self->length + 1) * sizeof(wchar_t);
+        self->size = (self->length + 1) << 2;
 
         self->data = (wchar_t *) malloc(self->size);
         memcpy(self->data, value, self->size);
 
         return self;
+    }
+
+    String(uint32_t _length, wchar_t * _data):
+        length(_length),
+        data(_data),
+        size((_length+1) << 2) {}
+
+    String(String &origin) {
+        length = origin.length;
+        size = origin.size;
+        data = origin.data;
+
+        origin.data = NULL;
     }
 
     inline String * copy() {
@@ -46,7 +59,7 @@ public:
 
     inline void set(const wchar_t * value) {
         length = wcslen(data);
-        size = (length + 1) * sizeof(wchar_t);
+        size = (length + 1) << 2;
         data = (wchar_t *) realloc(data, size);
 
         if (data)
@@ -54,7 +67,12 @@ public:
     }
 
     inline void clean() {
-        free(data);
+        if (data)
+            free(data);
+    }
+
+    inline operator const wchar_t *() const {
+        return data;
     }
 
     // inline bool

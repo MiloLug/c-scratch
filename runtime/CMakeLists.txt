@@ -9,6 +9,7 @@ target_sources(app PRIVATE
   array.h
   math.h
   coroutines.h
+  utils.h
 )
 
 add_subdirectory("math")
