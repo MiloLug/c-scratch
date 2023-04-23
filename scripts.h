@@ -38,7 +38,11 @@ Coroutine test1(Sprite * sprite) {
     }
 }
 
+ValueArray testGlobArr({1, 2, 3, L"GG", L"test str", 20903.3298741239283});
+
+
 Coroutine testCoro(Sprite * sprite) {
+    // testGlobArr.push(L"asdsad");
     // co_yield test1(sprite);
     // wprintf(L"asdsadsadsad\n");
     // co_yield NULL;
@@ -73,6 +77,7 @@ Coroutine testCoro(Sprite * sprite) {
     test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
 
     wprintf(L"lol: %ls\n", test.toString());
+    wprintf(L"global arr 0: %ls", testGlobArr.get(4).toString());
 
     co_yield NULL;
 }

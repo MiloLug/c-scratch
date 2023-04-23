@@ -2,6 +2,7 @@
 #define ARRAY_H
 
 #include "value.h"
+#include "math.h"
 
 #ifndef ARRAY_AHEAD_ALLOCATION_MULTIPLIER
     #define ARRAY_AHEAD_ALLOCATION_MULTIPLIER 1.5
@@ -19,12 +20,24 @@ public:
     Value * * data = NULL;
     Value nullValue = {0, L""};
 
+    template<std::size_t N>
+    ValueArray(const Value (&values)[N]) {
+        if (N == 0) return;
+        capacity = MAX(N+1, ARRAY_INITIAL_SIZE+1);
+        data = (Value * *) malloc(capacity * sizeof(Value *));
+        length = N;
+
+        for(int i = 0; i < N; i++) {
+            data[i+1] = values[i].copy();
+        }
+    }
+
     template<typename Tv>
     void push(Tv value) {
         if (data == NULL) {
             data = (Value * *) malloc(capacity * sizeof(Value *));
         }
-        else if (this->length == this->capacity - 1) {
+        else if (length == capacity - 1) {
             capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
             data = (Value * *) realloc(data, capacity * sizeof(Value *));
         }

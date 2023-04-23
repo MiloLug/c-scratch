@@ -31,4 +31,12 @@ const constexpr int32_t INT32_OVERFLOW = 2147483648;
     const constexpr uint32_t INT32_MAX = (1 << (INT32_BITS - 1)) - 1;
 #endif
 
+#ifndef MAX
+    #define MAX(a, b) ({auto _a = (a); auto _b = (b); _a > _b ? _a : _b;})
+#endif
+
+#ifndef MIN
+    #define MIN(a, b) ({auto _a = (a); auto _b = (b); _a < _b ? _a : _b;})
+#endif
+
 #endif
