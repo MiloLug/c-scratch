@@ -44,47 +44,47 @@ ValueArray testGlobArr({1, 2, 3, L"GG", L"test str", 20903.3298741239283});
 Coroutine testCoro(Sprite * sprite) {
     // testGlobArr.push(L"asdsad");
     // co_yield test1(sprite);
-    // wprintf(L"asdsadsadsad\n");
-    // co_yield NULL;
-    // wprintf(L"A 1\n");
-    // ValueArray arr1;
+    wprintf(L"asdsadsadsad\n");
+    co_yield NULL;
+    wprintf(L"A 1\n");
+    ValueArray arr1;
 
-    // for (Value i = 0; i < 10000000; i++) {
-    //     arr1.push(10);
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 2\n");
+    for (Value i = 0; i < 10000000; i++) {
+        arr1.push(10);
+        co_yield NULL;
+    }
+    wprintf(L"A 2\n");
 
-    // for (Value t = 0; t < 10; t+=1) {
-    //     for (Value i = 1; i <= arr1.length; i++) {
-    //         arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
-    //         co_yield NULL;
-    //     }
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 3\n");
+    for (Value t = 0; t < 10; t+=1) {
+        for (Value i = 1; i <= arr1.length; i++) {
+            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+            co_yield NULL;
+        }
+        co_yield NULL;
+    }
+    wprintf(L"A 3\n");
 
 
     // VARIABLES EXAMPLE
 
-    Value gg = L"333";
-    Value kek = gg + 15;
-    Value bruh = kek.toString();
-    Value test = bruh == (gg + 15);
+    // Value gg = L"333";
+    // Value kek = gg + 15;
+    // Value bruh = kek.toString();
+    // Value test = bruh == (gg + 15);
 
-    wprintf(L"lol: %ls\n", test.toString());
+    // wprintf(L"lol: %ls\n", test.toString());
 
-    test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
+    // test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
 
-    wprintf(L"lol: %ls\n", test.toString());
+    // wprintf(L"lol: %ls\n", test.toString());
 
-    test = 20 + join(1, 50);
+    // test = 20 + join(1, 50);
 
-    wprintf(L"lol: %ls\n", test.toString());
+    // wprintf(L"lol: %ls\n", test.toString());
 
-    test = letterOf(test, 2) + 20;
+    // test = letterOf(test, 2) + 20;
 
-    wprintf(L"lol: %ls\n", test.toString());
+    // wprintf(L"lol: %ls\n", test.toString());
 
     co_yield NULL;
 }

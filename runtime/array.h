@@ -20,6 +20,8 @@ public:
     Value * * data = NULL;
     Value nullValue = {0, L""};
 
+    ValueArray() {}
+
     template<std::size_t N>
     ValueArray(const Value (&values)[N]) {
         if (N == 0) return;
