@@ -1,7 +1,8 @@
 target_sources(app PRIVATE
-  const.h
-  sin_cos.h
-  sin_cos.cpp
-  sign.h
+  common.h
   rand.h
+  sign.h
 )
+
+add_subdirectory("fast")
+add_subdirectory("precise")

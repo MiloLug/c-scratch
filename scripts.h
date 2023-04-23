@@ -30,34 +30,46 @@ Coroutine test1(Sprite * sprite) {
     while(i--) {
         angle = fmod(angle + 0.00001, 360.0);
         sprite->goXY(
-            30.0 * mSin(angle) + x,
-            30.0 * mCos(angle) + y
+            30.0 * degSin(angle) + x,
+            30.0 * degCos(angle) + y
         );
         co_yield NULL;
     }
 }
 
 Coroutine testCoro(Sprite * sprite) {
-    co_yield test1(sprite);
-    wprintf(L"asdsadsadsad\n");
+    // co_yield test1(sprite);
+    // wprintf(L"asdsadsadsad\n");
+    // co_yield NULL;
+    wprintf(L"A 1\n");
+    ValueArray arr1;
+
+    for (Value i = 0; i < 10000000; i++) {
+        arr1.push(10);
+        co_yield NULL;
+    }
+    wprintf(L"A 2\n");
+
+    for (Value t = 0; t < 10; t+=1) {
+        for (Value i = 1; i <= arr1.length; i++) {
+            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+            co_yield NULL;
+        }
+        co_yield NULL;
+    }
+    wprintf(L"A 3\n");
+
+
+    // VARIABLES EXAMPLE
+    
+    // Value gg = L"333";
+    // Value kek = gg + 15;
+    // Value bruh = kek.toString();
+    // Value test = bruh == (gg + 15);
+
+    // wprintf(L"lol: %s\n", test.toString());
+
     co_yield NULL;
-    // wprintf(L"A 1\n");
-    // ValueArray arr1;
-
-    // for (Value i = 0; i < 10000000; i++) {
-    //     arr1.push(10);
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 2\n");
-
-    // for (Value t = 0; t < 10; t+=1) {
-    //     for (Value i = 0; i < arr1.length; i++) {
-    //         arr1.set(i, *arr1.get(i) + mSin(mRandInRange(0, 360)));
-    //         co_yield NULL;
-    //     }
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 3\n");
 }
 
 Coroutine spriteScript2(Sprite * sprite) {

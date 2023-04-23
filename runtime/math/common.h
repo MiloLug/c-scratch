@@ -1,8 +1,14 @@
-#ifndef CSCRATCH_CONST_H
-#define CSCRATCH_CONST_H
+#ifndef CSCRATCH_MATH_COMMON_H
+#define CSCRATCH_MATH_COMMON_H
 
 #include <cstdint>
-#include <cmath>
+
+#define GET_HIGH_WORD(hi,d)                       \
+{                                              \
+    union {double f; uint64_t i;} __u;              \
+    __u.f = (d);                                    \
+    (hi) = __u.i >> 32;                             \
+}
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -22,8 +28,7 @@ const constexpr int32_t INT32_BITS = 8 * sizeof(int32_t);
 const constexpr int32_t INT32_OVERFLOW = 2147483648;
 
 #ifndef INT32_MAX
-    const constexpr uint32_t INT32_MAX = ((1<<(INT32_BITS-1))-1);
+    const constexpr uint32_t INT32_MAX = (1 << (INT32_BITS - 1)) - 1;
 #endif
-
 
 #endif

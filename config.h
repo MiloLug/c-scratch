@@ -11,6 +11,8 @@
 #define WINDOW_WIDTH 480
 #define WINDOW_HEIGHT 360
 
+#define NUM_TO_STRING_FRACTION_DIGITS 20
+
 /**** ARRAYS ****/
 // In C we have to allocate some space before inserting the items
 // So this is by what multiply an array's size each time it reaches its bounds
@@ -18,8 +20,8 @@
 #define ARRAY_INITIAL_SIZE 4
 
 /**** MATH ****/
-// Enables fast trig functions. The only disadvantage is the accuracy
+// Enables fast math functions. The only disadvantage is the accuracy
 // in some functions, but it's enough for almost any calculations
-#define MATH_USE_FAST_TRIGONOMETRY
+#define USE_FAST_MATH
 
 #endif
