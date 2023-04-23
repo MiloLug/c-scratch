@@ -33,13 +33,13 @@ public:
     }
 
     inline void setY(float _y) {
-        pos.y = (WINDOW_HEIGHT - this->pos.h) / 2.0 + _y;
+        pos.y = (WINDOW_HEIGHT - this->pos.h) / 2.0 - _y;
         y = _y;
     }
 
     inline void goXY(float _x, float _y) {
         pos.x = (WINDOW_WIDTH - pos.w) / 2.0 + x;
-        pos.y = (WINDOW_HEIGHT - pos.h) / 2.0 + y;
+        pos.y = (WINDOW_HEIGHT - pos.h) / 2.0 - y;
         x = _x;
         y = _y;
     }
