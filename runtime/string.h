@@ -23,6 +23,23 @@ public:
         return self;
     }
 
+    String():
+        length(0),
+        data((wchar_t *)malloc(1 << 2)),
+        size(1 << 2)
+    {
+        data[0] = L'\0';
+    }
+
+    String(wchar_t sym):
+        length(1),
+        data((wchar_t *)malloc(2 << 2)),
+        size(2 << 2)
+    {
+        data[0] = sym;
+        data[1] = L'\0';
+    }
+
     String(uint32_t _length, wchar_t * _data):
         length(_length),
         data(_data),
@@ -73,6 +90,15 @@ public:
 
     inline operator const wchar_t *() const {
         return data;
+    }
+
+    inline operator double() const {
+        wchar_t tmp;
+        for (uint32_t i = 0; i < length; i++) {
+            tmp = data[i];
+            if (!iswdigit(tmp) && tmp != L'.' && tmp != L'-' && tmp != L'+') return 0;
+        }
+        return wcstod(data, NULL);
     }
 
     // inline bool

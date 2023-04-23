@@ -3,7 +3,7 @@
 #include "runtime/array.h"
 #include "runtime/math.h"
 #include "runtime/coroutines.h"
-#include "runtime/utils.h"
+#include "runtime/string_utils.h"
 
 
 Coroutine spriteScript1(Sprite * sprite) {
@@ -77,7 +77,14 @@ Coroutine testCoro(Sprite * sprite) {
     test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
 
     wprintf(L"lol: %ls\n", test.toString());
-    wprintf(L"global arr 0: %ls", testGlobArr.get(4).toString());
+
+    test = 20 + join(1, 50);
+
+    wprintf(L"lol: %ls\n", test.toString());
+
+    test = letterOf(test, 2) + 20;
+
+    wprintf(L"lol: %ls\n", test.toString());
 
     co_yield NULL;
 }
@@ -146,4 +153,11 @@ Coroutine sprite2Script1(Sprite * sprite) {
         co_yield NULL;
     };
     
+};
+
+Coroutine (*scripts[])(Sprite*) = {
+    spriteScript1,
+    testCoro,
+    spriteScript2,
+    sprite2Script1
 };

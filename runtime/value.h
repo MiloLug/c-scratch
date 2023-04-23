@@ -139,6 +139,18 @@ public:
         return *this;
     }
 
+    inline Value &operator=(const String &value) {
+        number = 0;
+        updateStrNumber = true;
+
+        if (string)
+            string->set(value);
+        else
+            string = String::create(value);
+
+        return *this;
+    }
+
     inline Value &operator=(double value) {
         number = value;
         updateNumberStr = true;
