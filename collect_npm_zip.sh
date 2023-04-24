@@ -16,6 +16,6 @@ sed -E \
 mkdir -p "$destination/dist/project"
 mkdir -p "$destination/dist/project/sprites"
 
-cp -r runtime .gitignore CMakeLists.txt config.h "$destination/dist/project/"
+cp -r runtime .gitignore CMakeLists.txt config.h source.cpp "$destination/dist/project/"
 cd "$destination/dist/project"
 zip -r ../project.zip *
