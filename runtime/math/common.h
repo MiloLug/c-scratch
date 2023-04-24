@@ -25,7 +25,7 @@
 const constexpr double M_RAD = M_PI / 180.0;
 
 const constexpr int32_t INT32_BITS = 8 * sizeof(int32_t);
-const constexpr int32_t INT32_OVERFLOW = 2147483648;
+const constexpr int32_t INT32_OVERFLOW = -2147483648;
 
 #ifndef INT32_MAX
     const constexpr uint32_t INT32_MAX = (1 << (INT32_BITS - 1)) - 1;
