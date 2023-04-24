@@ -38,8 +38,8 @@ public:
     }
 
     inline void goXY(float _x, float _y) {
-        pos.x = (WINDOW_WIDTH - pos.w) / 2.0 + x;
-        pos.y = (WINDOW_HEIGHT - pos.h) / 2.0 - y;
+        pos.x = (WINDOW_WIDTH - pos.w) / 2.0 + _x;
+        pos.y = (WINDOW_HEIGHT - pos.h) / 2.0 - _y;
         x = _x;
         y = _y;
     }

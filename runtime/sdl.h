@@ -5,10 +5,11 @@
 #include <atomic>
 #include "include_sdl.h"
 #include "../config.h"
+#include <mutex>
 
 
 extern const Uint8 * keyPressed;
-
+extern std::mutex globalSyncMutex;
 
 class ScratchSDLWindow {
 public:

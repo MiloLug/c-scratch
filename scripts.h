@@ -1,9 +1,15 @@
+#include <utility>
+#include <map>
+#include <vector>
+
 #include "runtime/sprite.h"
 #include "runtime/sdl.h"
 #include "runtime/array.h"
 #include "runtime/math.h"
 #include "runtime/coroutines.h"
 #include "runtime/string_utils.h"
+#include "runtime/script_utils.h"
+#include "sprites.h"
 
 
 Coroutine spriteScript1(Sprite * sprite) {
@@ -38,31 +44,47 @@ Coroutine test1(Sprite * sprite) {
     }
 }
 
+Value angle = 0;
+
+Coroutine testKeyPressR(Sprite * sprite) {
+    co_yield NULL;
+    sprite->goXY(
+        sprite->x - 30.0 * degSin(angle),
+        sprite->y - 30.0 * degCos(angle)
+    );
+
+    angle = fmod(angle + 2, 360.0);
+    sprite->goXY(
+        sprite->x + 30.0 * degSin(angle),
+        sprite->y + 30.0 * degCos(angle)
+    );
+}
+
 ValueArray testGlobArr({1, 2, 3, L"GG", L"test str", 20903.3298741239283});
 
 
 Coroutine testCoro(Sprite * sprite) {
-    testGlobArr.push(L"asdsad");
-    co_yield test1(sprite);
-    wprintf(L"asdsadsadsad\n");
-    // co_yield NULL;
-    // wprintf(L"A 1\n");
-    // ValueArray arr1;
+    // testGlobArr.push(L"asdsad");
+    // co_yield test1(sprite);
+    // wprintf(L"asdsadsadsad\n");
+    co_yield NULL;
+    wprintf(L"A 1\n");
+    ValueArray arr1;
 
-    // for (Value i = 0; i < 10000000; i++) {
-    //     arr1.push(10);
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 2\n");
+    for (Value i = 0; i < 10000000; i++) {
+        arr1.push(10);
+        co_yield NULL;
+    }
+    wprintf(L"A 2\n");
 
-    // for (Value t = 0; t < 10; t+=1) {
-    //     for (Value i = 1; i <= arr1.length; i++) {
-    //         arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
-    //         co_yield NULL;
-    //     }
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 3\n");
+    for (Value t = 0; t < 10; t+=1) {
+        for (Value i = 1; i <= arr1.length; i++) {
+            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+            co_yield NULL;
+        }
+        co_yield NULL;
+    }
+    wprintf(L"A 3\n");
 
 
     // VARIABLES EXAMPLE
@@ -162,9 +184,21 @@ Coroutine sprite2Script1(Sprite * sprite) {
     
 };
 
-Coroutine (*scripts[])(Sprite*) = {
-    spriteScript1,
-    testCoro,
-    spriteScript2,
-    sprite2Script1
+
+BindingsMap scriptBindings = {
+    {ACTION_START, {
+        {&sprite, {
+            // spriteScript1,
+            // spriteScript2
+        }},
+        {&sprite2, {
+            testCoro,
+            // sprite2Script1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_R, {
+        {&sprite2, {
+            testKeyPressR
+        }}
+    }}
 };
