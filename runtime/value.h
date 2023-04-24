@@ -79,6 +79,7 @@ public:
         uint16_t size = snprintf(NULL, 0, "%.*f", NUM_TO_STRING_FRACTION_DIGITS, number) + 1;
         if (size > numberStrSize) {
             numberStrTmp = (wchar_t *)realloc(numberStrTmp, sizeof(wchar_t) * size);
+            numberStrSize = size;
         }
         size = swprintf(numberStrTmp, size, L"%.*f", NUM_TO_STRING_FRACTION_DIGITS, number);
 
@@ -94,13 +95,7 @@ public:
     inline double getStrNumber() {
         if (!updateStrNumber) return number;
         updateStrNumber = false;
-        wchar_t tmp;
-        for (uint64_t i = 0; i < string->length; i++) {
-            tmp = string->data[i];
-            if (!iswdigit(tmp) && tmp != L'.') return 0;
-        }
-        number = wcstod(string->data, NULL);
-        return number;
+        return string->operator double();
     }
 
     inline const wchar_t * toString() {
@@ -140,6 +135,18 @@ public:
     }
 
     inline Value &operator=(const String &value) {
+        number = 0;
+        updateStrNumber = true;
+
+        if (string)
+            string->set(value);
+        else
+            string = String::create(value);
+
+        return *this;
+    }
+
+    inline Value &operator=(String &&value) {
         number = 0;
         updateStrNumber = true;
 
