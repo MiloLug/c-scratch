@@ -42,9 +42,9 @@ ValueArray testGlobArr({1, 2, 3, L"GG", L"test str", 20903.3298741239283});
 
 
 Coroutine testCoro(Sprite * sprite) {
-    // testGlobArr.push(L"asdsad");
-    // co_yield test1(sprite);
-    // wprintf(L"asdsadsadsad\n");
+    testGlobArr.push(L"asdsad");
+    co_yield test1(sprite);
+    wprintf(L"asdsadsadsad\n");
     // co_yield NULL;
     // wprintf(L"A 1\n");
     // ValueArray arr1;
@@ -66,34 +66,34 @@ Coroutine testCoro(Sprite * sprite) {
 
 
     // VARIABLES EXAMPLE
-    Value gg = 1;
+    // Value gg = 1;
 
-    for (Value i = 0; i < 1000000; i++) {
-        // ;
-        // Value kek = gg + 15;
-        // Value bruh = kek.toString();
-        // Value test = bruh == (gg + 15);
+    // for (Value i = 0; i < 1000000; i++) {
+    //     ;
+    //     Value kek = gg + 15;
+    //     Value bruh = kek.toString();
+    //     Value test = bruh == (gg + 15);
 
-        // wprintf(L"lol: %ls\n", test.toString());
+    //     wprintf(L"lol: %ls\n", test.toString());
 
-        // test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
+    //     test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
 
-        // wprintf(L"lol: %i\n", join(join(join(join(gg, L" + "), 15), L" = "), bruh) == L"333 + 15 = 348");
+    //     wprintf(L"lol: %i\n", join(join(join(join(gg, L" + "), 15), L" = "), bruh) == L"333 + 15 = 348");
 
-        // wprintf(L"lol: %ls\n", test.toString());
+    //     wprintf(L"lol: %ls\n", test.toString());
 
-        // test = 20 + join(1, 50);
+    //     test = 20 + join(1, 50);
 
-        // wprintf(L"lol: %ls\n", test.toString());
+    //     wprintf(L"lol: %ls\n", test.toString());
 
-        // test = letterOf(test, 2) + 20;
+    //     test = letterOf(test, 2) + 20;
 
-        // wprintf(L"lol: %ls\n", test.toString());
+    //     wprintf(L"lol: %ls\n", test.toString());
 
-        wprintf(L"\n== I: %ls ==\n", gg.toString());
+    //     wprintf(L"\n== I: %ls ==\n", i.toString());
 
-        co_yield NULL;
-    }
+    //     co_yield NULL;
+    // }
 }
 
 Coroutine spriteScript2(Sprite * sprite) {
