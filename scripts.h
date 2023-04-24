@@ -1,7 +1,3 @@
-#include <utility>
-#include <map>
-#include <vector>
-
 #include "runtime/sprite.h"
 #include "runtime/sdl.h"
 #include "runtime/array.h"
