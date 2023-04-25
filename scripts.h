@@ -72,7 +72,7 @@ Coroutine testCoro(Sprite * sprite) {
     //     co_yield NULL;
     // }
     // wprintf(L"A 2\n");
-
+    
     // for (Value t = 0; t < 10; t+=1) {
     //     for (Value i = 1; i <= arr1.length; i++) {
     //         arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
@@ -81,7 +81,6 @@ Coroutine testCoro(Sprite * sprite) {
     //     co_yield NULL;
     // }
     // wprintf(L"A 3\n");
-
 
     // VARIABLES EXAMPLE
     Value gg = 1;

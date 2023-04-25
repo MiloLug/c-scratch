@@ -159,7 +159,5 @@ public:
     }
 };
 
-const wchar_t * String::emptyString = L"";
-
 
 #endif
