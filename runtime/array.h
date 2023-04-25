@@ -35,7 +35,7 @@ public:
     }
 
     template<typename Tv>
-    void push(Tv value) {
+    void push(Tv &&value) {
         if (data == NULL) {
             data = (Value * *) malloc(capacity * sizeof(Value *));
         }
@@ -64,7 +64,7 @@ public:
     }
 
     template<typename Tv>
-    void insert(uint64_t i, Tv value) {
+    void insert(uint64_t i, Tv &&value) {
         if (i == length + 1) {
             push(value);
         } else if (i <= length && i > 0) {
@@ -82,7 +82,7 @@ public:
     }
 
     template<typename Tv>
-    inline double indexOf(Tv value) {
+    inline double indexOf(Tv &&value) {
         for (uint64_t i = 1; i <= length; i++) {
             if (data[i]->operator==(value)) return i;
         }
@@ -90,12 +90,12 @@ public:
     }
 
     template<typename Tv>
-    inline double contains(Tv value) {
+    inline double contains(Tv &&value) {
         return indexOf(value) != 0;
     }
 
     template<typename Tv>
-    inline void set(uint64_t i, Tv value) {
+    inline void set(uint64_t i, Tv &&value) {
         if (i <= length && i > 0) *data[i] = value;
     }
 
@@ -104,7 +104,7 @@ public:
     }
 
     inline void clean() {
-        for (int64_t i = 1; i <= this->length; i++) {
+        for (uint64_t i = 1; i <= this->length; i++) {
             data[i]->clean();
             free(data[i]);
         }
@@ -113,6 +113,33 @@ public:
         data = NULL;
         capacity = ARRAY_INITIAL_SIZE+1;
         length = 0;
+    }
+
+    operator String() {
+        if (length == 0) return String();
+
+        uint64_t strLen = 0;
+        uint64_t offset = 0;
+        wchar_t * str, tmpStr;
+
+        for (uint64_t i = 1; i <= length; i++) {
+            auto &tmp = data[i];
+            strLen += tmp->string ? tmp->string->length : wcslen(tmp->toString());
+        }
+        strLen += length;  // for the spaces between items
+
+        str = (wchar_t *)malloc(strLen << 2);
+
+        for (uint64_t i = 1; i <= length; i++) {
+            auto tmpStr = data[i]->toString();
+            while(*tmpStr != L'\0') {
+                str[offset++] = *(tmpStr++);
+            }
+            str[offset++] = L' ';
+        }
+        str[--offset] = L'\0';
+
+        return String(offset, str, true);
     }
 
     ~ValueArray() {

@@ -63,55 +63,56 @@ Coroutine testCoro(Sprite * sprite) {
     // testGlobArr.push(L"asdsad");
     // co_yield test1(sprite);
     // wprintf(L"asdsadsadsad\n");
-    co_yield NULL;
-    wprintf(L"A 1\n");
-    ValueArray arr1;
+    // co_yield NULL;
+    // wprintf(L"A 1\n");
+    // ValueArray arr1;
 
-    for (Value i = 0; i < 10000000; i++) {
-        arr1.push(10);
-        co_yield NULL;
-    }
-    wprintf(L"A 2\n");
-
-    for (Value t = 0; t < 10; t+=1) {
-        for (Value i = 1; i <= arr1.length; i++) {
-            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
-            co_yield NULL;
-        }
-        co_yield NULL;
-    }
-    wprintf(L"A 3\n");
-
-
-    // VARIABLES EXAMPLE
-    // Value gg = 1;
-
-    // for (Value i = 0; i < 1000000; i++) {
-    //     ;
-    //     Value kek = gg + 15;
-    //     Value bruh = kek.toString();
-    //     Value test = bruh == (gg + 15);
-
-    //     wprintf(L"lol: %ls\n", test.toString());
-
-    //     test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
-
-    //     wprintf(L"lol: %i\n", join(join(join(join(gg, L" + "), 15), L" = "), bruh) == L"333 + 15 = 348");
-
-    //     wprintf(L"lol: %ls\n", test.toString());
-
-    //     test = 20 + join(1, 50);
-
-    //     wprintf(L"lol: %ls\n", test.toString());
-
-    //     test = letterOf(test, 2) + 20;
-
-    //     wprintf(L"lol: %ls\n", test.toString());
-
-    //     wprintf(L"\n== I: %ls ==\n", i.toString());
-
+    // for (Value i = 0; i < 10000000; i++) {
+    //     arr1.push(10);
     //     co_yield NULL;
     // }
+    // wprintf(L"A 2\n");
+    
+    // for (Value t = 0; t < 10; t+=1) {
+    //     for (Value i = 1; i <= arr1.length; i++) {
+    //         arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+    //         co_yield NULL;
+    //     }
+    //     co_yield NULL;
+    // }
+    // wprintf(L"A 3\n");
+
+    // VARIABLES EXAMPLE
+    Value gg = 1;
+
+    for (Value i = 0; i < 10000; i++) {
+        Value kek = gg + 15;
+        Value bruh = kek.toString();
+        Value test = bruh == (gg + 15);
+        ValueArray testArr({1, 2, L"gg 10"});
+
+        wprintf(L"lol1: %ls\n", test.toString());
+
+        test = join(join(join(join(gg, L" + "), 15), L" = "), bruh);
+        wprintf(L"lol2: %i\n", join(join(join(join(gg, L" + "), 15), L" = "), bruh) == L"333 + 15 = 348");
+        wprintf(L"lol3: %ls\n", test.toString());
+
+        test = 20 + join(1, 50);
+        wprintf(L"lol4: %ls\n", test.toString());
+
+        test = letterOf(test, 2) + 20;
+        wprintf(L"lol5: %ls\n", test.toString());
+
+        test = testArr;
+        testArr.push(testArr);
+        test = join(L"testArr = ", testArr);
+        wprintf(L"lol7: %ls\n", test.toString());
+
+
+        wprintf(L"\n== I: %ls ==\n", i.toString());
+
+        co_yield NULL;
+    }
 }
 
 Coroutine spriteScript2(Sprite * sprite) {

@@ -23,91 +23,52 @@ __str_make_bool_op(>=)
 __str_make_bool_op(<=)
 
 
-String join(String &s1, String &s2) {
-    wchar_t * res = (wchar_t *)malloc(sizeof(wchar_t) * (s1.length + s2.length + 1));
+static inline String toTmpString(const wchar_t * s1) {
+    return String(wcslen(s1), (wchar_t *)s1, true, true);
+}
+static inline const String &toTmpString(const String &s1) {
+    return s1;
+}
+static inline String toTmpString(Value &s1) {
+    wchar_t * tmpStr = s1.string ? s1.string->data : s1.getNumberStr();
+    return String(s1.string ? s1.string->length : s1.numberStrSize - 1, tmpStr, true, true);
+}
+static inline String toTmpString(double s1) {
+    Value tmp(s1);
+    wchar_t * tmpStr = tmp.getNumberStr();
+    tmp.numberStrTmp = NULL;
+    return String(tmp.numberStrSize-1, tmpStr, true);
+}
+
+
+String join(const String &s1, const String &s2) {
+    wchar_t * res = (wchar_t *)malloc((s1.length + s2.length + 1) << 2);
     memcpy(res, s1.data, s1.size);
     memcpy(res + s1.length, s2.data, s2.size);
 
     return String(s1.length + s2.length, res, true);
 }
-
-String join(const wchar_t * s1, const wchar_t * s2) {
-    uint32_t len1 = wcslen(s1);
-    uint32_t len2 = wcslen(s2);
-
-    wchar_t * res = (wchar_t *)malloc((len1 + len2 + 1) << 2);
-
-    memcpy(res, s1, len1 << 2);
-    memcpy(res + len1, s2, (len2 + 1) << 2);
-
-    return String(len1 + len2, res, true);
-}
-
-static inline String join(const String &s1, double s2) {
-    return join(s1.data, Value(s2).toString());
-}
-static inline String join(double s1, const String &s2) {
-    return join(Value(s1).toString(), s2.data);
-}
-
-static inline String join(const wchar_t * s1, double s2) {
-    return join(s1, Value(s2).toString());
-}
-static inline String join(double s1, const wchar_t * s2) {
-    return join(Value(s1).toString(), s2);
-}
-
-static inline String join(const wchar_t * s1, Value &s2) {
-    return join(s1, s2.toString());
-}
-static inline String join(Value &s1, const wchar_t * s2) {
-    return join(s1.toString(), s2);
-}
-
-static inline String join(const wchar_t * s1, const String &s2) {
-    return join(s1, s2.data);
-}
-static inline String join(const String &s1, const wchar_t * s2) {
-    return join(s1.data, s2);
-}
-
-static inline String join(const String &s1, Value &s2) {
-    return join(s1, s2.toString());
-}
-static inline String join(Value &s1, const String &s2) {
-    return join(s1.toString(), s2);
-}
-
-static inline String join(double s1, double s2) {
-    return join(Value(s1).toString(), s2);
+template<typename T1, typename T2>
+static inline String join(T1 &&s1, T2 &&s2) {
+    return join(toTmpString(s1), toTmpString(s2));
 }
 
 
-static inline double lengthOf(const wchar_t * s1) {
-    return wcslen(s1);
-}
-static inline double lengthOf(String &s1) {
+static inline double lengthOf(const String &s1) {
     return s1.length;
 }
-static inline double lengthOf(Value &s1) {
-    return wcslen(s1.toString());
-}
-static inline double lengthOf(double s1) {
-    return lengthOf(Value(s1).toString());
+template<typename T>
+static inline double lengthOf(T &&s1) {
+    return lengthOf(toTmpString(s1));
 }
 
 
-static inline String letterOf(const wchar_t * s1, uint32_t i) {
-    return i > 0 && i <= wcslen(s1) ? String(s1[i-1], 1, true) : String(true);
+static inline String letterOf(const String &s1, uint64_t i) {
+    return i > 0 && i <= s1.length ? String(s1.data[i-1], 1, true) : String();
 }
-static inline String letterOf(const String &s1, uint32_t i) {
-    return i > 0 && i <= s1.length ? String(s1.data[i-1], 1, true) : String(true);
-}
-static inline String letterOf(Value &s1, uint32_t i) {
-    return letterOf(s1.toString(), i);
-}
-static inline String letterOf(double s1, uint32_t i) {
-    return letterOf(Value(s1).toString(), i);
+template<typename T>
+static inline double letterOf(T &&s1, uint64_t i) {
+    return letterOf(toTmpString(s1), i);
 }
 
 
