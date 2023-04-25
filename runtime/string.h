@@ -6,21 +6,34 @@
 #include <cstdint>
 
 
+/*
+ * This is just an inner container for wchar strings.
+ * !!! It's generally not supposed to be stored on stack !!!
+ * 
+ * Some use cases:
+ * - Returning value from a function. You can allocate a string and then use:
+ *   return String(length, stringPointer, true)
+ *   so the data won't be copied when assigning to a variable
+ * 
+ * - Storing a string as a pointer to String:
+ *   String::create(L"test test test")
+ */
 class String {
+    static const wchar_t * emptyString;
 public:
-    uint32_t length = 0;  // number of chars
-    uint32_t size = 0;  // memory taken in bytes
+    uint64_t length = 0;  // number of chars
+    uint64_t size = 0;  // memory taken in bytes
     wchar_t * data = NULL;
-    bool shouldMove = false;
+    bool shouldMove = false;  // hint to not make any copies and just take the pointer
+    bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
 
     static String * create(const wchar_t * value) {
         String * self = (String *) malloc(sizeof(String));
-        self->length = wcslen(value);
-        self->size = (self->length + 1) << 2;
-
-        self->data = (wchar_t *) malloc(self->size);
-        memcpy(self->data, value, self->size);
-
+        self->shouldMove = false;
+        self->isWrapper = false;
+        self->data = NULL;
+        self->set(value);
+        
         return self;
     }
 
@@ -38,73 +51,77 @@ public:
         return wcstod(str, NULL);
     }
 
-    String(bool _shouldMove = false):
+    /*Create an empty string*/
+    String():
         length(0),
-        data((wchar_t *)malloc(1 << 2)),
-        size(1 << 2)
-    {
-        data[0] = L'\0';
-        shouldMove = _shouldMove;
-    }
+        data((wchar_t *)emptyString),
+        size(1 << 2),
+        shouldMove(true),
+        isWrapper(true)
+    {}
 
-    String(wchar_t sym, int32_t _length, bool _shouldMove = false):
+    /*Create a string repeating the symbol from `sym`*/
+    String(wchar_t sym, uint64_t _length, bool _shouldMove = false, bool _isWrapper = false):
         length(_length),
         data((wchar_t *)malloc((_length + 1) << 2)),
-        size((_length + 1) << 2)
+        size((_length + 1) << 2),
+        shouldMove(_shouldMove),
+        isWrapper(_isWrapper)
     {
-        for (int32_t i = 0; i < _length; i++)
-            data[i] = sym;
-        data[_length] = L'\0';
+        if (_length == 1)
+            data[0] = sym;
+        else
+            while(_length > 0) data[--_length] = sym;
+
+        data[length] = L'\0';
         shouldMove = _shouldMove;
     }
 
-    String(uint32_t _length, wchar_t * _data, bool _shouldMove = false):
+    /*Wrap and existing string*/
+    String(uint64_t _length, wchar_t * _data, bool _shouldMove = false, bool _isWrapper = false):
         length(_length),
         data(_data),
         size((_length+1) << 2),
-        shouldMove(_shouldMove) {}
+        shouldMove(_shouldMove),
+        isWrapper(_isWrapper)
+    {}
 
+    /*For some edgy cases*/
     String(String &origin) {
-        if (origin.shouldMove) {
-            origin.move(*this);
-        } else {
+        if (origin.shouldMove)
+            origin.moveTo(*this);
+        else
             set(origin);
-        }
     }
 
-    void move(String &destination) {
+    void moveTo(String &destination) {
+        if (!destination.isWrapper && destination.data) free(destination.data);
+
         destination.length = length;
         destination.size = size;
         destination.data = data;
         destination.shouldMove = shouldMove;
+        destination.isWrapper = isWrapper;
 
         data = NULL;
-        length = 0;
-        size = 0;
     }
 
     String * copy() {
         String * copy = (String *) malloc(sizeof(String));
-        
-        if (shouldMove) {
-            move(*copy);
-            copy->shouldMove = false;
-        } else {
-            copy->length = length;
-            copy->size = size;
-            copy->data = (wchar_t *) malloc(size);
-            copy->shouldMove = false;
-            memcpy(copy->data, data, size);
-        }
+        copy->shouldMove = false;
+        copy->isWrapper = false;
+        copy->data = NULL;
+        copy->set(*this);
 
         return copy;
     }
 
     void set(String &origin) {
-        if (origin.shouldMove) {
-            origin.move(*this);
+        if (origin.shouldMove && !origin.isWrapper) {
+            origin.moveTo(*this);
             return;
         }
+
         length = origin.length;
         size = origin.size;
         data = (wchar_t *) realloc(data, origin.size);
@@ -114,7 +131,7 @@ public:
     }
 
     void set(const wchar_t * value) {
-        length = wcslen(data);
+        length = wcslen(value);
         size = (length + 1) << 2;
         data = (wchar_t *) realloc(data, size);
 
@@ -123,7 +140,7 @@ public:
     }
 
     void clean() {
-        if (data)
+        if (data && !isWrapper)
             free(data);
     }
 
@@ -141,6 +158,8 @@ public:
         clean();
     }
 };
+
+const wchar_t * String::emptyString = L"";
 
 
 #endif

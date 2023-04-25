@@ -37,7 +37,7 @@ public:
     bool updateStrNumber = true;
 
     template<typename Tv>
-    static inline Value * create(Tv value) {
+    static inline Value * create(Tv &&value) {
         Value * self = (Value*) malloc(sizeof(Value));
         
         self->string = NULL;
@@ -54,6 +54,7 @@ public:
     inline Value(double value): number(value) {}
     inline Value(int value): number(value) {}
     inline Value(const wchar_t * value): string(String::create(value)) {}
+    inline Value(String &&value): string(value.copy()) {}
     inline Value(const Value &origin): number(origin.number), string(origin.string->copy()) {}
 
     inline Value * copy() const {
@@ -78,7 +79,7 @@ public:
 
         uint16_t size = snprintf(NULL, 0, "%.*f", NUM_TO_STRING_FRACTION_DIGITS, number) + 1;
         if (size > numberStrSize) {
-            numberStrTmp = (wchar_t *)realloc(numberStrTmp, sizeof(wchar_t) * size);
+            numberStrTmp = (wchar_t *)realloc(numberStrTmp, size << 2);
             numberStrSize = size;
         }
         size = swprintf(numberStrTmp, size, L"%.*f", NUM_TO_STRING_FRACTION_DIGITS, number);
