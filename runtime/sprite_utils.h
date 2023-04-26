@@ -6,13 +6,11 @@
 
 
 static inline void renderSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {
-    SDL_RenderClear(window.renderer);
     const Sprite * sprite;
     int i = 0;
     while ((sprite = sprites[i++]) != NULL) {
         SDL_RenderCopyExF(window.renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
     }
-    SDL_RenderPresent(window.renderer);
 }
 
 static inline void initSprites(ScratchSDLWindow &window, Sprite * const sprites[]) {

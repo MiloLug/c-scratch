@@ -95,6 +95,12 @@ public:
     inline SDL_Texture * getCostumeTexture() const {
         return this->textures[this->costumeNumber];
     }
+
+    ~Sprite() {
+        for(auto &tex : textures) {
+            SDL_DestroyTexture(tex);
+        }
+    }
 };
 
 
