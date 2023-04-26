@@ -7,7 +7,7 @@
 #include "../config.h"
 #include <mutex>
 
-
+extern volatile bool shouldRun;
 extern const Uint8 * keyPressed;
 extern std::mutex globalSyncMutex;
 

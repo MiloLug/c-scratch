@@ -59,6 +59,7 @@ Coroutine testKeyPressR(Sprite * sprite) {
 
 ValueArray testGlobArr({1, 2, 3, L"GG", L"test str", 20903.3298741239283});
 
+Value div_ = 700;
 
 Coroutine testCoro(Sprite * sprite) {
     // testGlobArr.push(L"asdsad");
@@ -83,14 +84,29 @@ Coroutine testCoro(Sprite * sprite) {
     // }
     // wprintf(L"A 3\n");
 
-    for (Value i = 0; i < 1000; i++) {
+    // Value max = (double)0xFFFFFFFF;
+
+    Value off = 0;
+    Value t = 1;
+
+    while(1) {
+        off += t;
+        if (off > 30) {
+            t = -1;
+        } else if (off < 1) {
+            t = 1;
+        }
         for (Value x = 0; x < WINDOW_WIDTH; x++) {
             for (Value y = 0; y < WINDOW_HEIGHT; y++) {
-                Pen::drawLine(x, y, x, y, 1, 0x000000FF);
+                // max--;
+                Pen::drawLine(x, y, x, y, 1, (uint64_t)((double)0xFF0FF0FF * (
+                    1 - radSin(2 - (sqrt(pow(sprite->pos.x + sprite->pos.w / 2.0 - x, 2.0) + pow(sprite->pos.y + sprite->pos.h / 2.0 - y, 2.0)) + off) / div_)
+                )));
                 co_yield NULL;
             }
             co_yield NULL;
         }
+        co_yield NULL;
     }
 
     co_yield NULL;
@@ -194,21 +210,76 @@ Coroutine sprite2Script1(Sprite * sprite) {
     
 };
 
+Coroutine moveY1(Sprite * sprite) {
+    co_yield NULL;
+    sprite->changeY(10);
+}
+
+Coroutine moveYN1(Sprite * sprite) {
+    co_yield NULL;
+    sprite->changeY(-10);
+}
+
+Coroutine moveX1(Sprite * sprite) {
+    co_yield NULL;
+    sprite->changeX(10);
+}
+
+Coroutine moveXN1(Sprite * sprite) {
+    co_yield NULL;
+    sprite->changeX(-10);
+}
+
+Coroutine incDiv(Sprite * sprite) {
+    co_yield NULL;
+    div_ += 1;
+}
+Coroutine decDiv(Sprite * sprite) {
+    co_yield NULL;
+    div_ += -1;
+    if (div_ <= 0) div_ = 1;
+}
+
 
 BindingsMap scriptBindings = {
     {ACTION_START, {
         {&sprite, {
-            // spriteScript1,
-            // spriteScript2
+            spriteScript1,
+            spriteScript2
         }},
         {&sprite2, {
             testCoro,
             // sprite2Script1
         }}
     }},
-    {ACTION_KEYDOWN|SDL_SCANCODE_R, {
+    {ACTION_KEYDOWN|SDL_SCANCODE_W, {
         {&sprite2, {
-            // testKeyPressR
+            moveY1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_S, {
+        {&sprite2, {
+            moveYN1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_D, {
+        {&sprite2, {
+            moveX1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_A, {
+        {&sprite2, {
+            moveXN1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_Q, {
+        {&sprite2, {
+            incDiv
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_E, {
+        {&sprite2, {
+            decDiv
         }}
     }}
 };

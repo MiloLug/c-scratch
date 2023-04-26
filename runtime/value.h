@@ -193,6 +193,19 @@ public:
         return *this;
     }
 
+    inline Value &operator--(int) {
+        if (string) {
+            getStrNumber();
+            string->clean();
+            free(string);
+            string = NULL;
+        }
+
+        number--;
+        updateNumberStr = true;
+        return *this;
+    }
+
     inline Value &operator+=(double value) {
         if (string) {
             getStrNumber();

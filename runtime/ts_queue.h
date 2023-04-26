@@ -39,7 +39,7 @@ public:
         releaseQueue();
     }
 
-    T pop(T &out) {
+    bool pop(T &out) {
         uint32_t oldSize = size.load();
         do {
             if (oldSize == 0) return false;

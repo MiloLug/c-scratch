@@ -160,7 +160,9 @@ namespace Pen
     }
 
     void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t thickness, uint32_t color) {
-        pixels.take();
+        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+            pixels.take();
+        #endif
 
         if (x1 == x2 && y1 == y2) {
             if (thickness == 1) {
@@ -178,6 +180,8 @@ namespace Pen
 
         hasChanges = true;
 
-        pixels.release();
+        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+            pixels.release();
+        #endif
     }
 };
