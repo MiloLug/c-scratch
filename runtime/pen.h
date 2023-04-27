@@ -7,7 +7,7 @@
 #include <atomic>
 
 #include "sdl.h"
-#include "ts_container.h"
+#include "mutex.h"
 
 #define RGBA(r, g, b, a)
 
@@ -34,8 +34,8 @@ namespace Pen {
 
     extern volatile SDL_Texture * texture;
     extern volatile bool hasChanges;
-    extern volatile uint32_t pixelBuffer[];
-    extern ThreadSafeContainer<volatile uint32_t *> pixels;
+    extern volatile uint32_t pixelBuffer[canvasSize];
+    extern Mutex pixels;
     
     // extern changes_q changeBuffer;
     // extern std::atomic<changes_q *> changes;

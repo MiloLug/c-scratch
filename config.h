@@ -2,8 +2,8 @@
 #define C_SCRATCH_CONFIG_H
 
 /**** COMMON ****/
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH 480
+#define WINDOW_HEIGHT 360
 
 // Enables some useful outputs such as "sprite X is initialized"
 #define DEBUG

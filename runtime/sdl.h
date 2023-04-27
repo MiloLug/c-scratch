@@ -1,11 +1,13 @@
 #ifndef RUNTIME_SDL_H
 #define RUNTIME_SDL_H
 
+#include <mutex>
 #include <filesystem>
 #include <atomic>
+
 #include "include_sdl.h"
 #include "../config.h"
-#include <mutex>
+
 
 extern volatile bool shouldRun;
 extern const Uint8 * keyPressed;
