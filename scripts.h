@@ -110,16 +110,17 @@ Coroutine testCoro(Sprite * sprite) {
     //     co_yield NULL;
     // }
 
-    sprite->point(50);
+    sprite->point(121);
+    sprite->goXY(-20, -30);
     
 
-    for (Value i = 0; i < 1000000; i++) {
+    // for (Value i = 0; i < 1000000; i++) {
         // wprintf(L"PPP %f\n", fmod(i / 100, 360.0));
-        auto tmp = rotozoomSurface(sprite->getCostumeSurface(), sprite->direction, 1, 1);
-        Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + sprite->x, (WINDOW_HEIGHT - tmp->clip_rect.h) / 2.0 - sprite->y, tmp);
-        SDL_FreeSurface(tmp);
-        co_yield NULL;
-    }
+    auto tmp = rotozoomSurface(sprite->getCostumeSurface(), -sprite->direction, 1, 1);
+    Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + sprite->x + 0.5, (WINDOW_HEIGHT - tmp->h) / 2.0 - sprite->y + 0.5, tmp);
+    SDL_FreeSurface(tmp);
+    co_yield NULL;
+    // }
 
     while(1) co_yield NULL;
     // for(Value i = 0; i < 1000; i++) {
