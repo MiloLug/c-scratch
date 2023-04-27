@@ -93,9 +93,6 @@ public:
                 auto tmp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ARGB8888, 0);
                 SDL_FreeSurface(surface);
                 surface = tmp;
-                for(int i = 0; i < tmp->clip_rect.w * tmp->clip_rect.h; i++) {
-                    ((uint32_t *)tmp->pixels)[i] = 0xFF00FF00;
-                }
             }
             costumes.push_back({SDL_CreateTextureFromSurface(renderer, surface), surface});
         }
