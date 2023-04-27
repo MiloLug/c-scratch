@@ -8,6 +8,7 @@
 #include "include_sdl.h"
 #include "../config.h"
 #include <cwchar>
+#include <utility>
 
 
 const std::filesystem::path spritesBaseDirectory = L"sprites/";
@@ -25,7 +26,7 @@ public:
     int layerOrder;
     float x;
     float y;
-    std::vector<SDL_Texture*> textures = {};
+    std::vector<std::pair<SDL_Texture*, SDL_Surface*>> costumes = {};
 
     inline void setX(float _x) {
         pos.x = (WINDOW_WIDTH - this->pos.w) / 2.0 + _x;
@@ -86,19 +87,32 @@ public:
     inline void init(SDL_Renderer * renderer) {
         const std::filesystem::path spritePath = spritesBaseDirectory / name;
 
-        for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / L"costumes" })
-        {
-            textures.push_back(IMG_LoadTexture(renderer, dir_entry.path().string().c_str()));
+        for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / L"costumes" }) {
+            auto surface = IMG_Load(dir_entry.path().string().c_str());
+            if (surface->format->format != SDL_PIXELFORMAT_ARGB8888) {
+                auto tmp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ARGB8888, 0);
+                SDL_FreeSurface(surface);
+                surface = tmp;
+                for(int i = 0; i < tmp->clip_rect.w * tmp->clip_rect.h; i++) {
+                    ((uint32_t *)tmp->pixels)[i] = 0xFF00FF00;
+                }
+            }
+            costumes.push_back({SDL_CreateTextureFromSurface(renderer, surface), surface});
         }
     }
 
     inline SDL_Texture * getCostumeTexture() const {
-        return this->textures[this->costumeNumber];
+        return this->costumes[this->costumeNumber].first;
+    }
+
+    inline SDL_Surface * getCostumeSurface() const {
+        return this->costumes[this->costumeNumber].second;
     }
 
     ~Sprite() {
-        for(auto &tex : textures) {
-            SDL_DestroyTexture(tex);
+        for(auto &costume : costumes) {
+            SDL_DestroyTexture(costume.first);
+            SDL_FreeSurface(costume.second);
         }
     }
 };

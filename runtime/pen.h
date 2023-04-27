@@ -27,7 +27,7 @@ namespace Pen {
 
     // typedef ThreadSafeQueue<std::pair<uint64_t, uint32_t>> changes_q;  // (index, pixel)
 
-    static constexpr const uint32_t
+    static constexpr const int32_t
         canvasWidth = WINDOW_WIDTH,
         canvasHeight = WINDOW_HEIGHT;
     static constexpr const uint64_t canvasSize = canvasWidth * canvasHeight;
@@ -45,6 +45,7 @@ namespace Pen {
 
     void eraseAll();
     void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t thickness, uint32_t color);
+    void stamp(int32_t x, int32_t y, SDL_Surface * surface);
     // void setPixel(int16_t x, int16_t y, uint32_t color);
     
 };

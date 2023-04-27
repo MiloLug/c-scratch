@@ -17,7 +17,7 @@ Sprite sprite = {
     .size = 100,
     .visible = true,
     .layerOrder = 1,
-    .textures = {}
+    .costumes = {}
 };
 
 Sprite sprite2 = {
@@ -33,7 +33,7 @@ Sprite sprite2 = {
     .size = 100,
     .visible = true,
     .layerOrder = 1,
-    .textures = {}
+    .costumes = {}
 };
 
 Sprite * const sprites[] = {

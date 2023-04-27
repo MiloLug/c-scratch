@@ -2,8 +2,8 @@
 #define C_SCRATCH_CONFIG_H
 
 /**** COMMON ****/
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH 480
+#define WINDOW_HEIGHT 360
 
 // Enables some useful outputs such as "sprite X is initialized"
 #define DEBUG
@@ -17,14 +17,15 @@
 * So in the turbo mode, main function will say 'im working with the canvas',
 *    then run 10000 operations and say 'the canvas is ready to be shown'.
 */
-#define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH * WINDOW_HEIGHT + 1)
+// #define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH * WINDOW_HEIGHT + 1)
+#define TURBO_LOCK_WINDOW_CYCLES (10000)
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms can be disabled.
 * It TREMENDOUSLY speeds up such tools as pen,
 * but in *some* cases the app may crash (but it's highly unlikely as tests show).
 */
-#define ENABLE_UNSAFE_NO_LOCKS
+// #define ENABLE_UNSAFE_NO_LOCKS
 
 // How many of the fraction part to save in some "number to string" operations
 #define NUM_TO_STRING_FRACTION_DIGITS 20
