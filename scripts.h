@@ -115,8 +115,8 @@ Coroutine testCoro(Sprite * sprite) {
 
     for (Value i = 0; i < 1000000; i++) {
         // wprintf(L"PPP %f\n", fmod(i / 100, 360.0));
-        auto tmp = rotozoomSurface(sprite->getCostumeSurface(), fmod(i / 100, 360.0), 1, 1);
-        Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + 30, (WINDOW_HEIGHT - tmp->clip_rect.h) / 2.0 - 30, tmp);
+        auto tmp = rotozoomSurface(sprite->getCostumeSurface(), sprite->direction, 1, 1);
+        Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + sprite->x, (WINDOW_HEIGHT - tmp->clip_rect.h) / 2.0 - sprite->y, tmp);
         SDL_FreeSurface(tmp);
         co_yield NULL;
     }
