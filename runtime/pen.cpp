@@ -15,8 +15,7 @@ namespace Pen
                 WINDOW_HEIGHT
             );
 
-            for (uint64_t i = 0; i < (canvasSize >> 1); i++)
-                ((uint64_t *)pixelBuffer)[i] = 0xFFFFFFFF'FFFFFFFF;
+            memset((void *)pixelBuffer, 0xFF, canvasSize << 2);
         }
     }
     Initializer::~Initializer() {
@@ -44,7 +43,7 @@ namespace Pen
         if (alpha == 0xFF) {
             pixelBuffer[pos] = color;
         } else {
-            uint32_t bgColor = pixelBuffer[pos];
+            const uint32_t bgColor = pixelBuffer[pos];
 
             uint32_t rb = bgColor & 0x00FF00FF;
             uint32_t g = bgColor & 0x0000FF00;
@@ -57,15 +56,15 @@ namespace Pen
 
     static inline void drawLine1(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color) {
         bool yLonger = false;
-        int shortLen = y2 - y1;
-        int longLen = x2 - x1;
+        int32_t shortLen = y2 - y1;
+        int32_t longLen = x2 - x1;
         if (abs(shortLen) > abs(longLen)) {
-            int swap = shortLen;
+            int32_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
             yLonger = true;
         }
-        int decInc;
+        int32_t decInc;
         if (longLen == 0)
             decInc = 0;
         else
@@ -75,14 +74,14 @@ namespace Pen
             if (longLen > 0)
             {
                 longLen += y1;
-                for (int j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
+                for (int32_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawPixel(j >> 16, y1, color);
                     j += decInc;
                 }
                 return;
             }
             longLen += y1;
-            for (int j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
+            for (int32_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
                 drawPixel(j >> 16, y1, color);
                 j -= decInc;
             }
@@ -91,7 +90,7 @@ namespace Pen
 
         if (longLen > 0) {
             longLen += x1;
-            for (int j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
+            for (int32_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
             {
                 drawPixel(x1, j >> 16, color);
                 j += decInc;
@@ -99,18 +98,18 @@ namespace Pen
             return;
         }
         longLen += x1;
-        for (int j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
+        for (int32_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
             drawPixel(x1, j >> 16, color);
             j -= decInc;
         }
     }
 
     static inline void drawCircle(int32_t cX, int32_t cY, int32_t r, uint32_t color) {
-        int64_t rr = r * r;
+        const int64_t rr = r * r;
 
         for (int32_t x = -r; x < r ; x++)
         {
-            int32_t height = (int32_t)sqrt(rr - x * x);
+            int32_t height = roundDToI32(sqrt(rr - x * x));
 
             for (int32_t y = -height; y < height; y++)
                 drawPixel(x + cX, y + cY, color);
@@ -120,15 +119,15 @@ namespace Pen
     static inline void drawLineRounded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t thickness, uint32_t color) {
         thickness >>= 1;
         bool yLonger = false;
-        int shortLen = y2 - y1;
-        int longLen = x2 - x1;
+        int32_t shortLen = y2 - y1;
+        int32_t longLen = x2 - x1;
         if (abs(shortLen) > abs(longLen)) {
-            int swap = shortLen;
+            int32_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
             yLonger = true;
         }
-        int decInc;
+        int32_t decInc;
         if (longLen == 0)
             decInc = 0;
         else
@@ -138,14 +137,14 @@ namespace Pen
             if (longLen > 0)
             {
                 longLen += y1;
-                for (int j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
+                for (int32_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawCircle(j >> 16, y1, thickness, color);
                     j += decInc;
                 }
                 return;
             }
             longLen += y1;
-            for (int j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
+            for (int32_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
                 drawCircle(j >> 16, y1, thickness, color);
                 j -= decInc;
             }
@@ -154,7 +153,7 @@ namespace Pen
 
         if (longLen > 0) {
             longLen += x1;
-            for (int j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
+            for (int32_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
             {
                 drawCircle(x1, j >> 16, thickness, color);
                 j += decInc;
@@ -162,14 +161,14 @@ namespace Pen
             return;
         }
         longLen += x1;
-        for (int j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
+        for (int32_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
             drawCircle(x1, j >> 16, thickness, color);
             j -= decInc;
         }
     }
 
     void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t thickness, uint32_t color) {
-        thickness = thickness || 1;
+        // thickness = thickness || 1;
         #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
             pixels.take();
         #endif
@@ -213,11 +212,11 @@ namespace Pen
         y = MAX_UNSAFE(y, 0);
 
         auto surP = (uint32_t *)surface->pixels + surStartY * surface->clip_rect.w + surStartX;
-        uint64_t surSkip = surface->clip_rect.w - surDrawW + surStartX;
+        const uint64_t surSkip = surface->clip_rect.w - surDrawW + surStartX;
         auto surEnd = (uint32_t *)surface->pixels + (surStartY + surDrawH - 1) * surface->clip_rect.w + surDrawW;
         
         auto canvasP = (uint32_t *)pixelBuffer + y * canvasWidth + x;
-        uint64_t canvasSkip = canvasWidth - surDrawW;
+        const uint64_t canvasSkip = canvasWidth - surDrawW;
 
         while(surP < surEnd) {
             for (uint32_t sRowI = surStartX; sRowI < surDrawW; sRowI++, surP++, canvasP++) {
@@ -227,7 +226,7 @@ namespace Pen
                 if (alpha == 0xFF) {
                     *canvasP = surPix;
                 } else {
-                    uint32_t bgColor = *canvasP;
+                    const uint32_t bgColor = *canvasP;
 
                     uint32_t rb = bgColor & 0x00FF00FF;
                     uint32_t g = bgColor & 0x0000FF00;

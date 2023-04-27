@@ -9,8 +9,14 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+  set(CMAKE_CXX_FLAGS_DEBUG "/fp:fast")
+  set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast")
+else()
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ffast-math")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math")
+endif()
+
 
 # Executable settings
 find_library(SDL2 SDL2_image SDL2_gfx)

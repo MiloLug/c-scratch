@@ -122,6 +122,8 @@ Coroutine testCoro(Sprite * sprite) {
     co_yield NULL;
     // }
 
+    Pen::drawLine(-10, -2, 100, 140, 11, 0xFF0F7F4F);
+
     while(1) co_yield NULL;
     // for(Value i = 0; i < 1000; i++) {
     //     for(Value x = 0; x < WINDOW_WIDTH; x++) {
