@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
         while(corosIter != corosEnd) {
             auto &coro = *corosIter;
             
-            if(shouldRun = !coro->done()) {
+            if(!coro->done()) {
                 coro->resume();
                 corosIter++;
             } else {

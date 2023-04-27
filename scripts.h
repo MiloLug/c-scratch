@@ -86,39 +86,40 @@ Coroutine testCoro(Sprite * sprite) {
 
     // Value max = (double)0xFFFFFFFF;
 
-    // Value off = 0;
-    // Value t = 1;
+    Value off = 0;
+    Value t = 1;
 
-    // while(1) {
-    //     off += t;
-    //     if (off > 30) {
-    //         t = -1;
-    //     } else if (off < 1) {
-    //         t = 1;
-    //     }
-    //     for (Value x = 0; x < WINDOW_WIDTH; x++) {
-    //         for (Value y = 0; y < WINDOW_HEIGHT; y++) {
-    //             // max--;
-    //             Pen::drawLine(x, y, x, y, 1, (uint64_t)((double)0xFF0FF0FF * (
-    //                 1 - radSin(2 - (sqrt(pow(sprite->pos.x + sprite->pos.w / 2.0 - x, 2.0) + pow(sprite->pos.y + sprite->pos.h / 2.0 - y, 2.0)) + off) / div_)
-    //             )));
-    //             co_yield NULL;
-    //         }
-    //         co_yield NULL;
-    //     }
-    //     co_yield NULL;
-    // }
-
-    for(Value i = 0; i < 1000; i++) {
-        for(Value x = 0; x < WINDOW_WIDTH; x++) {
-            for(Value y = 0; y < WINDOW_HEIGHT; y++) {
-                Pen::drawLine(x, y, x, y, 1, 0x0200FF00);
+    while(1) {
+        off += t;
+        if (off > 30) {
+            t = -1;
+        } else if (off < 1) {
+            t = 1;
+        }
+        for (Value x = 0; x < WINDOW_WIDTH; x++) {
+            for (Value y = 0; y < WINDOW_HEIGHT; y++) {
+                // max--;
+                Pen::drawLine(x, y, x, y, 1, (uint64_t)((double)0xFF0FF0FF * (
+                    // 1 - (sqrt(pow(sprite->pos.x + sprite->pos.w / 2.0 - x, 2.0) + pow(sprite->pos.y + sprite->pos.h / 2.0 - y, 2.0)) + off) / (radSin(div_) || radCos(div_))
+                    1 - radSin(2 - (sqrt(pow(sprite->pos.x + sprite->pos.w / 2.0 - x, 2.0) + pow(sprite->pos.y + sprite->pos.h / 2.0 - y, 2.0)) + off) / div_)
+                )));
                 co_yield NULL;
             }
             co_yield NULL;
         }
         co_yield NULL;
     }
+
+    // for(Value i = 0; i < 1000; i++) {
+    //     for(Value x = 0; x < WINDOW_WIDTH; x++) {
+    //         for(Value y = 0; y < WINDOW_HEIGHT; y++) {
+    //             Pen::drawLine(x, y, x, y, 1, 0x0100FF00);
+    //             co_yield NULL;
+    //         }
+    //         co_yield NULL;
+    //     }
+    //     co_yield NULL;
+    // }
 
     co_yield NULL;
 
@@ -263,34 +264,34 @@ BindingsMap scriptBindings = {
             // sprite2Script1
         }}
     }},
-    // {ACTION_KEYDOWN|SDL_SCANCODE_W, {
-    //     {&sprite2, {
-    //         moveY1
-    //     }}
-    // }},
-    // {ACTION_KEYDOWN|SDL_SCANCODE_S, {
-    //     {&sprite2, {
-    //         moveYN1
-    //     }}
-    // }},
-    // {ACTION_KEYDOWN|SDL_SCANCODE_D, {
-    //     {&sprite2, {
-    //         moveX1
-    //     }}
-    // }},
-    // {ACTION_KEYDOWN|SDL_SCANCODE_A, {
-    //     {&sprite2, {
-    //         moveXN1
-    //     }}
-    // }},
-    // {ACTION_KEYDOWN|SDL_SCANCODE_Q, {
-    //     {&sprite2, {
-    //         incDiv
-    //     }}
-    // }},
-    // {ACTION_KEYDOWN|SDL_SCANCODE_E, {
-    //     {&sprite2, {
-    //         decDiv
-    //     }}
-    // }}
+    {ACTION_KEYDOWN|SDL_SCANCODE_W, {
+        {&sprite2, {
+            moveY1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_S, {
+        {&sprite2, {
+            moveYN1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_D, {
+        {&sprite2, {
+            moveX1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_A, {
+        {&sprite2, {
+            moveXN1
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_Q, {
+        {&sprite2, {
+            incDiv
+        }}
+    }},
+    {ACTION_KEYDOWN|SDL_SCANCODE_E, {
+        {&sprite2, {
+            decDiv
+        }}
+    }}
 };

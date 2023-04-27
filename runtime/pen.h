@@ -44,7 +44,7 @@ namespace Pen {
     // void releaseChangesQ(changes_q * changesQueue);
 
     void eraseAll();
-    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t thickness, uint32_t color);
+    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t thickness, uint32_t color);
     // void setPixel(int16_t x, int16_t y, uint32_t color);
     
 };

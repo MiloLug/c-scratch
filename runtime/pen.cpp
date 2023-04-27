@@ -15,7 +15,7 @@ namespace Pen
                 WINDOW_HEIGHT
             );
 
-            for (uint64_t i = 0; i < (canvasSize > 1); i++)
+            for (uint64_t i = 0; i < (canvasSize >> 1); i++)
                 ((uint64_t *)pixelBuffer)[i] = 0xFFFFFFFF'FFFFFFFF;
         }
     }
@@ -168,7 +168,7 @@ namespace Pen
         }
     }
 
-    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t thickness, uint32_t color) {
+    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t thickness, uint32_t color) {
         #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
             pixels.take();
         #endif
