@@ -55,24 +55,6 @@ namespace Pen
         }
     }
 
-    static inline void drawPixelUnsafe(int32_t x, int32_t y, uint32_t color) {
-        const uint8_t alpha = (color >> 24);
-        const uint64_t pos = WINDOW_WIDTH * y + x;
-
-        if (alpha == 0xFF) {
-            pixelBuffer[pos] = color;
-        } else {
-            uint32_t bgColor = pixelBuffer[pos];
-
-            uint32_t rb = bgColor & 0x00FF00FF;
-            uint32_t g = bgColor & 0x0000FF00;
-            rb += ((color & 0xFF00FF) - rb) * alpha >> 8;
-            g += ((color & 0x00FF00) - g) * alpha >> 8;
-
-            pixelBuffer[pos] = (rb & 0xFF00FF) | (g & 0x00FF00);
-        }
-    }
-
     static inline void drawLine1(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color) {
         bool yLonger = false;
         int shortLen = y2 - y1;
@@ -187,6 +169,7 @@ namespace Pen
     }
 
     void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t thickness, uint32_t color) {
+        thickness = thickness || 1;
         #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
             pixels.take();
         #endif
@@ -213,6 +196,10 @@ namespace Pen
     }
 
     void stamp(int32_t x, int32_t y, SDL_Surface * surface) {
+        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+            pixels.take();
+        #endif
+
         const int32_t surDrawW = (canvasWidth - x - surface->clip_rect.w) < 0 ? canvasWidth - x : surface->clip_rect.w;
         const int32_t surDrawH = (canvasHeight - y - surface->clip_rect.h) < 0 ? canvasHeight - y : surface->clip_rect.h;
 
@@ -254,5 +241,9 @@ namespace Pen
             surP += surSkip;
             canvasP += canvasSkip;
         }
+
+        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+            pixels.release();
+        #endif
     }
 };
