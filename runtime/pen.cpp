@@ -32,7 +32,17 @@ namespace Pen
     volatile uint32_t pixelBuffer[canvasSize];
     Mutex pixels;
 
-    void eraseAll() {}
+    void eraseAll() {
+        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+            pixels.take();
+        #endif
+
+        memset((void *)pixelBuffer, 0xFF, canvasSize << 2);
+
+        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+            pixels.release();
+        #endif
+    }
 
     static inline void drawPixel(int32_t x, int32_t y, uint32_t color) {
         if (x < 0 || x >= canvasWidth || y < 0 || y >= canvasHeight) return;
@@ -104,17 +114,69 @@ namespace Pen
         }
     }
 
-    static inline void drawCircle(int32_t cX, int32_t cY, int32_t r, uint32_t color) {
-        const int64_t rr = r * r;
-
-        for (int32_t x = -r; x < r ; x++)
-        {
-            int32_t height = roundDToI32(sqrt(rr - x * x));
-
-            for (int32_t y = -height; y < height; y++)
-                drawPixel(x + cX, y + cY, color);
+    static inline void draw8Symmetry(int32_t cX, int32_t cY, int32_t x, int32_t y, uint32_t color) {
+        if (abs(x) != abs(y)) {
+            drawPixel(cX + x, cY + y, color);
+            drawPixel(cX + x, cY - y, color);
+            drawPixel(cX + y, cY - x, color);
+            drawPixel(cX - x, cY + y, color);
+            drawPixel(cX - x, cY - y, color);
+            drawPixel(cX + y, cY + x, color);
+            drawPixel(cX - y, cY + x, color);
+            drawPixel(cX - y, cY - x, color);
         }
     }
+
+    void drawCircle(int32_t cX, int32_t cY, int32_t r, uint32_t color) {
+        int32_t i = 0;
+        int32_t j = r;
+        double lastFadeAmount = 0;
+        double fadeAmount = 0;
+        int32_t fadeAmountI;
+
+        const int32_t maxOpaque = color >> 24;
+        const int32_t noAlphaColor = color & 0x00FFFFFF;
+
+        while (i < j) {
+            double height = sqrt(MAX(r * r - i * i, 0.0));
+            fadeAmount = (double)maxOpaque * (ceil(height) - height);
+
+            if (fadeAmount < lastFadeAmount)
+                j -= 1;
+            lastFadeAmount = fadeAmount;
+
+            fadeAmountI = (int32_t)fadeAmount;
+
+            draw8Symmetry(cX, cY, i, j, noAlphaColor | ((maxOpaque - fadeAmountI) << 24));
+            draw8Symmetry(cX, cY, i, j - 1, noAlphaColor | (fadeAmountI << 24));
+
+            for (double y = -height + 1.0; y < j; y++) {
+                drawPixel(cX + i, y + cY, color);
+                if (i != 0)
+                    drawPixel(cX - i, y + cY, color);
+            }
+
+            i += 1;
+        }
+
+        int32_t sideWidth = i;
+        i = 0;
+        while (i < r) {
+            double width = sqrt(MAX(r * r - i * i, 0.0));
+
+            for (double x = sideWidth; x < width; x++) {
+                drawPixel(cX + x, cY + i, color);
+                drawPixel(cX - x, cY + i, color);
+                if (i != 0) {
+                    drawPixel(cX + x, cY - i, color);
+                    drawPixel(cX - x, cY - i, color);
+                }
+            }
+
+            i += 1;
+        }
+    }
+
 
     static inline void drawLineRounded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t thickness, uint32_t color) {
         thickness >>= 1;

@@ -86,8 +86,8 @@ Coroutine testCoro(Sprite * sprite) {
 
     // Value max = (double)0xFFFFFFFF;
 
-    Value off = 0;
-    Value t = 1;
+    // Value off = 0;
+    // Value t = 1;
 
     // while(1) {
     //     off += t;
@@ -110,19 +110,26 @@ Coroutine testCoro(Sprite * sprite) {
     //     co_yield NULL;
     // }
 
-    sprite->point(121);
-    sprite->goXY(-20, -30);
+    // sprite->point(121);
+    // sprite->goXY(-20, -30);
     
 
     // for (Value i = 0; i < 1000000; i++) {
         // wprintf(L"PPP %f\n", fmod(i / 100, 360.0));
-    auto tmp = rotozoomSurface(sprite->getCostumeSurface(), -sprite->direction, 1, 1);
-    Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + sprite->x + 0.5, (WINDOW_HEIGHT - tmp->h) / 2.0 - sprite->y + 0.5, tmp);
-    SDL_FreeSurface(tmp);
-    co_yield NULL;
+    // auto tmp = rotozoomSurface(sprite->getCostumeSurface(), -sprite->direction, 1, 1);
+    // Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + sprite->x + 0.5, (WINDOW_HEIGHT - tmp->h) / 2.0 - sprite->y + 0.5, tmp);
+    // SDL_FreeSurface(tmp);
+    // co_yield NULL;
     // }
 
-    Pen::drawLine(-10, -2, 100, 140, 11, 0xFF0F7F4F);
+    // Pen::drawLine(-2, -20, 100, 140, 11, 0xFF0F7F4F);
+
+    // Pen::drawLine(100, 160, 100, 160, 12, 0xFF0F7F4F);
+
+    for(Value i = 0; i < 1; i++) {
+        Pen::drawLine(100, 200, 100, 200, 35, 0xFF0F7F4F);
+        co_yield NULL;
+    }
 
     while(1) co_yield NULL;
     // for(Value i = 0; i < 1000; i++) {
