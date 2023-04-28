@@ -25,9 +25,7 @@ target_sources(app PRIVATE
   ts_queue.h
   ts_container.h
   mutex.h
-
-  pen.h
-  pen.cpp
 )
 
 add_subdirectory("math")
+add_subdirectory("pen")

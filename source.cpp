@@ -11,7 +11,7 @@
 #include "sprites.h"
 #include "scripts.h"
 
-#include "runtime/pen.h"
+#include "runtime/pen/pen.h"
 
 
 void UpdateFrameTiming(std::wostream& os = std::wcout, float period = 2.0f)
