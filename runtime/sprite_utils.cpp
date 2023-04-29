@@ -4,16 +4,16 @@
 SpritesList spritesStorage;
 
 
-void renderSprites(ScratchSDLWindow &window) {
+void renderSprites(SDL_Renderer *renderer) {
     for (auto &sprite : spritesStorage) {
         if (sprite->visible)
-            SDL_RenderCopyExF(window.renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyExF(renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
     }
 }
 
-void initSprites(ScratchSDLWindow &window, const SpritesList &sprites) {
+void initSprites(SDL_Renderer *renderer, const SpritesList &sprites) {
     for (auto &sprite : sprites) {
-        sprite->init(window.renderer);
+        sprite->init(renderer);
         spritesStorage.push_back(sprite);
 
         #ifdef DEBUG

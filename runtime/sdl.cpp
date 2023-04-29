@@ -62,7 +62,7 @@ void ScratchSDLWindow::loop() {
             Pen::pixels.release();
         }
         SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, nullptr, nullptr);
-        renderSprites(*this);
+        renderSprites(renderer);
 
         SDL_RenderPresent(renderer);
 

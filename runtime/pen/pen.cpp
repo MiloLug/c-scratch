@@ -3,11 +3,11 @@
 
 namespace Pen
 {
-    Initializer::Initializer(ScratchSDLWindow &window) {
+    Initializer::Initializer(SDL_Renderer *renderer) {
         if (!initialized) {
             initialized = true;
             texture = SDL_CreateTexture(
-                window.renderer,
+                renderer,
                 SDL_PIXELFORMAT_ARGB8888,
                 SDL_TEXTUREACCESS_STREAMING,
                 WINDOW_WIDTH,
