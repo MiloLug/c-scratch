@@ -8,6 +8,9 @@ ThreadSafeQueue<Coroutine*> newActiveCoros;
 BindingsMap scriptBindingsStorage;
 
 
+/*
+* Adds all scripts for the given `action` to the execution queue.
+*/
 void triggerScripts(int32_t action) {
     auto actionBindings = scriptBindingsStorage.find(action);
     if (actionBindings != scriptBindingsStorage.end()) {
@@ -19,6 +22,10 @@ void triggerScripts(int32_t action) {
     }
 }
 
+/*
+* Merges `bindings` to the bindings storage, so you can dynamically add new scripts
+* without losing old ones.
+*/
 void bindScripts(const BindingsMap &bindings) {
     for (auto &[action, actionSprites] : bindings) {
         auto globalActionBindings = scriptBindingsStorage.find(action);
@@ -35,6 +42,9 @@ void bindScripts(const BindingsMap &bindings) {
     }
 }
 
+/*
+* This loop executes all scripts triggered by `triggerScripts`
+*/
 void startScriptsLoop() {
     std::list<Coroutine*> activeCoros;
     Coroutine * newCoroutine;
