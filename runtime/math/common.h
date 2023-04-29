@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+
 #define GET_HIGH_WORD(hi,d)                       \
 {                                              \
     union {double f; uint64_t i;} __u;              \
@@ -42,7 +43,5 @@ const constexpr int32_t INT32_OVERFLOW = -2147483648;
 #define MAX_UNSAFE(a, b) ((a) > (b) ? (a) : (b))
 #define MIN_UNSAFE(a, b) ((a) < (b) ? (a) : (b))
 
-#define roundDToI32(d) ({ double t = (d) + 6755399441055744.0; *(int32_t *)&t; })
-#define roundDToI64(d) ({ double t = (d) + 6755399441055744.0; ((*(int32_t *)&t) << 13) >> 13; })
 
 #endif

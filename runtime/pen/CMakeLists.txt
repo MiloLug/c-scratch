@@ -10,4 +10,7 @@ target_sources(app PRIVATE
 
   _pixel.h
   _pixel.cpp
+
+  _stamp.h
+  _stamp.cpp
 )

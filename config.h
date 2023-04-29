@@ -24,7 +24,7 @@
 * It TREMENDOUSLY speeds up such tools as pen,
 * but in *some* cases the app may crash (but it's highly unlikely as tests show).
 */
-#define ENABLE_UNSAFE_NO_LOCKS
+// #define ENABLE_UNSAFE_NO_LOCKS
 
 // How many of the fraction part to save in some "number to string" operations
 #define NUM_TO_STRING_FRACTION_DIGITS 20

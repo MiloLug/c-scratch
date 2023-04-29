@@ -49,8 +49,6 @@ void startScriptsLoop() {
     std::list<Coroutine*> activeCoros;
     Coroutine * newCoroutine;
 
-    triggerScripts(ACTION_START);
-
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
         std::clock_t previous_time = std::clock();
@@ -60,6 +58,10 @@ void startScriptsLoop() {
             Pen::pixels.take();
         #endif
     #endif
+
+    // wprintf(L"C\n");
+    triggerScripts(ACTION_START);
+    // wprintf(L"C\n");
 
     while (shouldRun) {
         #ifndef ENABLE_TURBO
@@ -89,7 +91,9 @@ void startScriptsLoop() {
             auto &coro = *corosIter;
             
             if(shouldRun = !coro->done()) {
+    wprintf(L"C\n");
                 coro->resume();
+    wprintf(L"C\n");
                 corosIter++;
             } else {
                 delete coro;

@@ -9,6 +9,7 @@
 #include "runtime/string_utils.h"
 #include "runtime/script_utils.h"
 #include "runtime/pen/pen.h"
+#include "runtime/control_flow.h"
 #include "sprites.h"
 
 
@@ -64,27 +65,61 @@ ValueArray testGlobArr({1, 2, 3, L"GG", L"test str", 20903.3298741239283});
 
 Value div_ = 700;
 
+Coroutine kek221(Sprite * sprite) {
+    wprintf(L"I 1\n");
+    co_return;
+}
+Coroutine kek222(Sprite * sprite) {
+    wprintf(L"I 2\n");
+    co_return;
+}
+Coroutine kek223(Sprite * sprite) {
+    wprintf(L"I 3\n");
+    co_return;
+}
+Coroutine kek224(Sprite * sprite) {
+    wprintf(L"I 4\n");
+    co_return;
+}
+
+Coroutine kek22(Sprite * sprite) {
+    wprintf(L"I\n");
+    wait(kek221(sprite));
+    wait(kek222(sprite));
+    wait(kek223(sprite));
+    wait(kek224(sprite));
+    co_return;
+}
+
 Coroutine testCoro(Sprite * sprite) {
     // testGlobArr.push(L"asdsad");
     // co_yield test1(sprite);
     // wprintf(L"asdsadsadsad\n");
-    co_yield NULL;
+    // wprintf(L"A\n");
+    wait(kek22(sprite));
+
+    // // auto __test = kek22(sprite);
+    // // if (__coroNext(__test))
+    // //     co_yield __test;
+
+    // wprintf(L"B\n");
     wprintf(L"A 1\n");
     ValueArray arr1;
 
-    for (Value i = 0; i < 10000000; i++) {
-        arr1.push(10);
-        co_yield NULL;
-    }
+    // repeat (10000000) {
+    //     arr1.push(10);
+    //     yield;
+    // }
+
     wprintf(L"A 2\n");
     
-    for (Value t = 0; t < 10; t+=1) {
-        for (Value i = 1; i <= arr1.length; i++) {
-            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
-            co_yield NULL;
-        }
-        co_yield NULL;
-    }
+    // repeat (10) {
+    //     for (Value i = 1; i <= arr1.length; i++) {
+    //         arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+    //         yield;
+    //     }
+    //     yield;
+    // }
     wprintf(L"A 3\n");
 
     // Value max = (double)0xFFFFFFFF;
@@ -117,14 +152,9 @@ Coroutine testCoro(Sprite * sprite) {
     // sprite->goXY(500, 500);
     
 
-    // for (Value i = 0; i < 1000000; i++) {
-        // wprintf(L"PPP %f\n", fmod(i / 100, 360.0));
-    // auto tmp = rotozoomSurface(sprite->getCostumeSurface(), -sprite->direction, 1, 1);
-    // Pen::stamp((WINDOW_WIDTH - tmp->clip_rect.w) / 2.0 + sprite->x + 0.5, (WINDOW_HEIGHT - tmp->h) / 2.0 - sprite->y + 0.5, tmp);
-    // SDL_FreeSurface(tmp);
-    // co_yield NULL;
-    // }
+    
 
+    
     // Pen::drawLine(-2, -20, 100, 140, 11, 0xFF0F7F4F);
 
     // Pen::drawLine(100, 160, 100, 160, 12, 0xFF0F7F4F);
@@ -233,14 +263,19 @@ Coroutine testCoro(Sprite * sprite) {
     // }
     
     
-
+    // sprite->goXY(-(WINDOW_WIDTH / 2.0f), (WINDOW_HEIGHT / 2.0f));
+    // sprite->penDown();
     
-    // for(Value i = 0; i < 1000; i++) {
+    // repeat (1000) {
     //     for(Value x = 0; x < WINDOW_WIDTH; x++) {
     //         for(Value y = 0; y < WINDOW_HEIGHT; y++) {
-    //             Pen::drawLine(x, y, x, y, 1, 0xFF00FF00);
+    //             sprite->changeY(-1);
     //             co_yield NULL;
     //         }
+    //         sprite->penUp();
+    //         sprite->changeX(1);
+    //         sprite->changeY(WINDOW_HEIGHT);
+    //         sprite->penDown();
     //         co_yield NULL;
     //     }
     //     co_yield NULL;
@@ -281,12 +316,15 @@ Coroutine testCoro(Sprite * sprite) {
 
     //     co_yield NULL;
     // }
+    co_return;
 }
 
 Coroutine spriteScript2(Sprite * sprite) {
     co_yield NULL;
+
+    sprite->penDown();
     // forever
-    while (1) {
+    forever {
         if (keyPressed[SDL_SCANCODE_UP]) {
             // move 1 steps
             sprite->move(1);
@@ -319,7 +357,7 @@ Coroutine spriteScript2(Sprite * sprite) {
 Coroutine sprite2Script1(Sprite * sprite) {
     co_yield NULL;
     // forever
-    while (1) {
+    forever {
         if (keyPressed[SDL_SCANCODE_W]) {
             // change y by 1
             sprite->changeY(1);
@@ -379,6 +417,12 @@ Coroutine decDiv(Sprite * sprite) {
     if (div_ <= 0) div_ = 1;
 }
 
+Coroutine makeStamp(Sprite * sprite) {
+    co_yield NULL;
+
+    sprite->penStamp();
+}
+
 
 const BindingsMap scriptBindings = {
     {ACTION_START, {
@@ -391,6 +435,11 @@ const BindingsMap scriptBindings = {
             // sprite2Script1
         }}
     }},
+    // {ACTION_KEYDOWN|SDL_SCANCODE_P, {
+    //     {&sprite, {
+    //         makeStamp
+    //     }}
+    // }},
     // {ACTION_KEYDOWN|SDL_SCANCODE_W, {
     //     {&sprite2, {
     //         moveY1

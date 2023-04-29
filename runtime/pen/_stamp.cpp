@@ -5,10 +5,10 @@
 
 namespace Pen {
     void stamp(int32_t x, int32_t y, SDL_Surface * surface) {
-        const int32_t surDrawW = (canvasWidth - x - surface->clip_rect.w) < 0 ? canvasWidth - x : surface->clip_rect.w;
-        const int32_t surDrawH = (canvasHeight - y - surface->clip_rect.h) < 0 ? canvasHeight - y : surface->clip_rect.h;
+        const int32_t surDrawW = (canvasWidth - x - surface->w) < 0 ? canvasWidth - x : surface->w;
+        const int32_t surDrawH = (canvasHeight - y - surface->h) < 0 ? canvasHeight - y : surface->h;
 
-        if (surDrawW <= 0 || surDrawH <= 0 || -x >= surface->clip_rect.w || -y >= surface->clip_rect.h)
+        if (surDrawW <= 0 || surDrawH <= 0 || -x >= surface->w || -y >= surface->h)
             return;
 
         const int32_t surStartX = x < 0 ? -x : 0;
@@ -17,12 +17,12 @@ namespace Pen {
         x = MAX_UNSAFE(x, 0);
         y = MAX_UNSAFE(y, 0);
 
-        auto surP = (uint32_t *)surface->pixels + surStartY * surface->clip_rect.w + surStartX;
-        const uint64_t surSkip = surface->clip_rect.w - surDrawW + surStartX;
-        auto surEnd = (uint32_t *)surface->pixels + (surStartY + surDrawH - 1) * surface->clip_rect.w + surDrawW;
+        auto surP = (uint32_t *)surface->pixels + surStartY * surface->w + surStartX;
+        const uint64_t surSkip = surface->w - surDrawW + surStartX;
+        auto surEnd = (uint32_t *)surface->pixels + (surStartY + surDrawH - 1) * surface->w + surDrawW;
         
         auto canvasP = (uint32_t *)pixelBuffer + y * canvasWidth + x;
-        const uint64_t canvasSkip = canvasWidth - surDrawW;
+        const uint64_t canvasSkip = canvasWidth - surDrawW + surStartX;
 
         while(surP < surEnd) {
             for (uint32_t sRowI = surStartX; sRowI < surDrawW; sRowI++, surP++, canvasP++) {

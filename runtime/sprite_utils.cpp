@@ -6,7 +6,8 @@ SpritesList spritesStorage;
 
 void renderSprites(ScratchSDLWindow &window) {
     for (auto &sprite : spritesStorage) {
-        SDL_RenderCopyExF(window.renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
+        if (sprite->visible)
+            SDL_RenderCopyExF(window.renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
     }
 }
 

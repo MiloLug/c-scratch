@@ -2,39 +2,34 @@
 #define SPRITES_COLLECTION_H
 
 #include "runtime/sprite.h"
+#include "runtime/sprite_utils.h"
 
 
-Sprite sprite = {
+Sprite sprite({
     .name = L"sprite",
-    .pos = {
-        .x = (WINDOW_WIDTH - 95) / 2 + 100,
-        .y = (WINDOW_HEIGHT - 100) / 2 - 0,
-        .w = 95,
-        .h = 100
-    },
-    .direction = 45,
+    .x = 100,
+    .y = 0,
+    .width = 95,
+    .height = 100,
+    .direction = 135,
     .costumeNumber = 0,
     .size = 100,
     .visible = true,
     .layerOrder = 1,
-    .costumes = {}
-};
+});
 
-Sprite sprite2 = {
+Sprite sprite2({
     .name = L"sprite2",
-    .pos = {
-        .x = (WINDOW_WIDTH - 95) / 2 + -79,
-        .y = (WINDOW_HEIGHT - 100) / 2 - -27,
-        .w = 95,
-        .h = 100
-    },
-    .direction = 0,
+    .x = -79,
+    .y = -27,
+    .width = 95,
+    .height = 100,
+    .direction = 90,
     .costumeNumber = 0,
     .size = 100,
-    .visible = true,
-    .layerOrder = 1,
-    .costumes = {}
-};
+    .visible = false,
+    .layerOrder = 1
+});
 
 SpritesList sprites = {
     &sprite2,
