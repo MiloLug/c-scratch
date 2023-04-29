@@ -1,5 +1,5 @@
 #include "config.h"
-#ifndef USE_FAST_MATH
+#ifndef ENABLE_FAST_MATH
 
 /* origin: FreeBSD /usr/src/lib/msun/src/e_rem_pio2.c */
 /*

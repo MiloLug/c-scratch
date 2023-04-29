@@ -11,4 +11,8 @@
 #include SDL_HEADER(SDL_image.h)
 #include SDL_HEADER(SDL2_rotozoom.h)
 
+#if __has_include (<vulkan/vulkan.h>)
+    #define SDL_USE_VULKAN
+#endif
+
 #endif

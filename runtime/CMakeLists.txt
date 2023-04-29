@@ -5,6 +5,7 @@ target_sources(app PRIVATE
 
   sprite.h
   sprite_utils.h
+  sprite_utils.cpp
 
   string.h
   string.cpp

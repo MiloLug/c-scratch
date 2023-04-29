@@ -1,5 +1,5 @@
 #include "config.h"
-#ifdef USE_FAST_MATH
+#ifdef ENABLE_FAST_MATH
 
 #include "runtime/math.h"
 #include <cstdio>

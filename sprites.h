@@ -36,10 +36,9 @@ Sprite sprite2 = {
     .costumes = {}
 };
 
-Sprite * const sprites[] = {
+SpritesList sprites = {
     &sprite2,
-    &sprite,
-    NULL
+    &sprite
 };
 
 

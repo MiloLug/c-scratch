@@ -17,7 +17,7 @@
 * So in the turbo mode, main function will say 'im working with the canvas',
 *    then run 10000 operations and say 'the canvas is ready to be shown'.
 */
-#define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH * WINDOW_HEIGHT + 1)
+#define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH * WINDOW_HEIGHT)
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms can be disabled.
@@ -42,6 +42,6 @@
 * Enables fast math functions. The only disadvantage is the accuracy
 * in some functions, but it's enough for almost any calculations
 */
-#define USE_FAST_MATH
+#define ENABLE_FAST_MATH
 
 #endif

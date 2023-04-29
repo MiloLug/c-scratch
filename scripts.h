@@ -69,23 +69,23 @@ Coroutine testCoro(Sprite * sprite) {
     // co_yield test1(sprite);
     // wprintf(L"asdsadsadsad\n");
     co_yield NULL;
-    // wprintf(L"A 1\n");
-    // ValueArray arr1;
+    wprintf(L"A 1\n");
+    ValueArray arr1;
 
-    // for (Value i = 0; i < 10000000; i++) {
-    //     arr1.push(10);
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 2\n");
+    for (Value i = 0; i < 10000000; i++) {
+        arr1.push(10);
+        co_yield NULL;
+    }
+    wprintf(L"A 2\n");
     
-    // for (Value t = 0; t < 10; t+=1) {
-    //     for (Value i = 1; i <= arr1.length; i++) {
-    //         arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
-    //         co_yield NULL;
-    //     }
-    //     co_yield NULL;
-    // }
-    // wprintf(L"A 3\n");
+    for (Value t = 0; t < 10; t+=1) {
+        for (Value i = 1; i <= arr1.length; i++) {
+            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+            co_yield NULL;
+        }
+        co_yield NULL;
+    }
+    wprintf(L"A 3\n");
 
     // Value max = (double)0xFFFFFFFF;
 
@@ -129,26 +129,26 @@ Coroutine testCoro(Sprite * sprite) {
 
     // Pen::drawLine(100, 160, 100, 160, 12, 0xFF0F7F4F);
 
-    for(Value i = 0; i < 100; i++) {
-        // Pen::drawLine(100, 100, 100, 100, 10, 0x4F0F7F4F);
-        // Pen::drawLine(100, 120, 100, 120, 12, 0x4F0F7F4F);
-        // Pen::drawLine(100, 140, 100, 140, 14, 0x4F0F7F4F);
-        // Pen::drawLine(100, 160, 100, 160, 16, 0x4F0F7F4F);
-        // Pen::drawLine(100, 180, 100, 180, 18, 0x4F0F7F4F);
+    // for(Value i = 0; i < 100; i++) {
+    //     // Pen::drawLine(100, 100, 100, 100, 10, 0x4F0F7F4F);
+    //     // Pen::drawLine(100, 120, 100, 120, 12, 0x4F0F7F4F);
+    //     // Pen::drawLine(100, 140, 100, 140, 14, 0x4F0F7F4F);
+    //     // Pen::drawLine(100, 160, 100, 160, 16, 0x4F0F7F4F);
+    //     // Pen::drawLine(100, 180, 100, 180, 18, 0x4F0F7F4F);
 
-        // Pen::drawLine(140, 100, 140, 100, 20, 0x4F0F7F4F);
-        // Pen::drawLine(140, 130, 140, 130, 22, 0x4F0F7F4F);
-        // Pen::drawLine(140, 160, 140, 160, 24, 0x4F0F7F4F);
-        // Pen::drawLine(140, 190, 140, 190, 26, 0x4F0F7F4F);
-        // Pen::drawLine(140, 220, 140, 220, 28, 0x4F0F7F4F);
+    //     // Pen::drawLine(140, 100, 140, 100, 20, 0x4F0F7F4F);
+    //     // Pen::drawLine(140, 130, 140, 130, 22, 0x4F0F7F4F);
+    //     // Pen::drawLine(140, 160, 140, 160, 24, 0x4F0F7F4F);
+    //     // Pen::drawLine(140, 190, 140, 190, 26, 0x4F0F7F4F);
+    //     // Pen::drawLine(140, 220, 140, 220, 28, 0x4F0F7F4F);
 
-        // Pen::drawLine(180, 100, 180, 100, 30, 0x4F0F7F4F);
-        // Pen::drawLine(180, 140, 180, 140, 32, 0x4F0F7F4F);
-        // Pen::drawLine(180, 180, 180, 180, 34, 0x4F0F7F4F);
-        Pen_safe(Pen::drawLine(180, 220, 180, 220, 36, 0x4F0F7F4F));
+    //     // Pen::drawLine(180, 100, 180, 100, 30, 0x4F0F7F4F);
+    //     // Pen::drawLine(180, 140, 180, 140, 32, 0x4F0F7F4F);
+    //     // Pen::drawLine(180, 180, 180, 180, 34, 0x4F0F7F4F);
+    //     Pen_safe(Pen::drawLine(180, 220, 180, 220, 36, 0x4F0F7F4F));
         
-        co_yield NULL;
-    }
+    //     co_yield NULL;
+    // }
 
     // double seed = 546564;
     // OpenSimplexNoise::Noise noise(546564);
@@ -380,7 +380,7 @@ Coroutine decDiv(Sprite * sprite) {
 }
 
 
-BindingsMap scriptBindings = {
+const BindingsMap scriptBindings = {
     {ACTION_START, {
         {&sprite, {
             // spriteScript1,
