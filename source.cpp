@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
         printDebugInfo(window);
     #endif
     
-    Pen::Initializer penInit(window);
-    initSprites(window, sprites);
+    Pen::Initializer penInit(window.renderer);
+    initSprites(window.renderer, sprites);
     bindScripts(scriptBindings);
 
     auto sdlLoopThread = window.runLoop();

@@ -2,7 +2,7 @@
 #define CSCRATCH_PEN_H
 
 #include "config.h"
-#include "runtime/sdl.h"
+#include "runtime/include_sdl.h"
 #include "_pixel.h"
 #include "_fig.h"
 #include "_lines.h"
@@ -12,7 +12,7 @@
 namespace Pen {
     class Initializer {
     public:
-        Initializer(ScratchSDLWindow &window);
+        Initializer(SDL_Renderer *renderer);
         ~Initializer();
     private:
         static volatile bool initialized;

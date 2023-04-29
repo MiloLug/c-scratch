@@ -10,7 +10,7 @@
 #include "pen/pen.h"
 
 
-// The compiler can't inline it for some reason
+// The compiler can't it for some reason
 #define __penDrawLine(x1, y1, x2, y2) \
     Pen::drawLine( \
         x1 + centerOffsetX, \
@@ -81,7 +81,7 @@ public:
         }
     {}
 
-    inline void setX(float _x) {
+    void setX(float _x) {
         x = _x;
         _x = pos.x;
         pos.x = WINDOW_WIDTH / 2.0 - centerOffsetX + x;
@@ -90,7 +90,7 @@ public:
             Pen_safe(__penDrawLine(_x, pos.y, pos.x, pos.y));
     }
 
-    inline void setY(float _y) {
+    void setY(float _y) {
         y = _y;
         _y = pos.y;
         pos.y = WINDOW_HEIGHT / 2.0 - centerOffsetY - y;
@@ -99,7 +99,7 @@ public:
             Pen_safe(__penDrawLine(pos.x, _y, pos.x, pos.y));
     }
 
-    inline void goXY(float _x, float _y) {
+    void goXY(float _x, float _y) {
         x = _x;
         _x = pos.x;
         pos.x = WINDOW_WIDTH / 2.0 - centerOffsetX + x;
@@ -112,7 +112,7 @@ public:
             Pen_safe(__penDrawLine(_x, _y, pos.x, pos.y));
     }
 
-    inline void changeX(float offset) {
+    void changeX(float offset) {
         pos.x += offset;
         x += offset;
 
@@ -120,7 +120,7 @@ public:
             Pen_safe(__penDrawLine(pos.x - offset, pos.y, pos.x, pos.y));
     }
 
-    inline void changeY(float offset) {
+    void changeY(float offset) {
         pos.y -= offset;
         y -= offset;
 
@@ -128,26 +128,26 @@ public:
             Pen_safe(__penDrawLine(pos.x, pos.y - offset, pos.x, pos.y));
     }
 
-    inline void turnRight(float angle) {
+    void turnRight(float angle) {
         shouldUpdateSurfaceCache = true;
 
         direction += angle;
         direction = fmod(direction, 360.0);
     }
 
-    inline void turnLeft(float angle) {
+    void turnLeft(float angle) {
         shouldUpdateSurfaceCache = true;
 
         direction -= angle;
         direction = fmod(direction, 360.0);
     }
 
-    inline void point(float angle) {
+    void point(float angle) {
         shouldUpdateSurfaceCache = true;
         direction = fmod(angle - 90.0, 360.0);
     }
 
-    inline void move(float distance) {
+    void move(float distance) {
         float dX = distance * degCos(direction);
         float dY = distance * degSin(direction);
 
@@ -160,12 +160,12 @@ public:
             Pen_safe(__penDrawLine(pos.x - dX, pos.y - dY, pos.x, pos.y));
     }
 
-    inline float getDirection() const {
+    float getDirection() const {
         return fmod(direction + 90.0, 360.0);
     }
 
 
-    inline void init(SDL_Renderer * renderer) {
+    void init(SDL_Renderer * renderer) {
         const std::filesystem::path spritePath = spritesBaseDirectory / name;
 
         for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / L"costumes" }) {
@@ -179,15 +179,15 @@ public:
         }
     }
 
-    inline SDL_Texture * getCostumeTexture() const {
+    SDL_Texture * getCostumeTexture() const {
         return this->costumes[this->costumeNumber].first;
     }
 
-    inline SDL_Surface * getCostumeSurface() const {
+    SDL_Surface * getCostumeSurface() const {
         return this->costumes[this->costumeNumber].second;
     }
 
-    inline SDL_Surface * getCostumeTransformedSurface() {
+    SDL_Surface * getCostumeTransformedSurface() {
         if (!shouldUpdateSurfaceCache) return surfaceCache;
         
         if (surfaceCache != NULL)
@@ -198,7 +198,7 @@ public:
     }
 
 
-    inline void penStamp() {
+    void penStamp() {
         auto tmp = getCostumeTransformedSurface();
 
         Pen_safe(Pen::stamp(
@@ -208,22 +208,22 @@ public:
         ));
     }
 
-    inline void penSetColor(uint32_t color) {
+    void penSetColor(uint32_t color) {
         penColor = (color >> 24) == 0
             ? color | 0xFF000000
             : color;
     }
 
-    inline void penSetSize(double size) {
+    void penSetSize(double size) {
         penSize = round(MAX_UNSAFE(size, 0));
     }
 
-    inline void penDown() {
+    void penDown() {
         isPenDown = true;
         Pen_safe(__penDrawLine(pos.x, pos.y, pos.x, pos.y));
     }
 
-    inline void penUp() {
+    void penUp() {
         isPenDown = false;
     }
 
