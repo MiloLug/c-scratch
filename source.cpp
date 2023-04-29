@@ -1,3 +1,4 @@
+#include "config.h"
 #include "runtime/debug.h"
 #include "runtime/sdl.h"
 #include "runtime/sprite_utils.h"
