@@ -5,6 +5,7 @@ target_sources(app PRIVATE
 
   sprite.h
   sprite_utils.h
+  sprite_utils.cpp
 
   string.h
   string.cpp
@@ -23,6 +24,11 @@ target_sources(app PRIVATE
   script_utils.cpp
 
   ts_queue.h
+  ts_container.h
+  mutex.h
+
+  control_flow.h
 )
 
 add_subdirectory("math")
+add_subdirectory("pen")

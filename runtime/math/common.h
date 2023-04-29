@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+
 #define GET_HIGH_WORD(hi,d)                       \
 {                                              \
     union {double f; uint64_t i;} __u;              \
@@ -38,5 +39,9 @@ const constexpr int32_t INT32_OVERFLOW = -2147483648;
 #ifndef MIN
     #define MIN(a, b) ({auto _a = (a); auto _b = (b); _a < _b ? _a : _b;})
 #endif
+
+#define MAX_UNSAFE(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_UNSAFE(a, b) ((a) < (b) ? (a) : (b))
+
 
 #endif

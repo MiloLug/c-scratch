@@ -7,7 +7,7 @@
 #include "math/sign.h"
 #include "math/rand.h"
 
-#ifdef USE_FAST_MATH
+#ifdef ENABLE_FAST_MATH
     #include "math/fast/inc.h"
 #else
     #include "math/precise/inc.h"

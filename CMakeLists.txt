@@ -9,11 +9,17 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+  set(CMAKE_CXX_FLAGS_DEBUG "/fp:fast")
+  set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast")
+else()
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ffast-math")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math")
+endif()
+
 
 # Executable settings
-find_library(SDL2 SDL2_image)
+find_library(SDL2 SDL2_image SDL2_gfx)
 
 add_executable(app
   config.h
@@ -24,7 +30,7 @@ add_executable(app
 target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 
-target_link_libraries(app SDL2 SDL2main SDL2_image)
+target_link_libraries(app SDL2 SDL2main SDL2_image SDL2_gfx)
 
 # Assets
 file(COPY sprites DESTINATION ${CMAKE_BINARY_DIR})
