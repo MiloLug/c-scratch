@@ -1,3 +1,6 @@
+#ifndef CSCRATCH_SCRIPTS_H
+#define CSCRATCH_SCRIPTS_H
+
 #include "runtime/sprite.h"
 #include "runtime/sdl.h"
 #include "runtime/array.h"
@@ -111,7 +114,7 @@ Coroutine testCoro(Sprite * sprite) {
     // }
 
     // sprite->point(121);
-    sprite->goXY(20, 30);
+    // sprite->goXY(500, 500);
     
 
     // for (Value i = 0; i < 1000000; i++) {
@@ -126,32 +129,116 @@ Coroutine testCoro(Sprite * sprite) {
 
     // Pen::drawLine(100, 160, 100, 160, 12, 0xFF0F7F4F);
 
-    for(Value i = 0; i < 1000000; i++) {
-        // Pen::drawLine(100, 100, 100, 100, 10, 0x4F0F7F4F);
-        // Pen::drawLine(100, 120, 100, 120, 12, 0x4F0F7F4F);
-        // Pen::drawLine(100, 140, 100, 140, 14, 0x4F0F7F4F);
-        // Pen::drawLine(100, 160, 100, 160, 16, 0x4F0F7F4F);
-        // Pen::drawLine(100, 180, 100, 180, 18, 0x4F0F7F4F);
+    // for(Value i = 0; i < 1; i++) {
+    //     Pen::drawLine(100, 100, 100, 100, 10, 0x4F0F7F4F);
+    //     Pen::drawLine(100, 120, 100, 120, 12, 0x4F0F7F4F);
+    //     Pen::drawLine(100, 140, 100, 140, 14, 0x4F0F7F4F);
+    //     Pen::drawLine(100, 160, 100, 160, 16, 0x4F0F7F4F);
+    //     Pen::drawLine(100, 180, 100, 180, 18, 0x4F0F7F4F);
 
-        // Pen::drawLine(140, 100, 140, 100, 20, 0x4F0F7F4F);
-        // Pen::drawLine(140, 130, 140, 130, 22, 0x4F0F7F4F);
-        // Pen::drawLine(140, 160, 140, 160, 24, 0x4F0F7F4F);
-        // Pen::drawLine(140, 190, 140, 190, 26, 0x4F0F7F4F);
-        // Pen::drawLine(140, 220, 140, 220, 28, 0x4F0F7F4F);
+    //     Pen::drawLine(140, 100, 140, 100, 20, 0x4F0F7F4F);
+    //     Pen::drawLine(140, 130, 140, 130, 22, 0x4F0F7F4F);
+    //     Pen::drawLine(140, 160, 140, 160, 24, 0x4F0F7F4F);
+    //     Pen::drawLine(140, 190, 140, 190, 26, 0x4F0F7F4F);
+    //     Pen::drawLine(140, 220, 140, 220, 28, 0x4F0F7F4F);
 
-        // Pen::drawLine(180, 100, 180, 100, 30, 0x4F0F7F4F);
-        // Pen::drawLine(180, 140, 180, 140, 32, 0x4F0F7F4F);
-        // Pen::drawLine(180, 180, 180, 180, 34, 0x4F0F7F4F);
-        Pen::drawLine(180, 220, 180, 220, 36, 0x4F0F7F4F);
+    //     Pen::drawLine(180, 100, 180, 100, 30, 0x4F0F7F4F);
+    //     Pen::drawLine(180, 140, 180, 140, 32, 0x4F0F7F4F);
+    //     Pen::drawLine(180, 180, 180, 180, 34, 0x4F0F7F4F);
+    //     Pen::drawLine(180, 220, 180, 220, 36, 0x4F0F7F4F);
         
-        co_yield NULL;
-    }
+    //     co_yield NULL;
+    // }
+
+    // double seed = 546564;
+    // OpenSimplexNoise::Noise noise(546564);
+    // uint8_t octaves = 4;
+
+    // auto gradient = IMG_Load("sprites/gradient.png");
+    // if (gradient->format->format != SDL_PIXELFORMAT_ARGB8888) {
+    //     auto tmp = SDL_ConvertSurfaceFormat(gradient, SDL_PIXELFORMAT_ARGB8888, 0);
+    //     SDL_FreeSurface(gradient);
+    //     gradient = tmp;
+    // }
+
+    // const auto gradW = gradient->clip_rect.w;
+    // const auto gradPixels = (uint32_t *)gradient->pixels;
+    // double scale = 1;
+    // int64_t
+    //     offsetX = 200,
+    //     offsetY = 10;
+
+    
+    // while(1) {
+        
+    //     if (keyPressed[SDL_SCANCODE_KP_PLUS]) {
+    //         scale -= 0.01 * scale * 5;
+    //     }
+    //     if (keyPressed[SDL_SCANCODE_KP_MINUS]) {
+    //         scale += 0.01 * scale * 5;
+    //     }
+    //     if (keyPressed[SDL_SCANCODE_UP]) {
+    //         offsetY -= 10 / scale * scale;
+    //     }
+    //     if (keyPressed[SDL_SCANCODE_DOWN]) {
+    //         offsetY += 10 / scale * scale;
+    //     }
+    //     if (keyPressed[SDL_SCANCODE_LEFT]) {
+    //         offsetX -= 10 / scale * scale;
+    //     }
+    //     if (keyPressed[SDL_SCANCODE_RIGHT]) {
+    //         offsetX += 10 / scale * scale;
+    //     }
+
+    //     if (scale < 0.0001) scale = 0.0001;
+
+    //     // wprintf(L"ASDasdsadsadsad\n");
+
+    //     // Pen::eraseAll();
+    //     Pen::pixels.take();
+    //     for (int32_t x = 0; x < WINDOW_WIDTH; x++) {
+    //         for (int32_t y = 0; y < WINDOW_HEIGHT; y++) {
+    //             auto scaledX = double(x + offsetX) * scale;
+    //             auto scaledY = double(y + offsetY) * scale;
+
+    //             double
+    //                 res = 0.,
+    //                 amp = .5,
+    //                 freq = 1.95,
+    //                 _x = scaledX,
+    //                 _y = scaledY;
+
+    //             for (auto i = 0; i < octaves; i++) {
+    //                 res += amp * noise.eval(_x, _y);
+    //                 amp *= .5;
+    //                 _x *= freq;
+    //                 _y *= freq;
+    //             }
+
+    //             res = ((res + 1.) / 2.);
+
+    //             Pen::drawPixel(
+    //                 x,
+    //                 y,
+    //                 res == 1
+    //                     ? gradPixels[gradW - 1]
+    //                     : gradPixels[(uint64_t)(res * gradW)]
+    //             );
+    //         }
+    //     }
+    //     Pen::hasChanges = true;
+    //     Pen::pixels.release();
+
+    //     co_yield NULL;
+    // }
+    
+    
 
     // while(1) co_yield NULL;
     // for(Value i = 0; i < 1000; i++) {
     //     for(Value x = 0; x < WINDOW_WIDTH; x++) {
     //         for(Value y = 0; y < WINDOW_HEIGHT; y++) {
-    //             Pen::drawLine(x, y, x, y, 1, 0x0100FF00);
+    //             Pen::drawLine(x, y, x, y, 1, 0xFF00FF00);
     //             co_yield NULL;
     //         }
     //         co_yield NULL;
@@ -333,3 +420,6 @@ BindingsMap scriptBindings = {
     //     }}
     // }}
 };
+
+
+#endif

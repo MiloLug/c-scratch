@@ -10,7 +10,6 @@
 #include "runtime/sprite_utils.h"
 #include "sprites.h"
 #include "scripts.h"
-
 #include "runtime/pen/pen.h"
 
 
@@ -35,32 +34,7 @@ void UpdateFrameTiming(std::wostream& os = std::wcout, float period = 2.0f)
 }
 
 void sdlLoop(ScratchSDLWindow * window) {
-    
-
-    // const uint64_t texSize = WINDOW_WIDTH * WINDOW_HEIGHT * 4;
-    // SDL_Texture* texture = SDL_CreateTexture(
-    //     window->renderer,
-    //     SDL_PIXELFORMAT_ARGB8888,
-    //     SDL_TEXTUREACCESS_STREAMING, 
-    //     WINDOW_WIDTH,
-    //     WINDOW_HEIGHT
-    // );
-
-    // uint8_t pixels[texSize];
-    // for (uint64_t i = 0; i < texSize; i++) pixels[i] = 0;
-    
     while (shouldRun) {
-        // for ( unsigned int i = 0; i < 1000; i++ ) {
-        //     const unsigned int x = rand() % WINDOW_WIDTH;
-        //     const unsigned int y = rand() % WINDOW_HEIGHT;
-
-        //     const unsigned int offset = ( WINDOW_WIDTH * y * 4 ) + x * 4;
-        //     pixels[ offset + 0 ] = rand() % 256;        // b
-        //     pixels[ offset + 1 ] = rand() % 256;        // g
-        //     pixels[ offset + 2 ] = rand() % 256;        // r
-        //     pixels[ offset + 3 ] = SDL_ALPHA_OPAQUE;    // a
-        // }
-
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             switch(e.type) {

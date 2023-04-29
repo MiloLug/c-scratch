@@ -17,15 +17,12 @@ namespace Pen
                 WINDOW_HEIGHT
             );
 
-            surface = SDL_CreateRGBSurfaceWithFormat(0, canvasWidth, canvasHeight, 32, SDL_PIXELFORMAT_ARGB8888);
-            pixelBuffer = (uint32_t*)surface->pixels;
             memset((void *)pixelBuffer, 0xFF, canvasSize << 2);
         }
     }
     Initializer::~Initializer() {
         if (texture) {
             SDL_DestroyTexture(texture);
-            SDL_FreeSurface(surface);
         }
         texture = NULL;
     }

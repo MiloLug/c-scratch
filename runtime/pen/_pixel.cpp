@@ -8,6 +8,6 @@ namespace Pen {
     SDL_Surface *surface = NULL;
     SDL_Texture *texture = NULL;
     volatile bool hasChanges = true;
-    volatile uint32_t * pixelBuffer;
+    uint32_t volatile pixelBuffer[canvasSize];
     Mutex pixels;
 }

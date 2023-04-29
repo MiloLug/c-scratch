@@ -13,10 +13,9 @@ namespace Pen {
         canvasHeight = WINDOW_HEIGHT;
     static constexpr const uint64_t canvasSize = canvasWidth * canvasHeight;
 
-    extern SDL_Surface * surface;
     extern SDL_Texture * texture;
     extern volatile bool hasChanges;
-    extern volatile uint32_t * pixelBuffer;
+    extern uint32_t volatile pixelBuffer[canvasSize];
     extern Mutex pixels;
 
     static inline void eraseAll() {
