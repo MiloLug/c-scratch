@@ -7,6 +7,26 @@
 #include "runtime/mutex.h"
 
 
+#if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
+    /*
+    * Blocks the canvas for rendering while executing the code.
+    *
+    * After execution, sets `hasChanges` variable to tell the renderer to update the image.
+    * Returns 1
+    */
+    #define Pen_safe(code) ({Pen::pixels.take(); code; Pen::hasChanges = true; Pen::pixels.release(); 1;})
+#else
+    /*
+    * Should block the canvas for rendering while executing the code
+    * BUT you have `ENABLE_TURBO` or `ENABLE_UNSAFE_NO_LOCKS`, so it doesn't
+    *
+    * After execution, sets `hasChanges` variable to tell the renderer to update the image.
+    * Returns 1
+    */
+    #define Pen_safe(code) ({code; Pen::hasChanges = true; 1;})
+#endif
+
+
 namespace Pen {
     static constexpr const int32_t
         canvasWidth = WINDOW_WIDTH,
@@ -19,15 +39,7 @@ namespace Pen {
     extern Mutex pixels;
 
     static inline void eraseAll() {
-        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
-            pixels.take();
-        #endif
-
         memset((void *)pixelBuffer, 0xFF, canvasSize << 2);
-
-        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
-            pixels.release();
-        #endif
     }
 
     static inline void drawPixel(int32_t x, int32_t y, uint32_t color) {

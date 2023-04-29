@@ -1,4 +1,3 @@
-#include "config.h"
 #include "_pixel.h"
 
 

@@ -1,7 +1,4 @@
 #include "pen.h"
-#include <cstdint>
-#include "_pixel.h"
-#include "runtime/sdl.h"
 
 
 namespace Pen

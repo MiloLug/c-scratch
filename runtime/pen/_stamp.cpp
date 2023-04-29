@@ -1,4 +1,3 @@
-#include "config.h"
 #include "_stamp.h"
 #include "_pixel.h"
 #include "runtime/math.h"
@@ -6,10 +5,6 @@
 
 namespace Pen {
     void stamp(int32_t x, int32_t y, SDL_Surface * surface) {
-        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
-            pixels.take();
-        #endif
-
         const int32_t surDrawW = (canvasWidth - x - surface->clip_rect.w) < 0 ? canvasWidth - x : surface->clip_rect.w;
         const int32_t surDrawH = (canvasHeight - y - surface->clip_rect.h) < 0 ? canvasHeight - y : surface->clip_rect.h;
 
@@ -51,9 +46,5 @@ namespace Pen {
             surP += surSkip;
             canvasP += canvasSkip;
         }
-
-        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
-            pixels.release();
-        #endif
     }
 }

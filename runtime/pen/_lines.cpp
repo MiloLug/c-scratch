@@ -1,8 +1,6 @@
-#include "config.h"
 #include "_lines.h"
 #include "_fig.h"
 #include "_pixel.h"
-#include "runtime/math.h"
 
 
 namespace Pen {
@@ -160,10 +158,6 @@ namespace Pen {
     void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t d, uint32_t color) {
         if (!d) return;
 
-        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
-            pixels.take();
-        #endif
-
         if (x1 == x2 && y1 == y2) {
             switch (d) {
                 case 1:
@@ -187,11 +181,5 @@ namespace Pen {
                     drawLineRounded(x1, y1, x2, y2, d, color);
             }
         }
-
-        hasChanges = true;
-
-        #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
-            pixels.release();
-        #endif
     }
 }

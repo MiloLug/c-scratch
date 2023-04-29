@@ -129,26 +129,26 @@ Coroutine testCoro(Sprite * sprite) {
 
     // Pen::drawLine(100, 160, 100, 160, 12, 0xFF0F7F4F);
 
-    // for(Value i = 0; i < 1; i++) {
-    //     Pen::drawLine(100, 100, 100, 100, 10, 0x4F0F7F4F);
-    //     Pen::drawLine(100, 120, 100, 120, 12, 0x4F0F7F4F);
-    //     Pen::drawLine(100, 140, 100, 140, 14, 0x4F0F7F4F);
-    //     Pen::drawLine(100, 160, 100, 160, 16, 0x4F0F7F4F);
-    //     Pen::drawLine(100, 180, 100, 180, 18, 0x4F0F7F4F);
+    for(Value i = 0; i < 100; i++) {
+        // Pen::drawLine(100, 100, 100, 100, 10, 0x4F0F7F4F);
+        // Pen::drawLine(100, 120, 100, 120, 12, 0x4F0F7F4F);
+        // Pen::drawLine(100, 140, 100, 140, 14, 0x4F0F7F4F);
+        // Pen::drawLine(100, 160, 100, 160, 16, 0x4F0F7F4F);
+        // Pen::drawLine(100, 180, 100, 180, 18, 0x4F0F7F4F);
 
-    //     Pen::drawLine(140, 100, 140, 100, 20, 0x4F0F7F4F);
-    //     Pen::drawLine(140, 130, 140, 130, 22, 0x4F0F7F4F);
-    //     Pen::drawLine(140, 160, 140, 160, 24, 0x4F0F7F4F);
-    //     Pen::drawLine(140, 190, 140, 190, 26, 0x4F0F7F4F);
-    //     Pen::drawLine(140, 220, 140, 220, 28, 0x4F0F7F4F);
+        // Pen::drawLine(140, 100, 140, 100, 20, 0x4F0F7F4F);
+        // Pen::drawLine(140, 130, 140, 130, 22, 0x4F0F7F4F);
+        // Pen::drawLine(140, 160, 140, 160, 24, 0x4F0F7F4F);
+        // Pen::drawLine(140, 190, 140, 190, 26, 0x4F0F7F4F);
+        // Pen::drawLine(140, 220, 140, 220, 28, 0x4F0F7F4F);
 
-    //     Pen::drawLine(180, 100, 180, 100, 30, 0x4F0F7F4F);
-    //     Pen::drawLine(180, 140, 180, 140, 32, 0x4F0F7F4F);
-    //     Pen::drawLine(180, 180, 180, 180, 34, 0x4F0F7F4F);
-    //     Pen::drawLine(180, 220, 180, 220, 36, 0x4F0F7F4F);
+        // Pen::drawLine(180, 100, 180, 100, 30, 0x4F0F7F4F);
+        // Pen::drawLine(180, 140, 180, 140, 32, 0x4F0F7F4F);
+        // Pen::drawLine(180, 180, 180, 180, 34, 0x4F0F7F4F);
+        Pen_safe(Pen::drawLine(180, 220, 180, 220, 36, 0x4F0F7F4F));
         
-    //     co_yield NULL;
-    // }
+        co_yield NULL;
+    }
 
     // double seed = 546564;
     // OpenSimplexNoise::Noise noise(546564);
@@ -234,7 +234,7 @@ Coroutine testCoro(Sprite * sprite) {
     
     
 
-    // while(1) co_yield NULL;
+    
     // for(Value i = 0; i < 1000; i++) {
     //     for(Value x = 0; x < WINDOW_WIDTH; x++) {
     //         for(Value y = 0; y < WINDOW_HEIGHT; y++) {
@@ -246,7 +246,9 @@ Coroutine testCoro(Sprite * sprite) {
     //     co_yield NULL;
     // }
 
-    co_yield NULL;
+    // Pen::drawLine(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_HEIGHT - 5, 0xFF0FFFF0);
+    // while(1) co_yield NULL;
+    // co_yield NULL;
 
     // VARIABLES EXAMPLE
     // Value gg = 1;
