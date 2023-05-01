@@ -1,5 +1,6 @@
 #include "script_utils.h"
 #include <list>
+#include <ctime>
 #include "coroutines.h"
 
 
@@ -51,7 +52,7 @@ void startScriptsLoop() {
 
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
-        std::clock_t previous_time = std::clock();
+        clock_t previous_time = clock();
     #else
         #ifndef ENABLE_UNSAFE_NO_LOCKS
             int32_t unlockCounter = 0;
@@ -59,13 +60,11 @@ void startScriptsLoop() {
         #endif
     #endif
 
-    // wprintf(L"C\n");
     triggerScripts(ACTION_START);
-    // wprintf(L"C\n");
 
     while (shouldRun) {
         #ifndef ENABLE_TURBO
-            if (int(std::clock() - previous_time) < clocks_per_frame)
+            if (int(clock() - previous_time) < clocks_per_frame)
                 continue;
             previous_time += clocks_per_frame;
         #else
@@ -80,20 +79,18 @@ void startScriptsLoop() {
             #endif
         #endif
         
-
         while((newCoroutine = newActiveCoros.pop()) != NULL) {
             activeCoros.push_back(newCoroutine);
         }
-        
+
         auto corosIter = activeCoros.begin();
         auto corosEnd = activeCoros.end();
+
         while(corosIter != corosEnd) {
             auto &coro = *corosIter;
             
-            if(shouldRun = !coro->done()) {
-    wprintf(L"C\n");
+            if(!coro->done()) {
                 coro->resume();
-    wprintf(L"C\n");
                 corosIter++;
             } else {
                 delete coro;

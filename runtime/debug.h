@@ -14,6 +14,9 @@ void printDebugInfo(ScratchSDLWindow &window) {
     #ifdef ENABLE_FAST_MATH
         wprintf(L"using ENABLE_FAST_MATH\n");
     #endif
+    #ifdef USE_VALUE_FLOAT
+        wprintf(L"using USE_VALUE_FLOAT\n");
+    #endif
 
     SDL_RendererInfo info = {0};
     if (SDL_GetRendererInfo(window.renderer, &info))

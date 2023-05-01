@@ -17,16 +17,20 @@ class ValueArray {
 public:
     uint64_t capacity = ARRAY_INITIAL_SIZE+1;  // how much it can hold
     uint64_t length = 0;  // how much it actually holds
-    Value * * data = NULL;
+    Value * __restrict__ * __restrict__ data = NULL;
     Value nullValue = {0, L""};
 
-    ValueArray() {}
+    ValueArray() {
+        data = (Value * *) malloc(capacity * sizeof(Value *));
+        data[0] = &nullValue;
+    }
 
     template<std::size_t N>
     ValueArray(const Value (&values)[N]) {
         if (N == 0) return;
         capacity = MAX(N+1, ARRAY_INITIAL_SIZE+1);
         data = (Value * *) malloc(capacity * sizeof(Value *));
+        data[0] = &nullValue;
         length = N;
 
         for(int i = 0; i < N; i++) {
@@ -38,6 +42,7 @@ public:
     void push(Tv &&value) {
         if (data == NULL) {
             data = (Value * *) malloc(capacity * sizeof(Value *));
+            data[0] = &nullValue;
         }
         else if (length == capacity - 1) {
             capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
@@ -49,10 +54,10 @@ public:
     }
 
     inline void pop() {
-        if (length) data[length-- + 1]->clean();
+        if (length) delete data[length-- + 1];
     }
 
-    void remove(uint64_t i) {
+    void remove(int64_t i) {
         if (i <= length && i > 0) {
             data[i]->clean();
             free(data[i]);
@@ -64,7 +69,7 @@ public:
     }
 
     template<typename Tv>
-    void insert(uint64_t i, Tv &&value) {
+    void insert(int64_t i, Tv &&value) {
         if (i == length + 1) {
             push(value);
         } else if (i <= length && i > 0) {
@@ -90,17 +95,17 @@ public:
     }
 
     template<typename Tv>
-    inline double contains(Tv &&value) {
+    inline bool contains(Tv &&value) {
         return indexOf(value) != 0;
     }
 
     template<typename Tv>
-    inline void set(uint64_t i, Tv &&value) {
-        if (i <= length && i > 0) *data[i] = value;
+    inline void set(const uint64_t i, Tv &&value) {
+        if (i <= length && i > 0) data[i]->operator=(value);
     }
 
     inline Value &get(const uint64_t i) {
-        return (i <= length && i > 0) ? *data[i] : nullValue;
+        return (i <= length) ? *data[i] : nullValue;
     }
 
     inline void clean() {
@@ -109,7 +114,7 @@ public:
             free(data[i]);
         }
 
-        free(data);
+        free((void *)data);
         data = NULL;
         capacity = ARRAY_INITIAL_SIZE+1;
         length = 0;

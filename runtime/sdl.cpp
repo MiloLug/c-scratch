@@ -5,6 +5,7 @@
 
 
 const Uint8 * keyPressed = SDL_GetKeyboardState(nullptr);
+ThreadSafeSynchronizer screenUpdateLock;
 
 
 ScratchSDLWindow::ScratchSDLWindow(const char * name) {
@@ -53,22 +54,24 @@ void ScratchSDLWindow::loop() {
             }
         }
 
-        SDL_RenderClear(renderer);
+        if (!screenUpdateLock.is_blocked()) {
+            SDL_RenderClear(renderer);
 
-        if (Pen::hasChanges) {
-            Pen::pixels.take();
-            SDL_UpdateTexture((SDL_Texture *)Pen::texture, nullptr, (void *)Pen::pixelBuffer, Pen::canvasWidth*4);
-            Pen::hasChanges = false;
-            Pen::pixels.release();
+            if (Pen::hasChanges) {
+                Pen::pixels.take();
+                SDL_UpdateTexture((SDL_Texture *)Pen::texture, nullptr, (void *)Pen::pixelBuffer, Pen::canvasWidth*4);
+                Pen::hasChanges = false;
+                Pen::pixels.release();
+            }
+            SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, nullptr, nullptr);
+            renderSprites(renderer);
+
+            SDL_RenderPresent(renderer);
+
+            #ifdef DEBUG
+                updateFrameTiming();
+            #endif
         }
-        SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, nullptr, nullptr);
-        renderSprites(renderer);
-
-        SDL_RenderPresent(renderer);
-
-        #ifdef DEBUG
-            updateFrameTiming();
-        #endif
     }
 }
 

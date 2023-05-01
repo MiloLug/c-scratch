@@ -2,8 +2,8 @@
 #define C_SCRATCH_CONFIG_H
 
 /**** COMMON ****/
-#define WINDOW_WIDTH 480
-#define WINDOW_HEIGHT 360
+#define WINDOW_WIDTH 460.0f
+#define WINDOW_HEIGHT 320.0f
 
 // Enables some useful outputs such as "sprite X is initialized"
 #define DEBUG
@@ -13,21 +13,22 @@
 /*
 * It determines, for how many cycles to lock some resources.
 * For example, when we use Pen in non-turbo mode, it says 'im working with the canvas',
-*    but it takes too much time to say this 1000'000+ times.
+*   but it takes too much time to say this 1000'000+ times.
 * So in the turbo mode, main function will say 'im working with the canvas',
-*    then run 10000 operations and say 'the canvas is ready to be shown'.
+*   then run 10000 operations and say 'the canvas is ready to be shown'.
 */
 #define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH * WINDOW_HEIGHT)
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms can be disabled.
 * It TREMENDOUSLY speeds up such tools as pen,
-* but in *some* cases the app may crash (but it's highly unlikely as tests show).
+*   but in *some* cases the app may crash (but it's highly unlikely as tests show).
 */
-// #define ENABLE_UNSAFE_NO_LOCKS
+#define ENABLE_UNSAFE_NO_LOCKS
 
 // How many of the fraction part to save in some "number to string" operations
 #define NUM_TO_STRING_FRACTION_DIGITS 20
+
 
 /**** ARRAYS ****/
 /*
@@ -37,11 +38,20 @@
 #define ARRAY_AHEAD_ALLOCATION_MULTIPLIER 1.5
 #define ARRAY_INITIAL_SIZE 4
 
+
 /**** MATH ****/
 /*
 * Enables fast math functions. The only disadvantage is the accuracy
-* in some functions, but it's enough for almost any calculations
+*   in some functions, but it's enough for almost any calculations
 */
-#define ENABLE_FAST_MATH
+// #define ENABLE_FAST_MATH
+
+/*
+* Make the Value (storage type for strings an number) to use float instead of double.
+* But be aware the doubles can store much larger numbers (up to 325 digits), not losing
+*   speed that much. Its about a second on hundreds of millions of updates.
+*/
+#define USE_VALUE_FLOAT
+
 
 #endif

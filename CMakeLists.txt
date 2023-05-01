@@ -13,8 +13,8 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
   set(CMAKE_CXX_FLAGS_DEBUG "/fp:fast")
   set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast")
 else()
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ffast-math")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -Ofast -ffast-math")
+  set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -ffast-math")
 endif()
 
 

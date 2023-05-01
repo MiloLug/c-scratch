@@ -25,9 +25,13 @@ target_sources(app PRIVATE
 
   ts_queue.h
   ts_container.h
+  ts_synchronizer.h
   mutex.h
 
   control_flow.h
+
+  utils.h
+  utils.cpp
 )
 
 add_subdirectory("math")
