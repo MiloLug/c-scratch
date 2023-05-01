@@ -5,79 +5,118 @@
 #include <cwchar>
 #include <cstring>
 #include <memory>
+#include <type_traits>
 
 #include "config.h"
 #include "string.h"
 
 
 #define make_bool_op(op) \
-    inline bool operator op(double value) { \
-        return (string == NULL ? number : getStrNumber()) op value; \
+    bool operator op(double value) const { \
+        return number op value; \
     } \
-    inline bool operator op(uint64_t value) { \
-        return (string == NULL ? (uint64_t)number : getStrNumber()) op value; \
+    bool operator op(int value) const { \
+        return number op value; \
     } \
-    inline bool operator op(int value) { \
-        return (string == NULL ? (int)number : getStrNumber()) op value; \
+    bool operator op(Value &value) { \
+        return value.type == Type::NUMBER \
+            ? number op value.number \
+            : wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.string->data) op 0; \
     } \
-    inline bool operator op(const wchar_t * value) { \
-        return wcscmp(string == NULL ? getNumberStr() : string->data, value) op 0; \
+    template<typename T> \
+    bool operator op(T * value) requires(std::is_same_v<T, const wchar_t>) { \
+        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value) op 0; \
     } \
-    inline bool operator op(Value &value) { \
-        return value.string ? (*this op value.string->data) : (*this op value.number); \
+    bool operator op(String &&value) { \
+        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0; \
+    }
+
+
+#define make_math_bin_op(op) \
+    double operator op(double value) const { \
+        return number op value; \
+    } \
+    double operator op(int value) const { \
+        return number op value; \
+    } \
+    double operator op(Value &value) const { \
+        return number op value.number; \
+    } \
+    template<typename T> \
+    double operator op(T * value) const requires(std::is_same_v<T, const wchar_t>) { \
+        return number op String::strToNum(value, wcslen(value)); \
     }
 
 
 class Value {
     static wchar_t globalNumStrTmp[];
 public:
-    double number = 0;
+    enum Type {
+        STRING,
+        NUMBER
+    };
+
+    #ifdef USE_VALUE_FLOAT
+        typedef float storage_number_t;
+    #else
+        typedef double storage_number_t;
+    #endif
+
+    Type type = Type::NUMBER;
+
+    storage_number_t number = 0;
+    storage_number_t previousNumber = 0;  // for "number to string" caching
+
     String * string = NULL;
     wchar_t * numberStrTmp = NULL;
     uint16_t numberStrSize = 0;
-    bool updateNumberStr = true;
-    bool updateStrNumber = true;
 
     template<typename Tv>
-    static inline Value * create(Tv &&value) {
+    static Value * __restrict__ create(Tv &&value) {
         Value * self = (Value*) malloc(sizeof(Value));
         
+        self->previousNumber = 0;
         self->string = NULL;
         self->numberStrTmp = NULL;
         self->numberStrSize = 0;
-        self->updateNumberStr = true;
-        self->updateStrNumber = true;
 
         *self = value;
         return self;
     }
 
-    inline Value(double nValue, const wchar_t * sValue): number(nValue), string(String::create(sValue)) {}
-    inline Value(double value): number(value) {}
-    inline Value(int value): number(value) {}
-    inline Value(const wchar_t * value): string(String::create(value)) {}
-    inline Value(String &&value): string(value.copy()) {}
-    inline Value(const Value &origin): number(origin.number), string(origin.string->copy()) {}
+    Value() {}
+    Value(double nValue, const wchar_t * sValue): number(nValue), string(String::create(sValue)) {}
+    Value(double value): number(value) {}
+    Value(int value): number(value) {}
+    Value(const wchar_t * value): string(String::create(value)), type(Type::STRING) {
+        number = (double)*string;
+    }
+    Value(String &&value): string(value.copy()), type(Type::STRING) {}
+    Value(const Value &origin): number(origin.number), type(origin.type) {
+        if (origin.type == Type::STRING)
+            string = origin.string->copy();
+    }
 
-    inline Value * copy() const {
+    Value * copy() const {
         Value * copy = (Value*) malloc(sizeof(Value));
 
-        copy->number = number;
+        copy->previousNumber = 0;
+        copy->string = NULL;
         copy->numberStrTmp = NULL;
         copy->numberStrSize = 0;
-        copy->updateNumberStr = true;
-        copy->updateStrNumber = true;
+        copy->type = type;
+        copy->number = number;
 
-        if ((copy->string = string)) {
-            copy->string = string->copy();
-        }
+        // speed up numeric operations a little by avoiding jumps in case of NUMBER type
+        if (type == Type::NUMBER) return copy;
 
+        copy->string = string->copy();
         return copy;
     }
 
-    inline wchar_t * getNumberStr() {
-        if (!updateNumberStr) return numberStrTmp;
-        updateNumberStr = false;
+    wchar_t * getNumberStr() {
+        if (number == previousNumber && numberStrTmp) return numberStrTmp;
+        previousNumber = number;
 
         uint16_t size = swprintf(globalNumStrTmp, 325, L"%.*f", NUM_TO_STRING_FRACTION_DIGITS, number);
         do {
@@ -96,126 +135,79 @@ public:
 
         return numberStrTmp;
     }
-    
-    inline double getStrNumber() {
-        if (!updateStrNumber) return number;
-        updateStrNumber = false;
-        return string->operator double();
+
+    const wchar_t * toString() {
+        return type == Type::STRING ? string->data : getNumberStr();
     }
 
-    inline const wchar_t * toString() {
-        return string ? string->data : getNumberStr();
-    }
+    Value &operator=(const Value &origin) {
+        if (origin.type == Type::NUMBER) {
+            number = origin.number;
+            return *this;
+        }
 
-    inline Value &operator=(const Value &origin) {
         number = origin.number;
-        updateNumberStr = true;
-        updateStrNumber = true;
-
-        if (string) {
-            if (origin.string) {
-                string->set(*origin.string);
-            } else {
-                string->clean();
-                free(string);
-                string = NULL;
-            }
-        } else if (origin.string) {
-            string = origin.string->copy();
-        }
-
+        string = origin.string->copy();
+        type = origin.type;
+        
         return *this;
     }
 
-    inline Value &operator=(const wchar_t * value) {
-        number = 0;
-        updateStrNumber = true;
-
+    Value &operator=(const wchar_t * value) {
         if (string)
             string->set(value);
         else
             string = String::create(value);
 
+        number = (double)*string;
+        type = Type::STRING;
+
         return *this;
     }
 
-    inline Value &operator=(const String &value) {
-        number = 0;
-        updateStrNumber = true;
+    Value &operator=(String &&value) {
+        return operator=(value);
+    }
 
+    Value &operator=(const String &value) {
         if (string)
             string->set(value);
         else
             string = String::create(value);
 
-        return *this;
-    }
-
-    inline Value &operator=(String &&value) {
-        number = 0;
-        updateStrNumber = true;
-
-        if (string)
-            string->set(value);
-        else
-            string = String::create(value);
+        number = (double)value;
+        type = Type::STRING;
 
         return *this;
     }
 
-    inline Value &operator=(double value) {
+    Value &operator=(double value) {
         number = value;
-        updateNumberStr = true;
-
-        if (string) {
-            string->clean();
-            free(string);
-            string = NULL;
-        }
-
+        type = Type::NUMBER;
         return *this;
     }
 
-    inline Value &operator=(int value) {
-        return this->operator=(static_cast<double>(value));
+    Value &operator=(int value) {
+        number = value;
+        type = Type::NUMBER;
+        return *this;
     }
 
-    inline Value &operator++(int) {
-        if (string) {
-            getStrNumber();
-            string->clean();
-            free(string);
-            string = NULL;
-        }
-
+    Value &operator++(int) {
         number++;
-        updateNumberStr = true;
+        type = Type::NUMBER;
         return *this;
     }
 
-    inline Value &operator--(int) {
-        if (string) {
-            getStrNumber();
-            string->clean();
-            free(string);
-            string = NULL;
-        }
-
+    Value &operator--(int) {
         number--;
-        updateNumberStr = true;
+        type = Type::NUMBER;
         return *this;
     }
 
-    inline Value &operator+=(double value) {
-        if (string) {
-            getStrNumber();
-            string->clean();
-            free(string);
-            string = NULL;
-        }
-
+    Value &operator+=(double value) {
         number += value;
-        updateNumberStr = true;
+        type = Type::NUMBER;
         return *this;
     }
 
@@ -225,15 +217,20 @@ public:
     make_bool_op(>)
     make_bool_op(==)
 
-    inline operator double() {
-        return string ? getStrNumber() : number;
+    make_math_bin_op(-)
+    make_math_bin_op(+)
+    make_math_bin_op(/)
+    make_math_bin_op(*)
+
+    operator double() const {
+        return number;
     }
 
-    inline operator const wchar_t *() {
-        return string ? string->data : getNumberStr();
+    operator const wchar_t *() {
+        return type == Type::STRING ? string->data : getNumberStr();
     }
 
-    inline void clean() {
+    void clean() {
         if (string) {
             string->clean();
             free(string);
@@ -245,8 +242,6 @@ public:
         string = NULL;
         numberStrTmp = NULL;
         numberStrSize = 0;
-        updateNumberStr = true;
-        updateStrNumber = true;
     }
 
     ~Value() {

@@ -57,3 +57,6 @@ app.elf
 
 # automation
 zip_npm_tmp
+
+# dev
+__scripts

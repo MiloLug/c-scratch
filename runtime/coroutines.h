@@ -47,11 +47,11 @@ public:
 
 
 inline void Coroutine::resume() const {
-    auto subCoro = promise().subCoro;
+    auto &subCoro = promise().subCoro;
     if (subCoro && !subCoro->done()) {
         subCoro->resume();
     } else {
-        promise().subCoro = NULL;
+        subCoro = NULL;
         std::coroutine_handle<BasePromise>::resume();
     }
 }

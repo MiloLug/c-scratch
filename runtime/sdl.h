@@ -7,11 +7,19 @@
 #include <thread>
 
 #include "include_sdl.h"
-
+#include "ts_synchronizer.h"
 
 
 extern const Uint8 * keyPressed;
-extern std::mutex globalSyncMutex;
+extern ThreadSafeSynchronizer screenUpdateLock;
+
+
+class BlockWindowUpdates {
+public:
+    BlockWindowUpdates() { screenUpdateLock.take(); }
+    ~BlockWindowUpdates() { screenUpdateLock.release(); }
+};
+
 
 class ScratchSDLWindow {
 private:
