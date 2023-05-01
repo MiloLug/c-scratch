@@ -375,6 +375,7 @@ Coroutine spriteStartScript2(Sprite * sprite) {
         v_timer = timer;
         v_tick = 0;
 
+        // don't have graphical output rn, so it's just like this
         wprintf(L"timer = %ls\n", v_timer.toString());
 
         cs_yield;

@@ -1,6 +1,6 @@
 #include "sdl.h"
 #include "script_utils.h"
-#include "sprite_utils.h"
+#include "sprite_manager.h"
 #include "pen/pen.h"
 
 
@@ -64,7 +64,7 @@ void ScratchSDLWindow::loop() {
                 Pen::pixels.release();
             }
             SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, nullptr, nullptr);
-            renderSprites(renderer);
+            SpriteManager::renderSprites(renderer);
 
             SDL_RenderPresent(renderer);
 

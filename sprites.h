@@ -2,7 +2,7 @@
 #define SPRITES_COLLECTION_H
 
 #include "runtime/sprite.h"
-#include "runtime/sprite_utils.h"
+#include "runtime/sprite_manager.h"
 
 
 Sprite sprite({
@@ -31,7 +31,7 @@ Sprite sprite2({
     .layerOrder = 1
 });
 
-SpritesList sprites = {
+SpriteManager::SpriteList sprites = {
     &sprite2,
     &sprite
 };
