@@ -12,12 +12,6 @@
 
 
 #define make_bool_op(op) \
-    bool operator op(double value) const { \
-        return number op value; \
-    } \
-    bool operator op(int value) const { \
-        return number op value; \
-    } \
     bool operator op(Value &value) { \
         return value.type == Type::NUMBER \
             ? number op value.number \

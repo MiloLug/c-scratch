@@ -14,9 +14,6 @@
 #define stopAll() ScriptManager::shouldRun = false; co_return
 #define stopThisScript() co_return
 
-//TODO: implement!
-#define stopThisSprite() ({1;})
-
 
 static inline bool __coroNext(const Coroutine &subCoro) {
     if (!subCoro.done()) {
