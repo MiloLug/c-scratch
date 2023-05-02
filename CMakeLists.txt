@@ -24,6 +24,7 @@ find_library(SDL2 SDL2_image SDL2_gfx)
 add_executable(app
   config.h
   scripts.h
+  sprites.h
   source.cpp
 )
 

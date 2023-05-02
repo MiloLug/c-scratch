@@ -11,5 +11,6 @@ double __getTime();
 #define timer (__getTime())
 void resetTimer();
 
+#define SWAP(a, b) ({auto __tmp = (b); b = a; a = __tmp;})
 
 #endif

@@ -4,8 +4,8 @@ target_sources(app PRIVATE
   sdl.cpp
 
   sprite.h
-  sprite_utils.h
-  sprite_utils.cpp
+  sprite_manager.h
+  sprite_manager.cpp
 
   string.h
   string.cpp

@@ -10,7 +10,7 @@
 #include "pen/pen.h"
 
 
-// The compiler can't it for some reason
+// The compiler can't inline it for some reason, when used as a function
 #define __penDrawLine(x1, y1, x2, y2) \
     Pen::drawLine( \
         x1 + centerOffsetX, \
@@ -23,6 +23,8 @@
 
 
 const std::filesystem::path spritesBaseDirectory = L"sprites/";
+constexpr float WINDOW_CENTER_X = WINDOW_WIDTH / 2.0f;
+constexpr float WINDOW_CENTER_Y = WINDOW_HEIGHT / 2.0f;
 
 
 struct SpriteDeclaration {
@@ -32,10 +34,10 @@ struct SpriteDeclaration {
     float width;
     float height;
     float direction;
-    int costumeNumber;
+    uint64_t costumeNumber;
     float size;
-    int visible;
-    int layerOrder;
+    bool visible;
+    uint64_t layerOrder;
 };
 
 
@@ -43,10 +45,10 @@ class Sprite {
 public:
     const wchar_t * name;
     float direction;
-    int costumeNumber;
+    uint64_t costumeNumber;
     float size;
-    int visible;
-    int layerOrder;
+    bool visible;
+    uint64_t layerOrder;
     float x;
     float y;
     float centerOffsetX;
@@ -65,7 +67,7 @@ public:
     Sprite(const SpriteDeclaration &decl):
         name{decl.name},
         direction{decl.direction - 90.0f},
-        costumeNumber{decl.costumeNumber},
+        costumeNumber{decl.costumeNumber - 1},
         size{decl.size},
         visible{decl.visible},
         layerOrder{decl.layerOrder},
@@ -74,8 +76,8 @@ public:
         centerOffsetX{decl.width / 2.0f},
         centerOffsetY{decl.height / 2.0f},
         pos{
-            .x{WINDOW_WIDTH / 2.0f - centerOffsetX + decl.x},
-            .y{WINDOW_HEIGHT / 2.0f - centerOffsetY - decl.y},
+            .x{WINDOW_CENTER_X - centerOffsetX + decl.x},
+            .y{WINDOW_CENTER_Y - centerOffsetY - decl.y},
             .w{decl.width},
             .h{decl.height},
         }
@@ -84,7 +86,7 @@ public:
     void setX(float _x) {
         x = _x;
         _x = pos.x;
-        pos.x = WINDOW_WIDTH / 2.0 - centerOffsetX + x;
+        pos.x = WINDOW_CENTER_X - centerOffsetX + x;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(_x, pos.y, pos.x, pos.y));
@@ -93,7 +95,7 @@ public:
     void setY(float _y) {
         y = _y;
         _y = pos.y;
-        pos.y = WINDOW_HEIGHT / 2.0 - centerOffsetY - y;
+        pos.y = WINDOW_CENTER_Y - centerOffsetY - y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(pos.x, _y, pos.x, pos.y));
@@ -102,11 +104,11 @@ public:
     void goXY(float _x, float _y) {
         x = _x;
         _x = pos.x;
-        pos.x = WINDOW_WIDTH / 2.0 - centerOffsetX + x;
+        pos.x = WINDOW_CENTER_X - centerOffsetX + x;
 
         y = _y;
         _y = pos.y;
-        pos.y = WINDOW_HEIGHT / 2.0 - centerOffsetY - y;
+        pos.y = WINDOW_CENTER_Y - centerOffsetY - y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(_x, _y, pos.x, pos.y));
@@ -202,8 +204,8 @@ public:
         auto tmp = getCostumeTransformedSurface();
 
         Pen_safe(Pen::stamp(
-            round((WINDOW_WIDTH - tmp->w) / 2.0 + x),
-            round((WINDOW_HEIGHT - tmp->h) / 2.0 + y),
+            round(WINDOW_CENTER_X - tmp->w / 2.0 + x),
+            round(WINDOW_CENTER_Y - tmp->h / 2.0 + y),
             tmp
         ));
     }

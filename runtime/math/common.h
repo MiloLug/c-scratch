@@ -33,11 +33,11 @@ const constexpr int32_t INT32_OVERFLOW = -2147483648;
 #endif
 
 #ifndef MAX
-    #define MAX(a, b) ({auto _a = (a); auto _b = (b); _a > _b ? _a : _b;})
+    #define MAX(a, b) ({auto __a = (a); auto __b = (b); __a > __b ? __a : __b;})
 #endif
 
 #ifndef MIN
-    #define MIN(a, b) ({auto _a = (a); auto _b = (b); _a < _b ? _a : _b;})
+    #define MIN(a, b) ({auto __a = (a); auto __b = (b); __a < __b ? __a : __b;})
 #endif
 
 #define MAX_UNSAFE(a, b) ((a) > (b) ? (a) : (b))
