@@ -12,7 +12,7 @@ Sprite sprite({
     .width = 95,
     .height = 100,
     .direction = 135,
-    .costumeNumber = 0,
+    .costumeNumber = 1,
     .size = 100,
     .visible = false,
     .layerOrder = 1,
@@ -25,10 +25,10 @@ Sprite sprite2({
     .width = 95,
     .height = 100,
     .direction = 90,
-    .costumeNumber = 0,
+    .costumeNumber = 1,
     .size = 100,
     .visible = false,
-    .layerOrder = 1
+    .layerOrder = 1,
 });
 
 SpriteManager::SpriteList sprites = {

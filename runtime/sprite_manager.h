@@ -2,7 +2,7 @@
 #define SPRITE_MANAGER_H
 
 #include <list>
-#include <map>
+#include <set>
 #include "include_sdl.h"
 #include "sprite.h"
 
@@ -13,7 +13,7 @@ public:
 
 protected:
     static SpriteList spriteStorage;
-    static std::map<const Sprite *, uint64_t> spriteIndexes;
+    static std::set<Sprite *> managedSprites;
 
 public:
     static void renderSprites(SDL_Renderer * renderer);

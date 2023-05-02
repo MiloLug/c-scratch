@@ -3,7 +3,7 @@
 
 
 SpriteManager::SpriteList SpriteManager::spriteStorage;
-std::map<const Sprite *, uint64_t> SpriteManager::spriteIndexes;
+std::set<Sprite *> SpriteManager::managedSprites;
 
 
 void SpriteManager::renderSprites(SDL_Renderer *renderer) {
@@ -15,10 +15,37 @@ void SpriteManager::renderSprites(SDL_Renderer *renderer) {
 
 void SpriteManager::initSprites(SDL_Renderer *renderer, const SpriteList &sprites) {
     for (auto &sprite : sprites) {
+        if (managedSprites.contains(sprite)) continue;
+
         sprite->init(renderer);
         spriteStorage.push_back(sprite);
-        spriteIndexes[sprite] = spriteStorage.size() - 1;
+        managedSprites.insert(sprite);
 
+        const auto maxLayer = spriteStorage.size();
+        const auto layer = MAX(MIN(sprite->layerOrder - 1, maxLayer), 0);  // layerOrder starts from 1 on declaration
+        auto listIter = spriteStorage.begin();
+        uint64_t i = 0;
+
+        sprite->layerOrder = layer;
+
+        if (layer == maxLayer) {
+            spriteStorage.push_back(sprite);
+        } else if (layer == 0) {
+            spriteStorage.push_front(sprite);
+            for (; i < maxLayer; i++, listIter++) {
+                (*listIter)->layerOrder++;
+            }
+        } else {
+            for (; i < layer; i++, listIter++);
+
+            spriteStorage.insert(listIter, sprite);
+
+            for (; i < maxLayer; i++, listIter++) {
+                (*listIter)->layerOrder++;
+            }
+            spriteStorage.erase(listIter);
+        }
+        
         #ifdef DEBUG
             wprintf(L"Sprites initialization: %ls OK\n", sprite->name);
         #endif
@@ -26,37 +53,35 @@ void SpriteManager::initSprites(SDL_Renderer *renderer, const SpriteList &sprite
 }
 
 void SpriteManager::moveByLayers(Sprite * sprite, int64_t layersNumber) {
-    auto found = spriteIndexes.find(sprite);
+    if (!managedSprites.contains(sprite)) return;
 
-    if (found != spriteIndexes.end()) {
-        const auto newLayer = MAX(MIN(found->second + layersNumber, spriteStorage.size() - 1), 0);
-        const auto oldLayer = found->second;
+    const auto newLayer = MAX(MIN(sprite->layerOrder + layersNumber, spriteStorage.size() - 1), 0);
+    const auto oldLayer = sprite->layerOrder;
 
-        if (newLayer == oldLayer) return;
+    if (newLayer == oldLayer) return;
 
-        auto listIter = spriteStorage.begin();
-        uint64_t i = 0;
-        found->second = newLayer;
-            
-        if (newLayer < oldLayer) {
-            for (; i < newLayer; i++, listIter++);
+    auto listIter = spriteStorage.begin();
+    uint64_t i = 0;
+    sprite->layerOrder = newLayer;
+        
+    if (newLayer < oldLayer) {
+        for (; i < newLayer; i++, listIter++);
 
-            spriteStorage.insert(listIter, sprite);
+        spriteStorage.insert(listIter, sprite);
 
-            for (; i < oldLayer; i++, listIter++) {
-                spriteIndexes[*listIter]++;
-            }
-            spriteStorage.erase(listIter);
-        } else {
-            for (; i < oldLayer; i++, listIter++);
-
-            spriteStorage.erase(listIter++);
-
-            for (; i < newLayer; i++, listIter++) {
-                spriteIndexes[*listIter]--;
-            }
-            spriteStorage.insert(listIter, sprite);
+        for (; i < oldLayer; i++, listIter++) {
+            (*listIter)->layerOrder++;
         }
+        spriteStorage.erase(listIter);
+    } else {
+        for (; i < oldLayer; i++, listIter++);
+
+        spriteStorage.erase(listIter++);
+
+        for (; i < newLayer; i++, listIter++) {
+            (*listIter)->layerOrder--;
+        }
+        spriteStorage.insert(listIter, sprite);
     }
 }
 
