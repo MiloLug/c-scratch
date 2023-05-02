@@ -54,6 +54,7 @@ public:
         return true;
     }
 
+    // Suits for cases when the T can be nullable (e.g. to 0)
     T pop() {
         uint32_t oldSize = size.load();
         do {

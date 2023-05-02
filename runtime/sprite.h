@@ -56,6 +56,8 @@ public:
 
     SDL_FRect pos;
     std::vector<std::pair<SDL_Texture *, SDL_Surface *>> costumes = {};
+    
+    volatile bool stopScripts = false;
 
     SDL_Surface * surfaceCache = NULL;  // Surface cache for the Pen's stamp
     bool shouldUpdateSurfaceCache = true;
@@ -227,6 +229,10 @@ public:
 
     void penUp() {
         isPenDown = false;
+    }
+
+    void stopSpriteScripts() {
+        stopScripts = true;
     }
 
     ~Sprite() {
