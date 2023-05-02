@@ -11,7 +11,7 @@
 
 #define forever while(1)
 
-#define stopAll() shouldRun = false; co_yield NULL
+#define stopAll() ScriptManager::shouldRun = false; co_return
 #define stopThisScript() co_return
 
 //TODO: implement!

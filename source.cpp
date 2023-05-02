@@ -2,7 +2,7 @@
 #include "runtime/debug.h"
 #include "runtime/sdl.h"
 #include "runtime/sprite_manager.h"
-#include "runtime/script_utils.h"
+#include "runtime/script_manager.h"
 #include "scripts.h"
 #include "sprites.h"
 
@@ -21,10 +21,10 @@ int main(int argc, char* argv[]) {
     
     Pen::Initializer penResource(window.renderer);
     SpriteManager::initSprites(window.renderer, sprites);
-    bindScripts(scriptBindings);
+    ScriptManager::bindScripts(scriptBindings);
 
     auto sdlLoopThread = window.runLoop();
-    startScriptsLoop();
+    ScriptManager::startScriptsLoop();
     sdlLoopThread.join();
 
     return 0;
