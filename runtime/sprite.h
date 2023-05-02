@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include "math.h"
-#include "include_sdl.h"
+#include "sdl.h"
 #include "pen/pen.h"
 
 
@@ -23,8 +23,6 @@
 
 
 const std::filesystem::path spritesBaseDirectory = L"sprites/";
-constexpr float WINDOW_CENTER_X = WINDOW_WIDTH / 2.0f;
-constexpr float WINDOW_CENTER_Y = WINDOW_HEIGHT / 2.0f;
 
 
 struct SpriteDeclaration {
@@ -166,6 +164,33 @@ public:
         return fmod(direction + 90.0, 360.0);
     }
 
+    float getPointerDistance() {
+        const auto xDiff = mouseState.x - pos.x;
+        const auto yDiff = mouseState.y - pos.y;
+        return sqrt(xDiff * xDiff + yDiff * yDiff);
+    }
+
+    bool isTouchingPointer() {
+        const auto tmpSurface = getCostumeTransformedSurface();
+
+        const auto
+            cOffsetX = tmpSurface->w / 2,
+            cOffsetY = tmpSurface->h / 2;
+
+        if (
+            mouseState.x > (x + cOffsetX)
+            || mouseState.x < (x - cOffsetX)
+            || mouseState.y > (y + cOffsetY)
+            || mouseState.y < (y - cOffsetY)
+        )
+            return false;
+        
+        const uint64_t
+            pixelX = round((float)mouseState.x - x + cOffsetX),
+            pixelY = round(y - mouseState.y + cOffsetY);
+        
+        return (((uint32_t *)tmpSurface->pixels)[tmpSurface->w * pixelY + pixelX] >> 24) != 0;
+    }
 
     void init(SDL_Renderer * renderer) {
         const std::filesystem::path spritePath = spritesBaseDirectory / name;
@@ -204,8 +229,8 @@ public:
         auto tmp = getCostumeTransformedSurface();
 
         Pen_safe(Pen::stamp(
-            round(WINDOW_CENTER_X - tmp->w / 2.0 + x),
-            round(WINDOW_CENTER_Y - tmp->h / 2.0 + y),
+            round(WINDOW_CENTER_X - (float)tmp->w / 2.0 + x),
+            round(WINDOW_CENTER_Y - (float)tmp->h / 2.0 - y),
             tmp
         ));
     }

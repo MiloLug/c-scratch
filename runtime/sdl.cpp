@@ -5,6 +5,7 @@
 
 
 const Uint8 * keyPressed = SDL_GetKeyboardState(nullptr);
+MouseState volatile mouseState;
 ThreadSafeSynchronizer screenUpdateLock;
 
 
@@ -49,6 +50,16 @@ void ScratchSDLWindow::loop() {
             case SDL_QUIT:
                 ScriptManager::shouldRun = false;
                 return;
+            case SDL_MOUSEMOTION:
+                mouseState.x = e.motion.x - WINDOW_CENTER_X;
+                mouseState.y = WINDOW_CENTER_Y - e.motion.y;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                mouseState.isButtonDown = true;
+                break;
+            case SDL_MOUSEBUTTONUP:
+                mouseState.isButtonDown = false;
+                break;
             default:
                 break;
             }

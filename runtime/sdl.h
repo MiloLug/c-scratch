@@ -10,7 +10,14 @@
 #include "ts_synchronizer.h"
 
 
+struct MouseState {
+    int32_t x = 0;
+    int32_t y = 0;
+    bool isButtonDown = false;
+};
+
 extern const Uint8 * keyPressed;
+extern MouseState volatile mouseState;
 extern ThreadSafeSynchronizer screenUpdateLock;
 
 
