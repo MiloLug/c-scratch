@@ -147,8 +147,11 @@ public:
         }
 
         number = origin.number;
-        string = origin.string->copy();
-        type = origin.type;
+        if (string)
+            string->set(*origin.string);
+        else
+            string = origin.string->copy();
+        type = Type::STRING;
         
         return *this;
     }
