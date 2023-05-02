@@ -1,18 +1,18 @@
-#include "script_utils.h"
+#include "script_manager.h"
 #include <list>
 #include <ctime>
 #include "coroutines.h"
 
 
-volatile bool shouldRun = true;
-ThreadSafeQueue<Coroutine*> newActiveCoros;
-BindingsMap scriptBindingsStorage;
+volatile bool ScriptManager::shouldRun = true;
+ThreadSafeQueue<Coroutine*> ScriptManager::newActiveCoros;
+ScriptManager::BindingsMap ScriptManager::scriptBindingsStorage;
 
 
 /*
 * Adds all scripts for the given `action` to the execution queue.
 */
-void triggerScripts(int32_t action) {
+void ScriptManager::triggerScripts(uint32_t action) {
     auto actionBindings = scriptBindingsStorage.find(action);
     if (actionBindings != scriptBindingsStorage.end()) {
         for (auto &[sprite, coros] : actionBindings->second) {
@@ -27,7 +27,7 @@ void triggerScripts(int32_t action) {
 * Merges `bindings` to the bindings storage, so you can dynamically add new scripts
 * without losing old ones.
 */
-void bindScripts(const BindingsMap &bindings) {
+void ScriptManager::bindScripts(const BindingsMap &bindings) {
     for (auto &[action, actionSprites] : bindings) {
         auto globalActionBindings = scriptBindingsStorage.find(action);
 
@@ -46,7 +46,7 @@ void bindScripts(const BindingsMap &bindings) {
 /*
 * This loop executes all scripts triggered by `triggerScripts`
 */
-void startScriptsLoop() {
+void ScriptManager::startScriptsLoop() {
     std::list<Coroutine*> activeCoros;
     Coroutine * newCoroutine;
 

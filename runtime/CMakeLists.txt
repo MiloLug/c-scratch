@@ -20,8 +20,8 @@ target_sources(app PRIVATE
 
   coroutines.h
   
-  script_utils.h
-  script_utils.cpp
+  script_manager.h
+  script_manager.cpp
 
   ts_queue.h
   ts_container.h

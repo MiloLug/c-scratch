@@ -1,5 +1,5 @@
 #include "sdl.h"
-#include "script_utils.h"
+#include "script_manager.h"
 #include "sprite_manager.h"
 #include "pen/pen.h"
 
@@ -39,16 +39,16 @@ void ScratchSDLWindow::updateFrameTiming(std::wostream& os, float period) {
 }
 
 void ScratchSDLWindow::loop() {
-    while (shouldRun) {
+    while (ScriptManager::shouldRun) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             switch(e.type) {
             case SDL_KEYDOWN:
-                triggerScripts(ACTION_KEYDOWN|e.key.keysym.scancode);
+                ScriptManager::triggerScripts(ACTION_KEYDOWN|e.key.keysym.scancode);
                 break;
             case SDL_QUIT:
-                shouldRun = false;
-                break;
+                ScriptManager::shouldRun = false;
+                return;
             default:
                 break;
             }

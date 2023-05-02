@@ -7,7 +7,7 @@
 #include "runtime/math.h"
 #include "runtime/coroutines.h"
 #include "runtime/string_utils.h"
-#include "runtime/script_utils.h"
+#include "runtime/script_manager.h"
 #include "runtime/pen/pen.h"
 #include "runtime/control_flow.h"
 #include "runtime/utils.h"
@@ -386,7 +386,7 @@ Coroutine spriteStartScript2(Sprite * sprite) {
 
 
 
-const BindingsMap scriptBindings = {
+const ScriptManager::BindingsMap scriptBindings = {
     {ACTION_START, {
         {&sprite, {
             spriteStartScript1,
