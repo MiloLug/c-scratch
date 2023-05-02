@@ -384,39 +384,39 @@ Coroutine spriteStartScript2(Sprite * sprite) {
     stopThisScript();
 }
 
-Coroutine testCoro(Sprite * sprite) {
-    // testGlobArr.push(L"asdsad");
-    // co_yield test1(sprite);
-    // wprintf(L"asdsadsadsad\n");
-    // wprintf(L"A\n");
-    // wait(kek22(sprite));
+// Coroutine testCoro(Sprite * sprite) {
+//     // testGlobArr.push(L"asdsad");
+//     // co_yield test1(sprite);
+//     // wprintf(L"asdsadsadsad\n");
+//     // wprintf(L"A\n");
+//     // wait(kek22(sprite));
 
-    // // auto __test = kek22(sprite);
-    // // if (__coroNext(__test))
-    // //     co_yield __test;
+//     // // auto __test = kek22(sprite);
+//     // // if (__coroNext(__test))
+//     // //     co_yield __test;
 
-    wprintf(L"B\n");
-    wprintf(L"A 1\n");
-    ValueArray arr1;
+//     wprintf(L"B\n");
+//     wprintf(L"A 1\n");
+//     ValueArray arr1;
 
-    repeat (10000000) {
-        arr1.push(10);
-        cs_yield;
-    }
+//     repeat (10000000) {
+//         arr1.push(10);
+//         cs_yield;
+//     }
 
-    wprintf(L"A 2\n");
+//     wprintf(L"A 2\n");
     
-    repeat (10) {
-        for (Value i = 1; i <= arr1.length; i++) {
-            arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
-            cs_yield;
-        }
-        cs_yield;
-    }
-    wprintf(L"A 3\n");
+//     repeat (10) {
+//         for (Value i = 1; i <= arr1.length; i++) {
+//             arr1.set(i, arr1.get(i) + degSin(randInRange(0, 360)));
+//             cs_yield;
+//         }
+//         cs_yield;
+//     }
+//     wprintf(L"A 3\n");
 
-    stopAll();
-}
+//     stopAll();
+// }
 
 
 const ScriptManager::BindingsMap scriptBindings = {
