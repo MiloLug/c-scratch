@@ -21,15 +21,6 @@
         penColor \
     )
 
-
-const std::filesystem::path spritesBaseDirectory = L"sprites/";
-
-constexpr float WINDOW_CENTER_X = WINDOW_WIDTH / 2.0f;
-constexpr float WINDOW_CENTER_Y = WINDOW_HEIGHT / 2.0f;
-constexpr float SPRITE_MAX_X = 30000.0f;
-constexpr float SPRITE_MAX_Y = 30000.0f;
-
-
 #define __boundX(x) ({auto __x = (x); __x > SPRITE_MAX_X ? SPRITE_MAX_X : (__x < -SPRITE_MAX_X ? -SPRITE_MAX_X : __x);})
 #define __boundY(y) ({auto __y = (y); __y > SPRITE_MAX_Y ? SPRITE_MAX_Y : (__y < -SPRITE_MAX_Y ? -SPRITE_MAX_Y : __y);})
 #define __boundXUnsafe(x) (x > SPRITE_MAX_X ? SPRITE_MAX_X : (x < -SPRITE_MAX_X ? -SPRITE_MAX_X : x))
@@ -68,6 +59,10 @@ struct SpriteDeclaration {
 
 class Sprite {
 public:
+    static const std::filesystem::path ASSETS_BASE_DIR;
+    static constexpr float SPRITE_MAX_X = 30000.0f;
+    static constexpr float SPRITE_MAX_Y = 30000.0f;
+
     const wchar_t * name;
     float direction;
     uint64_t costumeNumber;
@@ -227,7 +222,7 @@ public:
     }
 
     void init(SDL_Renderer * renderer) {
-        const std::filesystem::path spritePath = spritesBaseDirectory / name;
+        const std::filesystem::path spritePath = ASSETS_BASE_DIR / name;
 
         for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / L"costumes" }) {
             auto surface = IMG_Load(dir_entry.path().string().c_str());
