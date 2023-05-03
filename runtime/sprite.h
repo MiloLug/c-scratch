@@ -140,6 +140,21 @@ public:
             Pen_safe(__penDrawLine(_x, _y, pos.x, pos.y));
     }
 
+    void goToPinter() {
+        goXY(mouseState.x, mouseState.y);
+    }
+
+    void goToRandomPosition() {
+        goXY(
+            randInRange(-WINDOW_CENTER_X, WINDOW_CENTER_X),
+            randInRange(-WINDOW_CENTER_Y, WINDOW_CENTER_Y)
+        );
+    }
+
+    void goToSprite(Sprite * sprite) {
+        goXY(sprite->x, sprite->y);
+    }
+
     void changeX(float offset) {
         x = __boundX(x + offset);
         pos.x = windowCenterOffsetX + x;
@@ -175,6 +190,16 @@ public:
         direction = fmod(angle - 90.0, 360.0);
     }
 
+    void pointTowardsPointer() {
+        shouldUpdateSurfaceCache = true;
+        direction = (atan2(mouseState.x - x, mouseState.y - y) - M_PI_2) / M_RAD;
+    }
+
+    void pointTowardsSprite(Sprite * sprite) {
+        shouldUpdateSurfaceCache = true;
+        direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
+    }
+
     void move(float distance) {
         x = __boundXMove(x, distance * (float)degCos(direction));
         y = __boundYMove(y, distance * (float)degSin(direction));
@@ -196,6 +221,12 @@ public:
     float getPointerDistance() {
         const auto xDiff = mouseState.x - pos.x;
         const auto yDiff = mouseState.y - pos.y;
+        return sqrt(xDiff * xDiff + yDiff * yDiff);
+    }
+
+    float getSpriteDistance(Sprite * sprite) {
+        const auto xDiff = sprite->x - pos.x;
+        const auto yDiff = sprite->y - pos.y;
         return sqrt(xDiff * xDiff + yDiff * yDiff);
     }
 

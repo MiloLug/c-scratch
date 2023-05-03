@@ -1,5 +1,8 @@
 # C-Scratch Project
 
+## Documentation
+[Scratch functionality](docs/scratch_functionality.md)
+
 ## Requirements
 
 - ### Tools
@@ -21,3 +24,4 @@
 ## Todo
 
 - Get rid of SDL2 gfx
+- Add atan2 from https://mazzo.li/posts/vectorized-atan2.html
