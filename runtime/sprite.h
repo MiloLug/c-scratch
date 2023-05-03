@@ -28,17 +28,13 @@
 
 #define __boundXMove(x, d) ({  \
     float                      \
-        __x1 = (x),            \
-        __d = (d),             \
-        __x2 = __x1 + __d;     \
+        __x2 = (x) + (d);      \
     __x2 > SPRITE_MAX_X ? SPRITE_MAX_X : (__x2 < -SPRITE_MAX_X ? -SPRITE_MAX_X : __x2); \
 })
 
 #define __boundYMove(y, d) ({  \
     float                      \
-        __y1 = (y),            \
-        __d = (d),             \
-        __y2 = __y1 + __d;     \
+        __y2 = (y) + (d);      \
     __y2 > SPRITE_MAX_X ? SPRITE_MAX_X : (__y2 < -SPRITE_MAX_X ? -SPRITE_MAX_X : __y2); \
 })
 
@@ -192,12 +188,12 @@ public:
 
     void pointTowardsPointer() {
         shouldUpdateSurfaceCache = true;
-        direction = (atan2(mouseState.x - x, mouseState.y - y) - M_PI_2) / M_RAD;
+        direction = (atan2(mouseState.x - x, mouseState.y + y) - M_PI_2) / M_RAD;
     }
 
     void pointTowardsSprite(Sprite * sprite) {
         shouldUpdateSurfaceCache = true;
-        direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
+        direction = (atan2(sprite->x - x, sprite->y + y) - M_PI_2) / M_RAD;
     }
 
     void move(float distance) {
@@ -208,7 +204,7 @@ public:
         float oldY = pos.y;
 
         pos.x = windowCenterOffsetX + x;
-        pos.y = windowCenterOffsetX - y;
+        pos.y = windowCenterOffsetY + y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(oldX, oldY, pos.x, pos.y));
