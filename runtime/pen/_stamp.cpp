@@ -4,7 +4,7 @@
 
 
 namespace Pen {
-    void stamp(int32_t x, int32_t y, SDL_Surface * surface) {
+    void stamp(int64_t x, int64_t y, SDL_Surface * surface) {
         const int32_t surDrawW = (canvasWidth - x - surface->w) < 0 ? canvasWidth - x : surface->w;
         const int32_t surDrawH = (canvasHeight - y - surface->h) < 0 ? canvasHeight - y : surface->h;
 

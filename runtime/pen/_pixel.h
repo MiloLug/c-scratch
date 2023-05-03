@@ -28,7 +28,7 @@
 
 
 namespace Pen {
-    static constexpr const int32_t
+    static constexpr const int64_t
         canvasWidth = WINDOW_WIDTH,
         canvasHeight = WINDOW_HEIGHT;
     static constexpr const uint64_t canvasSize = canvasWidth * canvasHeight;
@@ -42,7 +42,7 @@ namespace Pen {
         memset((void *)pixelBuffer, 0xFF, canvasSize << 2);
     }
 
-    static inline void drawPixel(int32_t x, int32_t y, uint32_t color) {
+    static inline void drawPixel(int64_t x, int64_t y, uint64_t color) {
         if (x < 0 || x >= canvasWidth || y < 0 || y >= canvasHeight) return;
 
         const uint8_t alpha = (color >> 24);

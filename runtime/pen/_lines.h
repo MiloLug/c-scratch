@@ -5,7 +5,7 @@
 
 
 namespace Pen {
-    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t d, uint32_t color);
+    void drawLine(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t d, uint64_t color);
 }
 
 

@@ -4,17 +4,17 @@
 
 
 namespace Pen {
-    static inline void drawLine2(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color) {
+    static inline void drawLine2(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t color) {
         bool yLonger = false;
-        int32_t shortLen = y2 - y1;
-        int32_t longLen = x2 - x1;
+        int64_t shortLen = y2 - y1;
+        int64_t longLen = x2 - x1;
         if (abs(shortLen) > abs(longLen)) {
-            int32_t swap = shortLen;
+            int64_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
             yLonger = true;
         }
-        int32_t decInc;
+        int64_t decInc;
         if (longLen == 0)
             decInc = 0;
         else
@@ -24,14 +24,14 @@ namespace Pen {
             if (longLen > 0)
             {
                 longLen += y1;
-                for (int32_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
+                for (int64_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawSquare2(j >> 16, y1, color);
                     j += decInc;
                 }
                 return;
             }
             longLen += y1;
-            for (int32_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
+            for (int64_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
                 drawSquare2(j >> 16, y1, color);
                 j -= decInc;
             }
@@ -40,7 +40,7 @@ namespace Pen {
 
         if (longLen > 0) {
             longLen += x1;
-            for (int32_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
+            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
             {
                 drawSquare2(x1, j >> 16, color);
                 j += decInc;
@@ -48,23 +48,23 @@ namespace Pen {
             return;
         }
         longLen += x1;
-        for (int32_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
+        for (int64_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
             drawSquare2(x1, j >> 16, color);
             j -= decInc;
         }
     }
 
-    static inline void drawLine1(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color) {
+    static inline void drawLine1(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t color) {
         bool yLonger = false;
-        int32_t shortLen = y2 - y1;
-        int32_t longLen = x2 - x1;
+        int64_t shortLen = y2 - y1;
+        int64_t longLen = x2 - x1;
         if (abs(shortLen) > abs(longLen)) {
-            int32_t swap = shortLen;
+            int64_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
             yLonger = true;
         }
-        int32_t decInc;
+        int64_t decInc;
         if (longLen == 0)
             decInc = 0;
         else
@@ -74,14 +74,14 @@ namespace Pen {
             if (longLen > 0)
             {
                 longLen += y1;
-                for (int32_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
+                for (int64_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawPixel(j >> 16, y1, color);
                     j += decInc;
                 }
                 return;
             }
             longLen += y1;
-            for (int32_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
+            for (int64_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
                 drawPixel(j >> 16, y1, color);
                 j -= decInc;
             }
@@ -90,7 +90,7 @@ namespace Pen {
 
         if (longLen > 0) {
             longLen += x1;
-            for (int32_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
+            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
             {
                 drawPixel(x1, j >> 16, color);
                 j += decInc;
@@ -98,24 +98,24 @@ namespace Pen {
             return;
         }
         longLen += x1;
-        for (int32_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
+        for (int64_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
             drawPixel(x1, j >> 16, color);
             j -= decInc;
         }
     }
 
-    void drawLineRounded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t d, uint32_t color) {
+    void drawLineRounded(int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color) {
         d >>= 1;
         bool yLonger = false;
-        int32_t shortLen = y2 - y1;
-        int32_t longLen = x2 - x1;
+        int64_t shortLen = y2 - y1;
+        int64_t longLen = x2 - x1;
         if (abs(shortLen) > abs(longLen)) {
-            int32_t swap = shortLen;
+            int64_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
             yLonger = true;
         }
-        int32_t decInc;
+        int64_t decInc;
         if (longLen == 0)
             decInc = 0;
         else
@@ -125,14 +125,14 @@ namespace Pen {
             if (longLen > 0)
             {
                 longLen += y1;
-                for (int32_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
+                for (int64_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawCircle(j >> 16, y1, d, color);
                     j += decInc;
                 }
                 return;
             }
             longLen += y1;
-            for (int32_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
+            for (int64_t j = 0x8000 + (x1 << 16); y1 >= longLen; --y1) {
                 drawCircle(j >> 16, y1, d, color);
                 j -= decInc;
             }
@@ -141,7 +141,7 @@ namespace Pen {
 
         if (longLen > 0) {
             longLen += x1;
-            for (int32_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
+            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
             {
                 drawCircle(x1, j >> 16, d, color);
                 j += decInc;
@@ -149,13 +149,13 @@ namespace Pen {
             return;
         }
         longLen += x1;
-        for (int32_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
+        for (int64_t j = 0x8000 + (y1 << 16); x1 >= longLen; --x1) {
             drawCircle(x1, j >> 16, d, color);
             j -= decInc;
         }
     }
 
-    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t d, uint32_t color) {
+    void drawLine(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t d, uint64_t color) {
         if (!d) return;
 
         if (x1 == x2 && y1 == y2) {

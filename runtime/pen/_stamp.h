@@ -6,7 +6,7 @@
 
 
 namespace Pen {
-    void stamp(int32_t x, int32_t y, SDL_Surface * surface);
+    void stamp(int64_t x, int64_t y, SDL_Surface * surface);
 }
 
 
