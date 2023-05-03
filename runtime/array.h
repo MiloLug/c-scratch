@@ -46,7 +46,7 @@ public:
         }
         else if (length == capacity - 1) {
             capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
-            data = (Value * *) realloc(data, capacity * sizeof(Value *));
+            data = (Value * *) realloc((void *)data, capacity * sizeof(Value *));
         }
 
         data[length+1] = Value::create(value);
@@ -75,7 +75,7 @@ public:
         } else if (i <= length && i > 0) {
             if (this->length == this->capacity - 1) {
                 capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
-                data = (Value * *) realloc(data, capacity * sizeof(Value *));
+                data = (Value * *) realloc((void *)data, capacity * sizeof(Value *));
             }
             for (uint64_t j = length; j >= i; j--) {
                 data[j+1] = data[j];

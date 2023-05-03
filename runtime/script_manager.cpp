@@ -5,7 +5,7 @@
 
 
 volatile bool ScriptManager::shouldRun = true;
-ThreadSafeQueue<Coroutine*> ScriptManager::newActiveCoros;
+ThreadSafeQueue<ScriptManager::CoroContainer> ScriptManager::newActiveCoros;
 ScriptManager::BindingsMap ScriptManager::scriptBindingsStorage;
 
 
@@ -17,7 +17,7 @@ void ScriptManager::triggerScripts(uint32_t action) {
     if (actionBindings != scriptBindingsStorage.end()) {
         for (auto &[sprite, coros] : actionBindings->second) {
             for (auto &coro : coros) {
-                newActiveCoros.push(new Coroutine(coro(sprite)));
+                newActiveCoros.push({sprite, new Coroutine(coro(sprite))});
             }
         }
     }
@@ -47,8 +47,8 @@ void ScriptManager::bindScripts(const BindingsMap &bindings) {
 * This loop executes all scripts triggered by `triggerScripts`
 */
 void ScriptManager::startScriptsLoop() {
-    std::list<Coroutine*> activeCoros;
-    Coroutine * newCoroutine;
+    std::list<CoroContainer> activeCoros;
+    CoroContainer newCoroutine;
 
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
@@ -79,7 +79,7 @@ void ScriptManager::startScriptsLoop() {
             #endif
         #endif
         
-        while((newCoroutine = newActiveCoros.pop()) != NULL) {
+        while(newActiveCoros.pop(newCoroutine)) {
             activeCoros.push_back(newCoroutine);
         }
 
@@ -87,9 +87,9 @@ void ScriptManager::startScriptsLoop() {
         auto corosEnd = activeCoros.end();
 
         while(corosIter != corosEnd) {
-            auto &coro = *corosIter;
+            auto &[sprite, coro] = *corosIter;
             
-            if(!coro->done()) {
+            if(!coro->done() && !sprite->stopScripts) {
                 coro->resume();
                 corosIter++;
             } else {

@@ -24,6 +24,33 @@
 
 const std::filesystem::path spritesBaseDirectory = L"sprites/";
 
+constexpr float WINDOW_CENTER_X = WINDOW_WIDTH / 2.0f;
+constexpr float WINDOW_CENTER_Y = WINDOW_HEIGHT / 2.0f;
+constexpr float SPRITE_MAX_X = 30000.0f;
+constexpr float SPRITE_MAX_Y = 30000.0f;
+
+
+#define __boundX(x) ({auto __x = (x); __x > SPRITE_MAX_X ? SPRITE_MAX_X : (__x < -SPRITE_MAX_X ? -SPRITE_MAX_X : __x);})
+#define __boundY(y) ({auto __y = (y); __y > SPRITE_MAX_Y ? SPRITE_MAX_Y : (__y < -SPRITE_MAX_Y ? -SPRITE_MAX_Y : __y);})
+#define __boundXUnsafe(x) (x > SPRITE_MAX_X ? SPRITE_MAX_X : (x < -SPRITE_MAX_X ? -SPRITE_MAX_X : x))
+#define __boundYUnsafe(y) (y > SPRITE_MAX_Y ? SPRITE_MAX_Y : (y < -SPRITE_MAX_Y ? -SPRITE_MAX_Y : y))
+
+#define __boundXMove(x, d) ({  \
+    float                      \
+        __x1 = (x),            \
+        __d = (d),             \
+        __x2 = __x1 + __d;     \
+    __x2 > SPRITE_MAX_X ? SPRITE_MAX_X : (__x2 < -SPRITE_MAX_X ? -SPRITE_MAX_X : __x2); \
+})
+
+#define __boundYMove(y, d) ({  \
+    float                      \
+        __y1 = (y),            \
+        __d = (d),             \
+        __y2 = __y1 + __d;     \
+    __y2 > SPRITE_MAX_X ? SPRITE_MAX_X : (__y2 < -SPRITE_MAX_X ? -SPRITE_MAX_X : __y2); \
+})
+
 
 struct SpriteDeclaration {
     const wchar_t * name;
@@ -51,9 +78,13 @@ public:
     float y;
     float centerOffsetX;
     float centerOffsetY;
+    float windowCenterOffsetX;
+    float windowCenterOffsetY;
 
     SDL_FRect pos;
     std::vector<std::pair<SDL_Texture *, SDL_Surface *>> costumes = {};
+    
+    volatile bool stopScripts = false;
 
     SDL_Surface * surfaceCache = NULL;  // Surface cache for the Pen's stamp
     bool shouldUpdateSurfaceCache = true;
@@ -69,60 +100,62 @@ public:
         size{decl.size},
         visible{decl.visible},
         layerOrder{decl.layerOrder},
-        x{decl.x},
-        y{decl.y},
+        x{__boundXUnsafe(decl.x)},
+        y{__boundYUnsafe(decl.y)},
         centerOffsetX{decl.width / 2.0f},
         centerOffsetY{decl.height / 2.0f},
+        windowCenterOffsetX{WINDOW_CENTER_X - centerOffsetX},
+        windowCenterOffsetY{WINDOW_CENTER_Y - centerOffsetY},
         pos{
-            .x{WINDOW_CENTER_X - centerOffsetX + decl.x},
-            .y{WINDOW_CENTER_Y - centerOffsetY - decl.y},
+            .x{windowCenterOffsetX + __boundXUnsafe(decl.x)},
+            .y{windowCenterOffsetY - __boundYUnsafe(decl.y)},
             .w{decl.width},
             .h{decl.height},
         }
     {}
 
     void setX(float _x) {
-        x = _x;
+        x = __boundXUnsafe(_x);
         _x = pos.x;
-        pos.x = WINDOW_CENTER_X - centerOffsetX + x;
+        pos.x = windowCenterOffsetX + x;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(_x, pos.y, pos.x, pos.y));
     }
 
     void setY(float _y) {
-        y = _y;
+        y = __boundYUnsafe(_y);
         _y = pos.y;
-        pos.y = WINDOW_CENTER_Y - centerOffsetY - y;
+        pos.y = windowCenterOffsetY - y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(pos.x, _y, pos.x, pos.y));
     }
 
     void goXY(float _x, float _y) {
-        x = _x;
+        x = __boundXUnsafe(_x);
         _x = pos.x;
-        pos.x = WINDOW_CENTER_X - centerOffsetX + x;
+        pos.x = windowCenterOffsetX + x;
 
-        y = _y;
+        y = __boundYUnsafe(_y);
         _y = pos.y;
-        pos.y = WINDOW_CENTER_Y - centerOffsetY - y;
+        pos.y = windowCenterOffsetY - y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(_x, _y, pos.x, pos.y));
     }
 
     void changeX(float offset) {
-        pos.x += offset;
-        x += offset;
+        x = __boundX(x + offset);
+        pos.x = windowCenterOffsetX + x;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(pos.x - offset, pos.y, pos.x, pos.y));
     }
 
     void changeY(float offset) {
-        pos.y -= offset;
-        y -= offset;
+        y = __boundY(y + offset);
+        pos.y = windowCenterOffsetY - y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(pos.x, pos.y - offset, pos.x, pos.y));
@@ -148,16 +181,17 @@ public:
     }
 
     void move(float distance) {
-        float dX = distance * degCos(direction);
-        float dY = distance * degSin(direction);
+        x = __boundXMove(x, distance * (float)degCos(direction));
+        y = __boundYMove(y, distance * (float)degSin(direction));
 
-        pos.x += dX;
-        pos.y += dY;
-        x += dX;
-        y += dY;
+        float oldX = pos.x;
+        float oldY = pos.y;
+
+        pos.x = windowCenterOffsetX + x;
+        pos.y = windowCenterOffsetX - y;
 
         if (isPenDown)
-            Pen_safe(__penDrawLine(pos.x - dX, pos.y - dY, pos.x, pos.y));
+            Pen_safe(__penDrawLine(oldX, oldY, pos.x, pos.y));
     }
 
     float getDirection() const {
@@ -252,6 +286,10 @@ public:
 
     void penUp() {
         isPenDown = false;
+    }
+
+    void stopSpriteScripts() {
+        stopScripts = true;
     }
 
     ~Sprite() {

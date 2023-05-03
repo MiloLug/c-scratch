@@ -18,7 +18,6 @@ void SpriteManager::initSprites(SDL_Renderer *renderer, const SpriteList &sprite
         if (managedSprites.contains(sprite)) continue;
 
         sprite->init(renderer);
-        spriteStorage.push_back(sprite);
         managedSprites.insert(sprite);
 
         const auto maxLayer = spriteStorage.size();

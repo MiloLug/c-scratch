@@ -124,7 +124,7 @@ public:
 
         length = origin.length;
         size = origin.size;
-        data = (wchar_t *) realloc(data, origin.size);
+        data = (wchar_t *) realloc((void *)data, origin.size);
 
         if (data)
             memcpy(data, origin.data, origin.size);
@@ -133,7 +133,7 @@ public:
     void set(const wchar_t * value) {
         length = wcslen(value);
         size = (length + 1) << 2;
-        data = (wchar_t *) realloc(data, size);
+        data = (wchar_t *) realloc((void *)data, size);
 
         if (data)
             memcpy(data, value, size);

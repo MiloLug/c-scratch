@@ -12,12 +12,6 @@
 
 
 #define make_bool_op(op) \
-    bool operator op(double value) const { \
-        return number op value; \
-    } \
-    bool operator op(int value) const { \
-        return number op value; \
-    } \
     bool operator op(Value &value) { \
         return value.type == Type::NUMBER \
             ? number op value.number \
@@ -128,7 +122,7 @@ public:
         size++;
 
         if (size > numberStrSize) {
-            numberStrTmp = (wchar_t *)realloc(numberStrTmp, size << 2);
+            numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
             numberStrSize = size;
         }
         memcpy(numberStrTmp, globalNumStrTmp, size << 2);

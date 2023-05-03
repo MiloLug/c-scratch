@@ -18,11 +18,12 @@ constexpr uint32_t ACTION_KEYDOWN = 0x2000'0000;
 
 class ScriptManager {
 public:
-    typedef std::pair<Sprite*, std::vector<Coroutine(*)(Sprite*)>> SpriteScripts;
+    typedef std::pair<Sprite *, Coroutine *> CoroContainer;
+    typedef std::pair<Sprite *, std::vector<Coroutine(*)(Sprite *)>> SpriteScripts;
     typedef std::map<uint32_t, std::vector<SpriteScripts>> BindingsMap;
 
 protected:
-    static ThreadSafeQueue<Coroutine*> newActiveCoros;
+    static ThreadSafeQueue<CoroContainer> newActiveCoros;
     static BindingsMap scriptBindingsStorage;
 
 public:
