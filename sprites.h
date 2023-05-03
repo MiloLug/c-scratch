@@ -14,7 +14,7 @@ Sprite sprite({
     .direction = 135,
     .costumeNumber = 1,
     .size = 100,
-    .visible = false,
+    .visible = true,
     .layerOrder = 1,
 });
 
