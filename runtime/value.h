@@ -122,7 +122,7 @@ public:
         size++;
 
         if (size > numberStrSize) {
-            numberStrTmp = (wchar_t *)realloc(numberStrTmp, size << 2);
+            numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
             numberStrSize = size;
         }
         memcpy(numberStrTmp, globalNumStrTmp, size << 2);
