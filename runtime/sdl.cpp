@@ -68,15 +68,17 @@ void ScratchSDLWindow::loop() {
         if (!screenUpdateLock.is_blocked()) {
             SDL_RenderClear(renderer);
 
+            SpriteManager::renderBackdrop(renderer);
+
             if (Pen::hasChanges) {
                 Pen::pixels.take();
-                SDL_UpdateTexture((SDL_Texture *)Pen::texture, nullptr, (void *)Pen::pixelBuffer, Pen::canvasWidth*4);
+                SDL_UpdateTexture((SDL_Texture *)Pen::texture, NULL, (void *)Pen::pixelBuffer, Pen::canvasWidth*4);
                 Pen::hasChanges = false;
                 Pen::pixels.release();
             }
-            SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, nullptr, nullptr);
-            SpriteManager::renderSprites(renderer);
+            SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, NULL, NULL);
 
+            SpriteManager::renderSprites(renderer);
             SDL_RenderPresent(renderer);
 
             #ifdef DEBUG

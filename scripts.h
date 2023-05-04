@@ -389,6 +389,25 @@ public:
 };
 
 
+// Coroutine testCoro(Sprite * sprite) {
+//     repeat(1) {
+//         // for (int y = 0; y < WINDOW_HEIGHT; y++) {
+//         //     Pen_safe(Pen::drawLine(0, y, WINDOW_WIDTH, y, 1, 0x4F0F1F9F));
+
+//         //     cs_yield;
+//         // }
+//         Pen_safe(Pen::drawLine(200, 100, 200, 100, 100, 0x0000FF9F));
+//         Pen_safe(Pen::drawLine(230, 300, 230, 300, 200, 0xFF000F9F));
+//         Pen_safe(Pen::drawLine(100, 250, 100, 250, 300, 0xF0FF0F9F));
+
+//         cs_yield;
+//     }
+
+//     stopThisScript();
+//     // stopAll();
+// }
+
+
 const ScriptManager::BindingsMap scriptBindings = {
     {ACTION_START, {
         {&sprite, {

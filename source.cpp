@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
     
     Pen::Initializer penResource(window.renderer);
     SpriteManager::initSprites(window.renderer, sprites);
+    SpriteManager::initBackdrop(window.renderer, &backdrop);
     ScriptManager::bindScripts(scriptBindings);
 
     auto sdlLoopThread = window.runLoop();

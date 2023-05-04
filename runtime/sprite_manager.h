@@ -5,6 +5,7 @@
 #include <set>
 #include "include_sdl.h"
 #include "sprite.h"
+#include "backdrop.h"
 
 
 class SpriteManager {
@@ -14,8 +15,12 @@ public:
 protected:
     static SpriteList spriteStorage;
     static std::set<Sprite *> managedSprites;
+    static Backdrop * backdrop;
 
 public:
+    static void renderBackdrop(SDL_Renderer * renderer);
+    static void initBackdrop(SDL_Renderer * renderer, Backdrop * _backdrop);
+
     static void renderSprites(SDL_Renderer * renderer);
     static void initSprites(SDL_Renderer * renderer, const SpriteList &sprites);
 

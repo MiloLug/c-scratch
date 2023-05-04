@@ -27,19 +27,20 @@ namespace Pen {
         while(surP < surEnd) {
             for (uint32_t sRowI = surStartX; sRowI < surDrawW; sRowI++, surP++, canvasP++) {
                 const uint32_t surPix = *surP;
-                const uint8_t alpha = (surPix >> 24);
+                const uint8_t alpha = surPix & 0xFF;
 
                 if (alpha == 0xFF) {
                     *canvasP = surPix;
                 } else {
                     const uint32_t bgColor = *canvasP;
+                    uint32_t resA = alpha + ((bgColor & 0xFF) * (255 - alpha) >> 8);
 
-                    uint32_t rb = bgColor & 0x00FF00FF;
-                    uint32_t g = bgColor & 0x0000FF00;
-                    rb += ((surPix & 0xFF00FF) - rb) * alpha >> 8;
-                    g += ((surPix & 0x00FF00) - g) * alpha >> 8;
+                    uint32_t rb = bgColor >> 8 & 0x00FF00FF;
+                    uint32_t g = bgColor & 0x00FF0000;
+                    rb += ((surPix >> 8 & 0x00FF00FF) - rb) * alpha >> 8;
+                    g += ((surPix & 0x00FF0000) - g) * alpha >> 8;
 
-                    *canvasP = (rb & 0xFF00FF) | (g & 0x00FF00);
+                    *canvasP = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
                 }
 
             }

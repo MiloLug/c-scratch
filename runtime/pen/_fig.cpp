@@ -29,8 +29,8 @@ namespace Pen {
         double fadeAmount = 0;
         int32_t fadeAmountI;
 
-        const int32_t maxOpaque = color >> 24;
-        const int32_t noAlphaColor = color & 0x00FFFFFF;
+        const int32_t maxOpaque = color & 0xFF;
+        const int32_t noAlphaColor = color & 0xFFFFFF00;
 
         while (i < j) {
             double height = sqrt(rr - i * i);
@@ -42,7 +42,7 @@ namespace Pen {
             lastFadeAmount = fadeAmount;
             
             // Draw the semi-transparent circle around the filling
-            draw8Symmetry(cX, cY, i, j, noAlphaColor | ((int32_t)fadeAmount << 24));
+            draw8Symmetry(cX, cY, i, j, noAlphaColor | ((int32_t)fadeAmount & 0xFF));
 
             // Draw central filling
             if (i != 0) {

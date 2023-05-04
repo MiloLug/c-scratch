@@ -3,7 +3,9 @@ target_sources(app PRIVATE
   sdl.h
   sdl.cpp
 
+  sprite_base.h
   sprite.h
+  backdrop.h
   sprite_manager.h
   sprite_manager.cpp
 

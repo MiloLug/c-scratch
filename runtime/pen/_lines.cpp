@@ -4,6 +4,8 @@
 #include "runtime/math.h"
 #include <immintrin.h>
 
+#include <math.h>
+#include <emmintrin.h>
 
 namespace Pen {
     static inline void drawLine2(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t color) {
@@ -69,66 +71,84 @@ namespace Pen {
 
         auto rowStart = pixelBuffer + canvasWidth * y + x1;
         auto rowEnd = pixelBuffer + canvasWidth * y + x2;
-        const uint8_t alpha = (color >> 24);
+        const uint32_t srcA = color & 0xFF;
 
         #if defined(__AVX2__)
             __m256i colorVec = _mm256_set1_epi32(color);
-            __m256i alphaVec = _mm256_set1_epi32(alpha);
+            __m256i alphaVec = _mm256_set1_epi32(srcA);
+            __m256i t = _mm256_set1_epi32(0xFF);
 
             while (rowStart + 8 <= rowEnd) {
                 __m256i rbMask = _mm256_set1_epi32(0x00FF00FF);
-                __m256i gMask = _mm256_set1_epi32(0x0000FF00);
+                __m256i gMask = _mm256_set1_epi32(0x00FF0000);
+                __m256i aMask = _mm256_set1_epi32(0x000000FF);
 
                 __m256i bgColorVec = _mm256_loadu_si256((__m256i*)(rowStart));
-                __m256i rbVec = bgColorVec & rbMask;
+                __m256i resAVec = _mm256_add_epi32(
+                    alphaVec,
+                    _mm256_srli_epi32(
+                        _mm256_mullo_epi32(bgColorVec & aMask, t - alphaVec),
+                        8
+                    )
+                );
+
+                __m256i rbVec = (bgColorVec >> 8) & rbMask;
                 __m256i gVec = bgColorVec & gMask;
-                __m256i colorRbVec = colorVec & rbMask;
-                __m256i colorGVec = colorVec & gMask;
 
-                rbVec += _mm256_mullo_epi32(colorRbVec - rbVec, alphaVec) >> 8;
-                gVec += _mm256_mullo_epi32(colorGVec - gVec, alphaVec) >> 8;
+                rbVec += _mm256_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
+                gVec += _mm256_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
 
-                _mm256_storeu_si256((__m256i*)(rowStart), (rbVec & rbMask) | (gVec & gMask));
+                _mm256_storeu_si256((__m256i*)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec);
                 
                 rowStart += 8;
             }
         #elif defined(__AVX__)
             __m128i colorVec = _mm_set1_epi32(color);
-            __m128i alphaVec = _mm_set1_epi32(alpha);
+            __m128i alphaVec = _mm_set1_epi32(srcA);
+            __m128i t = _mm_set1_epi32(0xFF);
 
             while (rowStart + 4 <= rowEnd) {
                 __m128i rbMask = _mm_set1_epi32(0x00FF00FF);
-                __m128i gMask = _mm_set1_epi32(0x0000FF00);
+                __m128i gMask = _mm_set1_epi32(0x00FF0000);
+                __m128i aMask = _mm_set1_epi32(0x000000FF);
 
                 __m128i bgColorVec = _mm_loadu_si128((__m128i*)(rowStart));
-                __m128i rbVec = bgColorVec & rbMask;
+                __m128i resAVec = _mm_add_epi32(
+                    alphaVec,
+                    _mm_srli_epi32(
+                        _mm_mullo_epi32(bgColorVec & aMask, t - alphaVec),
+                        8
+                    )
+                );
+
+                __m128i rbVec = (bgColorVec >> 8) & rbMask;
                 __m128i gVec = bgColorVec & gMask;
-                __m128i colorRbVec = colorVec & rbMask;
-                __m128i colorGVec = colorVec & gMask;
 
-                rbVec += _mm_mullo_epi32(colorRbVec - rbVec, alphaVec) >> 8;
-                gVec += _mm_mullo_epi32(colorGVec - gVec, alphaVec) >> 8;
+                rbVec += _mm_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
+                gVec += _mm_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
 
-                _mm_storeu_si128((__m128i*)(rowStart), (rbVec & rbMask) | (gVec & gMask));
+                _mm_storeu_si128((__m128i*)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec);
                 
                 rowStart += 4;
             }
         #endif
-
+        
         if (rowStart <= rowEnd) {
-            if (alpha == 0xFF) {
+            if (srcA == 0xFF) {
                 for (; rowStart <= rowEnd; rowStart++)
                     *rowStart = color;
             } else {
                 for (; rowStart <= rowEnd; rowStart++) {
                     const uint32_t bgColor = *rowStart;
+                    uint32_t bgA = bgColor & 0xFF;
+                    uint32_t resA = srcA + (bgA * (255 - srcA) >> 8);
 
-                    uint32_t rb = bgColor & 0x00FF00FF;
-                    uint32_t g = bgColor & 0x0000FF00;
-                    rb += ((color & 0xFF00FF) - rb) * alpha >> 8;
-                    g += ((color & 0x00FF00) - g) * alpha >> 8;
+                    uint32_t rb = bgColor >> 8 & 0x00FF00FF;
+                    uint32_t g = bgColor & 0x00FF0000;
+                    rb += ((color >> 8 & 0x00FF00FF) - rb) * srcA >> 8;
+                    g += ((color & 0x00FF0000) - g) * srcA >> 8;
 
-                    *rowStart = (rb & 0xFF00FF) | (g & 0x00FF00);
+                    *rowStart = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
                 }
             }
         }

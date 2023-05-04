@@ -8,13 +8,15 @@ namespace Pen
             initialized = true;
             texture = SDL_CreateTexture(
                 renderer,
-                SDL_PIXELFORMAT_ARGB8888,
+                SDL_PIXELFORMAT_RGBA8888,
                 SDL_TEXTUREACCESS_STREAMING,
                 WINDOW_WIDTH,
                 WINDOW_HEIGHT
             );
 
-            memset((void *)pixelBuffer, 0xFF, canvasSize << 2);
+            SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+            memset((void *)pixelBuffer, 0x00, canvasSize << 2);
         }
     }
     Initializer::~Initializer() {

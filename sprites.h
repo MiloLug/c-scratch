@@ -2,7 +2,13 @@
 #define SPRITES_COLLECTION_H
 
 #include "runtime/sprite.h"
+#include "runtime/backdrop.h"
 #include "runtime/sprite_manager.h"
+
+
+Backdrop backdrop({
+    .costumeNumber = 1,
+});
 
 
 Sprite sprite({

@@ -4,16 +4,31 @@
 
 SpriteManager::SpriteList SpriteManager::spriteStorage;
 std::set<Sprite *> SpriteManager::managedSprites;
+Backdrop * SpriteManager::backdrop = NULL;
 
 
-void SpriteManager::renderSprites(SDL_Renderer *renderer) {
+void SpriteManager::renderBackdrop(SDL_Renderer * renderer) {
+    if (backdrop) {
+        SDL_RenderCopy(renderer, backdrop->getCostumeTexture(), NULL, NULL);
+    }
+}
+void SpriteManager::initBackdrop(SDL_Renderer * renderer, Backdrop * _backdrop) {
+    if (backdrop) return;
+    _backdrop->init(renderer);
+    backdrop = _backdrop;
+
+    #ifdef DEBUG
+        wprintf(L"Backdrop initialization: OK\n");
+    #endif
+}
+
+void SpriteManager::renderSprites(SDL_Renderer * renderer) {
     for (auto &sprite : spriteStorage) {
         if (sprite->visible)
             SDL_RenderCopyExF(renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
     }
 }
-
-void SpriteManager::initSprites(SDL_Renderer *renderer, const SpriteList &sprites) {
+void SpriteManager::initSprites(SDL_Renderer * renderer, const SpriteList &sprites) {
     for (auto &sprite : sprites) {
         if (managedSprites.contains(sprite)) continue;
 
