@@ -188,23 +188,23 @@ public:
 
     void pointTowardsPointer() {
         shouldUpdateSurfaceCache = true;
-        direction = (atan2(mouseState.x - x, mouseState.y + y) - M_PI_2) / M_RAD;
+        direction = (atan2(mouseState.x - x, mouseState.y - y) - M_PI_2) / M_RAD;
     }
 
     void pointTowardsSprite(Sprite * sprite) {
         shouldUpdateSurfaceCache = true;
-        direction = (atan2(sprite->x - x, sprite->y + y) - M_PI_2) / M_RAD;
+        direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
     }
 
     void move(float distance) {
         x = __boundXMove(x, distance * (float)degCos(direction));
-        y = __boundYMove(y, distance * (float)degSin(direction));
+        y = __boundYMove(y, -distance * (float)degSin(direction));
 
         float oldX = pos.x;
         float oldY = pos.y;
 
         pos.x = windowCenterOffsetX + x;
-        pos.y = windowCenterOffsetY + y;
+        pos.y = windowCenterOffsetY - y;
 
         if (isPenDown)
             Pen_safe(__penDrawLine(oldX, oldY, pos.x, pos.y));

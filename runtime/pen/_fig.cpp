@@ -1,4 +1,5 @@
 #include "_fig.h"
+#include "_lines.h"
 
 
 namespace Pen {
@@ -44,15 +45,11 @@ namespace Pen {
             draw8Symmetry(cX, cY, i, j, noAlphaColor | ((int32_t)fadeAmount << 24));
 
             // Draw central filling
-            if (i != 0)
-                for (int32_t x = -j + 1; x < j; x++) {
-                    drawPixel(cX + x, cY + i, color);
-                    drawPixel(cX + x, cY - i, color);
-                }
-            else
-                for (int32_t x = -j + 1; x < j; x++)
-                    drawPixel(cX + x, cY + i, color);
-
+            if (i != 0) {
+                drawLine(cX - j + 1, cY + i, cX + j - 1, cY + i, 1, color);
+                drawLine(cX - j + 1, cY - i, cX + j - 1, cY - i, 1, color);
+            } else
+                drawLine(cX - j + 1, cY + i, cX + j - 1, cY + i, 1, color);
             i++;
         }
 
@@ -60,9 +57,9 @@ namespace Pen {
         while (i < r) {
             int32_t lineLength = ceil(sqrt(rr - i * i));
 
-            for (int32_t x = -lineLength + 1; x < lineLength; x++) {
-                drawPixel(cX + x, cY + i, color);
-                drawPixel(cX + x, cY - i, color);
+            if (lineLength) {
+                drawLine(cX - lineLength + 1, cY + i, cX + lineLength - 1, cY + i, 1, color);
+                drawLine(cX - lineLength + 1, cY - i, cX + lineLength - 1, cY - i, 1, color);
             }
 
             i++;

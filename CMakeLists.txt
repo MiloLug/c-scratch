@@ -9,12 +9,21 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-if (CMAKE_GENERATOR MATCHES "Visual Studio")
-  set(CMAKE_CXX_FLAGS_DEBUG "/fp:fast /await")
-  set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast /await")
+if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC)
+  set(AVX_FLAGS)
+  if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
+      set(AVX_FLAGS "${AVX_FLAGS} /arch:AVX2")
+  elseif(HAVE_AVX_EXTENSIONS  AND NOT MSVC_VERSION LESS 1600)
+      set(AVX_FLAGS "${AVX_FLAGS} /arch:AVX")
+  endif()
+
+  set(CMAKE_CXX_FLAGS_DEBUG "/fp:fast /await ${AVX_FLAGS}")
+  set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast /await ${AVX_FLAGS}")
+
 else()
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -Ofast -ffast-math -fcoroutines")
-  set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -ffast-math -fcoroutines")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -ffast-math -fcoroutines -march=native")
+  set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -ffast-math -fcoroutines -march=native")
+  
 endif()
 
 
