@@ -153,18 +153,20 @@ public:
 
     void changeX(float offset) {
         x = __boundX(x + offset);
+        offset = pos.x;
         pos.x = windowCenterOffsetX + x;
 
         if (isPenDown)
-            Pen_safe(__penDrawLine(pos.x - offset, pos.y, pos.x, pos.y));
+            Pen_safe(__penDrawLine(offset, pos.y, pos.x, pos.y));
     }
 
     void changeY(float offset) {
         y = __boundY(y + offset);
+        offset = pos.y;
         pos.y = windowCenterOffsetY - y;
 
         if (isPenDown)
-            Pen_safe(__penDrawLine(pos.x, pos.y - offset, pos.x, pos.y));
+            Pen_safe(__penDrawLine(pos.x, offset, pos.x, pos.y));
     }
 
     void turnRight(float angle) {
