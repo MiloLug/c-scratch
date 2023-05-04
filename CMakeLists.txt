@@ -43,4 +43,4 @@ add_subdirectory("runtime")
 target_link_libraries(app SDL2 SDL2main SDL2_image SDL2_gfx)
 
 # Assets
-file(COPY sprites DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
