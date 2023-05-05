@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    ScratchSDLWindow window{"c scratch 0.4"};
+    ScratchSDLWindow window{APP_WINDOW_NAME};
 
     #ifdef DEBUG
         printDebugInfo(window);

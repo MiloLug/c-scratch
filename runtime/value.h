@@ -7,6 +7,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "utils.h"
 #include "config.h"
 #include "string.h"
 
@@ -66,8 +67,8 @@ public:
     uint16_t numberStrSize = 0;
 
     template<typename Tv>
-    static Value * __restrict__ create(Tv &&value) {
-        Value * self = (Value*) malloc(sizeof(Value));
+    static Value * restrict__ create(Tv &&value) {
+        Value * restrict__ self = (Value*) malloc(sizeof(Value));
         
         self->previousNumber = 0;
         self->string = NULL;
@@ -79,10 +80,10 @@ public:
     }
 
     Value() {}
-    Value(double nValue, const wchar_t * sValue): number(nValue), string(String::create(sValue)) {}
+    Value(double nValue, const wchar_t * restrict__ sValue): number(nValue), string(String::create(sValue)) {}
     Value(double value): number(value) {}
     Value(int value): number(value) {}
-    Value(const wchar_t * value): string(String::create(value)), type(Type::STRING) {
+    Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
         number = (double)*string;
     }
     Value(String &&value): string(value.copy()), type(Type::STRING) {}
@@ -92,7 +93,7 @@ public:
     }
 
     Value * copy() const {
-        Value * copy = (Value*) malloc(sizeof(Value));
+        Value * restrict__ copy = (Value*) malloc(sizeof(Value));
 
         copy->previousNumber = 0;
         copy->string = NULL;

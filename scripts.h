@@ -315,9 +315,7 @@ public:
 
         v_light_size = v_size_100 / 6.0;
         v_light_position = floor(v_size_100 / 5.0) * v_size_100 + floor(v_size_100 / 5.0);
-
-        wprintf(L"1.0 - l_COLOR_SHIFT.get(3.0) = %f \n", 1.0 - l_COLOR_SHIFT.get(3.0));
-
+        
         repeat (v_size_100) {
             v_j = 0;
 
@@ -363,8 +361,6 @@ public:
             cs_wait(spriteProcedure_calculate(sprite));
             cs_wait(spriteProcedure_render(sprite));
             v_tick += 1;
-
-            // wprintf(L"tick = %ls\n", v_tick.toString());
 
             cs_yield;
         }

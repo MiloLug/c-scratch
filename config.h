@@ -2,6 +2,8 @@
 #define C_SCRATCH_CONFIG_H
 
 /**** COMMON ****/
+#define APP_WINDOW_NAME "Light simulation project"
+
 #define WINDOW_WIDTH 460.0f
 #define WINDOW_HEIGHT 320.0f
 
@@ -17,7 +19,7 @@
 * So in the turbo mode, main function will say 'im working with the canvas',
 *   then run 10000 operations and say 'the canvas is ready to be shown'.
 */
-#define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH * WINDOW_HEIGHT)
+#define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH + WINDOW_HEIGHT)
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms can be disabled.

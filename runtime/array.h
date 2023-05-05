@@ -1,6 +1,7 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
+#include "utils.h"
 #include "value.h"
 #include "math.h"
 
@@ -17,7 +18,7 @@ class ValueArray {
 public:
     uint64_t capacity = ARRAY_INITIAL_SIZE+1;  // how much it can hold
     uint64_t length = 0;  // how much it actually holds
-    Value * __restrict__ * __restrict__ data = NULL;
+    Value * restrict__ * restrict__ data = NULL;
     Value nullValue = {0, L""};
 
     ValueArray() {
@@ -125,7 +126,7 @@ public:
 
         uint64_t strLen = 0;
         uint64_t offset = 0;
-        wchar_t * str, tmpStr;
+        wchar_t * restrict__ str, tmpStr;
 
         for (uint64_t i = 1; i <= length; i++) {
             auto &tmp = data[i];
