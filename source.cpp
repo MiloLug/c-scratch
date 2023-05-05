@@ -3,8 +3,8 @@
 #include "runtime/sdl.h"
 #include "runtime/sprite_manager.h"
 #include "runtime/script_manager.h"
-#include "scripts.h"
-#include "sprites.h"
+#include "stage/sprites.h"
+#include "stage/scripts.h"
 
 
 int main(int argc, char* argv[]) {
@@ -19,10 +19,12 @@ int main(int argc, char* argv[]) {
         printDebugInfo(window);
     #endif
     
+    SpriteManager::staticInit();
+    ScriptManager::staticInit();
+
     Pen::Initializer penResource(window.renderer);
-    SpriteManager::initSprites(window.renderer, sprites);
-    SpriteManager::initBackdrop(window.renderer, &backdrop);
-    ScriptManager::bindScripts(scriptBindings);
+    SpriteManager::initSprites(window.renderer);
+    SpriteManager::initBackdrop(window.renderer);
 
     auto sdlLoopThread = window.runLoop();
     ScriptManager::startScriptsLoop();

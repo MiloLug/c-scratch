@@ -6,18 +6,19 @@
 
 volatile bool ScriptManager::shouldRun = true;
 ThreadSafeQueue<ScriptManager::CoroContainer> ScriptManager::newActiveCoros;
-ScriptManager::BindingsMap ScriptManager::scriptBindingsStorage;
+constinit std::unique_ptr<ScriptManager::BindingsMap> ScriptManager::scriptBindingsStorage = nullptr;
 
+// STATIC
 
 /*
 * Adds all scripts for the given `action` to the execution queue.
 */
 void ScriptManager::triggerScripts(uint32_t action) {
-    auto actionBindings = scriptBindingsStorage.find(action);
-    if (actionBindings != scriptBindingsStorage.end()) {
+    auto actionBindings = scriptBindingsStorage->find(action);
+    if (actionBindings != scriptBindingsStorage->end()) {
         for (auto &[sprite, coros] : actionBindings->second) {
             for (auto &coro : coros) {
-                newActiveCoros.push({sprite, new Coroutine(coro(sprite))});
+                newActiveCoros.push({sprite, new Coroutine(coro())});
             }
         }
     }
@@ -29,16 +30,16 @@ void ScriptManager::triggerScripts(uint32_t action) {
 */
 void ScriptManager::bindScripts(const BindingsMap &bindings) {
     for (auto &[action, actionSprites] : bindings) {
-        auto globalActionBindings = scriptBindingsStorage.find(action);
 
-        if (globalActionBindings != scriptBindingsStorage.end()) {
+        auto globalActionBindings = scriptBindingsStorage->find(action);
+        if (globalActionBindings != scriptBindingsStorage->end()) {
             auto &globalActionSprites = (*globalActionBindings).second;
 
             for (auto &sprite : actionSprites) {
                 globalActionSprites.push_back(sprite);
             }
         } else {
-            scriptBindingsStorage[action] = actionSprites;
+            (*scriptBindingsStorage)[action] = actionSprites;
         }
     }
 }
@@ -104,4 +105,17 @@ void ScriptManager::startScriptsLoop() {
             Pen::pixels.release();
         #endif
     #endif
+}
+
+void ScriptManager::staticInit() {
+    if (scriptBindingsStorage != nullptr) return;
+
+    scriptBindingsStorage.reset(new ScriptManager::BindingsMap);
+}
+
+// NON-STATIC
+
+ScriptManager::ScriptManager(const BindingsMap &bindings) {
+    staticInit();
+    bindScripts(bindings);
 }

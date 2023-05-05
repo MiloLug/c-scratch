@@ -8,7 +8,7 @@
 4. [Operators](#operators)
 5. [Variables](#variables)
 
-## Documentation - Scratch functionality
+## Documentation - Scratch Blocks
 
 All the docs here assume you have `spriteA` and `spriteB` sprites. And your current sprite is `spriteA`.
 
@@ -132,7 +132,33 @@ Coroutine sprite_onFlagClicked(Sprite * sprite) {
 
 ### Looks
 
-...
+- [`say (X)`]
+
+    `...` NOT IMPLEMENTED
+
+- [`think (X) for (Y) seconds`]
+
+    `...` NOT IMPLEMENTED
+
+- [`think (X)`]
+
+    `...` NOT IMPLEMENTED
+
+- [`switch costume to (X)`]
+
+    `...` NOT IMPLEMENTED
+
+- [`say (X) for (Y) seconds`]
+
+    `...` NOT IMPLEMENTED
+
+- [`say (X) for (Y) seconds`]
+
+    `...` NOT IMPLEMENTED
+
+- [`say (X) for (Y) seconds`]
+
+    `...` NOT IMPLEMENTED
 
 ### Sound
 

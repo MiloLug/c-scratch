@@ -13,7 +13,12 @@ sed -E \
   -e 's/\{\{package_name\}\}/'"$package_name"'/' \
   <"$origin/package.json" > "$destination/package.json"
 
+mkdir -p "$destination/dist/project/assets/sprites"
+mkdir -p "$destination/dist/project/assets/backdrop/costumes"
+mkdir -p "$destination/dist/project/assets/backdrop/sounds"
+
 cp -r runtime .gitignore CMakeLists.txt config.h source.cpp "$destination/dist/project/"
-cp -r base_project_readme.md "$destination/dist/project/README.md"
+cp -r "$origin/stage" "$origin/assets" "$destination/"
+
 cd "$destination/dist/project"
 zip -r ../project.zip *

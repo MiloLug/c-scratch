@@ -3,19 +3,28 @@
 
 
 SpriteManager::SpriteList SpriteManager::spriteStorage;
-std::set<Sprite *> SpriteManager::managedSprites;
-Backdrop * SpriteManager::backdrop = NULL;
+constinit std::unique_ptr<SpriteManager::SpriteList> SpriteManager::waitingForInit = nullptr;
+std::unordered_set<Sprite *> SpriteManager::managedSprites;
+constinit Backdrop * SpriteManager::backdrop = nullptr;
 
+
+// STATIC
+
+void SpriteManager::add(Sprite * sprite) {
+    waitingForInit->push_back(sprite);
+}
 
 void SpriteManager::renderBackdrop(SDL_Renderer * renderer) {
     if (backdrop) {
         SDL_RenderCopy(renderer, backdrop->getCostumeTexture(), NULL, NULL);
     }
 }
-void SpriteManager::initBackdrop(SDL_Renderer * renderer, Backdrop * _backdrop) {
-    if (backdrop) return;
-    _backdrop->init(renderer);
-    backdrop = _backdrop;
+void SpriteManager::initBackdrop(SDL_Renderer * renderer) {
+    if (backdrop == nullptr) {
+        wprintf(L"Backdrop initialization: FAILED, no backdrop\n");
+        return;
+    }
+    backdrop->init(renderer);
 
     #ifdef DEBUG
         wprintf(L"Backdrop initialization: OK\n");
@@ -28,8 +37,8 @@ void SpriteManager::renderSprites(SDL_Renderer * renderer) {
             SDL_RenderCopyExF(renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
     }
 }
-void SpriteManager::initSprites(SDL_Renderer * renderer, const SpriteList &sprites) {
-    for (auto &sprite : sprites) {
+void SpriteManager::initSprites(SDL_Renderer * renderer) {
+    for (auto &sprite : *waitingForInit) {
         if (managedSprites.contains(sprite)) continue;
 
         sprite->init(renderer);
@@ -64,6 +73,8 @@ void SpriteManager::initSprites(SDL_Renderer * renderer, const SpriteList &sprit
             wprintf(L"Sprites initialization: %ls OK\n", sprite->name);
         #endif
     }
+
+    waitingForInit->clear();
 }
 
 void SpriteManager::moveByLayers(Sprite * sprite, int64_t layersNumber) {
@@ -111,4 +122,21 @@ void SpriteManager::moveToBack(Sprite * sprite) {
 }
 void SpriteManager::moveToFront(Sprite * sprite) {
     moveByLayers(sprite, spriteStorage.size());
+}
+
+void SpriteManager::staticInit() {
+    if (waitingForInit != nullptr) return;
+
+    waitingForInit.reset(new SpriteList);
+}
+
+// NON-STATIC
+
+SpriteManager::SpriteManager(Sprite * sprite) {
+    staticInit();
+    add(sprite);
+}
+
+SpriteManager::SpriteManager(Backdrop * _backdrop) {
+    backdrop = _backdrop;
 }

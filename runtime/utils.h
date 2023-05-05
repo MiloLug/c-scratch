@@ -2,6 +2,7 @@
 #define CSCRATCH_UTILS_H
 
 #include <ctime>
+#include <cstdint>
 
 
 extern clock_t start_time;
@@ -22,6 +23,24 @@ void resetTimer();
 #else
     #define restrict__ /* no-op */
 #endif
+
+
+constexpr uint64_t fastHash(const wchar_t * str) {
+    constexpr uint64_t maxOffset = 1LL << 61;
+    uint64_t res = 0;
+    wchar_t c = 0;
+    while((c = *(str++)) != L'\0') {
+        res = res >= maxOffset
+            ? (res >> 7) ^ c
+            : (res << 3) ^ c;
+    }
+
+    return res;
+}
+
+constexpr uint64_t operator ""_H(const wchar_t * str, size_t) {
+    return fastHash(str);
+}
 
 
 #endif

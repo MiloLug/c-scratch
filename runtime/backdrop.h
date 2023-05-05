@@ -7,13 +7,18 @@
 
 struct BackdropDeclaration {
     uint64_t costumeNumber;
+    const std::vector<Costume> costumes;
 };
 
 
 class Backdrop: public SpriteBase {
 public:
     Backdrop(const BackdropDeclaration &decl):
-        SpriteBase(ASSETS_BASE_DIR / L"background", decl.costumeNumber - 1)
+        SpriteBase(
+            ASSETS_BASE_DIR / L"backdrop",
+            decl.costumeNumber - 1,
+            decl.costumes
+        )
     {}
 };
 

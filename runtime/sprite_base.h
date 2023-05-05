@@ -4,6 +4,7 @@
 #include "config.h"
 #include <filesystem>
 #include <vector>
+#include <unordered_map>
 #include "math.h"
 #include "sdl.h"
 #include "pen/pen.h"
@@ -227,53 +228,78 @@ public:
 };
 
 
+class Costume {
+public:
+    const wchar_t * name;
+    const wchar_t * fileName;
+
+    SDL_Surface * surface = NULL;
+    SDL_Texture * texture = NULL;
+
+    Costume(const wchar_t * _name, const wchar_t * _fileName):
+        name{_name},
+        fileName{_fileName}
+    {}
+
+    void init(SDL_Renderer * renderer, const std::filesystem::path &baseDir) {
+        auto surface = IMG_Load((baseDir / fileName).string().c_str());
+        if (surface->format->format != SDL_PIXELFORMAT_RGBA8888) {
+            auto tmp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
+            SDL_FreeSurface(surface);
+            surface = tmp;
+        }
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+    }
+
+    ~Costume() {
+        if (surface) {
+            SDL_FreeSurface(surface);
+            SDL_DestroyTexture(texture);
+        }
+    }
+};
+
+
 class SpriteBase {
 public:
     const std::filesystem::path spritePath;
+    const std::filesystem::path costumesPath;
     uint64_t costumeNumber;
-    
-    std::vector<std::pair<SDL_Texture *, SDL_Surface *>> costumes = {};
+    std::vector<Costume> costumes;
+    std::unordered_map<uint64_t, uint64_t> costumesIndexes;
     
     volatile bool stopScripts = false;
 
-    SpriteBase(const std::filesystem::path _spritePath, uint64_t costumeNum):
+    SpriteBase(
+        const std::filesystem::path &_spritePath,
+        uint64_t costumeNum,
+        const std::vector<Costume> &_costumes
+    ):
         costumeNumber{costumeNum},
-        spritePath{_spritePath}
+        spritePath{_spritePath},
+        costumesPath{_spritePath / L"costumes"},
+        costumes{_costumes}
     {}
 
     void init(SDL_Renderer * renderer) {
-        for (auto const& dir_entry : std::filesystem::directory_iterator{ spritePath / L"costumes" }) {
-            auto surface = IMG_Load(dir_entry.path().string().c_str());
-            if (surface->format->format != SDL_PIXELFORMAT_ARGB8888) {
-                auto tmp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ARGB8888, 0);
-                SDL_FreeSurface(surface);
-                surface = tmp;
-            }
-            costumes.push_back({SDL_CreateTextureFromSurface(renderer, surface), surface});
-
+        for (auto &costume : costumes) {
+            costume.init(renderer, costumesPath);
             #ifdef DEBUG
-                wprintf(L"Sprite costumes loader: '%s' OK\n", dir_entry.path().string().c_str());
+                wprintf(L"Sprite costumes loader: '%ls' OK\n", costume.name);
             #endif
         }
     }
 
     SDL_Texture * getCostumeTexture() const {
-        return this->costumes[this->costumeNumber].first;
+        return this->costumes[this->costumeNumber].texture;
     }
 
     SDL_Surface * getCostumeSurface() const {
-        return this->costumes[this->costumeNumber].second;
+        return this->costumes[this->costumeNumber].surface;
     }
 
     SDL_Surface * getCostumeTransformedSurface() {
         return NULL;
-    }
-
-    virtual ~SpriteBase() {
-        for(auto &costume : costumes) {
-            SDL_DestroyTexture(costume.first);
-            SDL_FreeSurface(costume.second);
-        }
     }
 };
 

@@ -32,13 +32,12 @@ find_library(SDL2 SDL2_image SDL2_gfx)
 
 add_executable(app
   config.h
-  scripts.h
-  sprites.h
   source.cpp
 )
 
 target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
+add_subdirectory("stage")
 
 target_link_libraries(app SDL2 SDL2main SDL2_image SDL2_gfx)
 

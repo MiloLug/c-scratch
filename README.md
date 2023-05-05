@@ -1,7 +1,8 @@
 # C-Scratch Project
 
 ## Documentation
-[Scratch functionality](docs/scratch_functionality.md)
+
+[Scratch blocks supported](docs/scratch_functionality.md)
 
 ## Requirements
 
@@ -25,3 +26,5 @@
 
 - Get rid of SDL2 gfx
 - Add atan2 from https://mazzo.li/posts/vectorized-atan2.html
+- Add [`if on edge, bounce`], along with <`touching (edge) ?`>
+- Translate some "internal" docs on the file structure and publish them

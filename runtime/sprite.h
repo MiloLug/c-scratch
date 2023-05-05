@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "sprite_base.h"
+#include <list>
 
 
 struct SpriteDeclaration {
@@ -16,6 +17,7 @@ struct SpriteDeclaration {
     float size;
     bool visible;
     uint64_t layerOrder;
+    const std::vector<Costume> costumes;
 };
 
 
@@ -30,7 +32,8 @@ public:
         Movable(decl.x, decl.y, decl.width, decl.height, decl.direction, decl.size),
         SpriteBase(
             ASSETS_BASE_DIR / L"sprites" / decl.name,
-            decl.costumeNumber - 1
+            decl.costumeNumber - 1,
+            decl.costumes
         ),
         name{decl.name},
         visible{decl.visible},
