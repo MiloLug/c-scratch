@@ -12,16 +12,21 @@ constinit std::unique_ptr<ScriptManager::BindingsMap> ScriptManager::scriptBindi
 
 /*
 * Adds all scripts for the given `action` to the execution queue.
+* Returns: number of scripts activated.
 */
-void ScriptManager::triggerScripts(uint32_t action) {
+uint64_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
+    uint64_t i = 0;
     auto actionBindings = scriptBindingsStorage->find(action);
     if (actionBindings != scriptBindingsStorage->end()) {
         for (auto &[sprite, coros] : actionBindings->second) {
             for (auto &coro : coros) {
-                newActiveCoros.push({sprite, new Coroutine(coro())});
+                newActiveCoros.push({sprite, new Coroutine(coro(ctx))});
+                i++;
             }
         }
     }
+
+    return i;
 }
 
 /*
@@ -44,12 +49,34 @@ void ScriptManager::bindScripts(const BindingsMap &bindings) {
     }
 }
 
+static void stopOtherScripts(
+    SpriteBase * const &sprite,
+    Coroutine * const &coro,
+    std::list<ScriptManager::CoroContainer>::iterator &currentIter,
+    std::list<ScriptManager::CoroContainer> &corosList,
+    const std::list<ScriptManager::CoroContainer>::iterator &end
+) {
+    sprite->stopOtherScripts = false;
+
+    corosList.erase(currentIter);
+    auto corosIter = corosList.begin();
+
+    while(corosIter != end) {
+        if (corosIter->first == sprite) {
+            delete corosIter->second;
+            corosList.erase(corosIter++);
+        }
+    }
+    corosList.push_back({sprite, coro});
+}
+
 /*
 * This loop executes all scripts triggered by `triggerScripts`
 */
 void ScriptManager::startScriptsLoop() {
     std::list<CoroContainer> activeCoros;
     CoroContainer newCoroutine;
+    auto corosEnd = activeCoros.end();
 
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
@@ -85,13 +112,19 @@ void ScriptManager::startScriptsLoop() {
         }
 
         auto corosIter = activeCoros.begin();
-        auto corosEnd = activeCoros.end();
 
         while(corosIter != corosEnd) {
             auto &[sprite, coro] = *corosIter;
             
-            if(!coro->done() && !sprite->stopScripts) {
+            if(!coro->done()) {
                 coro->resume();
+
+                if (sprite->stopOtherScripts) {
+                    // I could just inline it, but I wanted to avoid too long jump in the if
+                    stopOtherScripts(sprite, coro, corosIter, activeCoros, corosEnd);
+                    break;
+                }
+
                 corosIter++;
             } else {
                 delete coro;

@@ -8,6 +8,7 @@
 #include "runtime/coroutines.h"
 #include "runtime/string_utils.h"
 #include "runtime/script_manager.h"
+#include "runtime/messages.h"
 #include "runtime/pen/pen.h"
 #include "runtime/control_flow.h"
 #include "runtime/utils.h"

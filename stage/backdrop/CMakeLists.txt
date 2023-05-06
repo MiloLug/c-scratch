@@ -1,4 +1,4 @@
 target_sources(app PRIVATE
-  sprite.h
+  backdrop.h
   scripts.h
 )

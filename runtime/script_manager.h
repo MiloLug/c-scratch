@@ -11,17 +11,14 @@
 #include "ts_queue.h"
 #include "coroutines.h"
 #include "sprite_base.h"
-
-
-constexpr uint32_t ACTION_START = 0x1000'0000;
-constexpr uint32_t ACTION_KEYDOWN = 0x2000'0000;
+#include "actions.h"
 
 
 class ScriptManager {
 public:
     typedef std::pair<SpriteBase *, Coroutine *> CoroContainer;
-    typedef std::pair<SpriteBase *, std::vector<Coroutine(*)()>> SpriteScripts;
-    typedef std::map<uint32_t, std::vector<SpriteScripts>> BindingsMap;
+    typedef std::pair<SpriteBase *, std::vector<Coroutine(*)(Context *)>> SpriteScripts;
+    typedef std::map<uint64_t, std::vector<SpriteScripts>> BindingsMap;
 
 protected:
     static ThreadSafeQueue<CoroContainer> newActiveCoros;
@@ -30,7 +27,7 @@ protected:
 public:
     static volatile bool shouldRun;
     
-    static void triggerScripts(uint32_t action);
+    static uint64_t triggerScripts(uint64_t action, Context * ctx = nullptr);
     static void bindScripts(const BindingsMap &bindings);
     static void startScriptsLoop();
 

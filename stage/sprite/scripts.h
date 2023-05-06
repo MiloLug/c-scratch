@@ -265,7 +265,7 @@ namespace NS_sprite {
             stopThisScript();
         }
 
-        static Coroutine spriteStartScript1() {
+        static Coroutine spriteStartScript1(Context * ctx) {
             l_imgData_blue.clean();
             l_imgData_green.clean();
             l_imgData_red.clean();
@@ -353,7 +353,7 @@ namespace NS_sprite {
             stopThisScript();
         }
 
-        static Coroutine spriteStartScript2() {
+        static Coroutine spriteStartScript2(Context * ctx) {
             forever {
                 waitUntil(v_tick == 100);
                 v_timer = timer;
@@ -366,6 +366,28 @@ namespace NS_sprite {
             }
             
             stopThisScript();
+        }
+
+        static Coroutine onMessage1(Context * ctx) {
+            Messages::Handler handler(ctx);
+            wprintf(L"onMessage1\n");
+            co_return;
+        }
+        static Coroutine onMessage2(Context * ctx) {
+            Messages::Handler handler(ctx);
+            wprintf(L"onMessage2\n");
+            co_return;
+        }
+        static Coroutine onMessage3(Context * ctx) {
+            Messages::Handler handler(ctx);
+            wprintf(L"onMessage3\n");
+            co_return;
+        }
+
+        static Coroutine onFlagLol(Context * ctx) {
+            cs_wait(Messages::broadcastWait(L"some message..."_A));
+            wprintf(L"onFlagLol\n");
+            co_return;
         }
     };
 
@@ -392,9 +414,17 @@ namespace NS_sprite {
     ScriptManager bindScripts({
         {ACTION_START, {
             {&sprite, {
-                Scripts::spriteStartScript1,
-                Scripts::spriteStartScript2,
+                // Scripts::spriteStartScript1,
+                // Scripts::spriteStartScript2,
                 // testCoro,
+                Scripts::onFlagLol,
+            }},
+        }},
+        {ACTION_MESSAGE|L"some message..."_A, {
+            {&sprite, {
+                Scripts::onMessage1,
+                Scripts::onMessage2,
+                Scripts::onMessage3,
             }},
         }},
     });

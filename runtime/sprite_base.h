@@ -274,7 +274,7 @@ protected:
 
 public:
     
-    volatile bool stopScripts = false;
+    volatile bool stopOtherScripts = false;
 
     SpriteBase(
         const std::filesystem::path &_spritePath,
