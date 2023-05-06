@@ -14,19 +14,19 @@
 > `<Sprite Name>` - this means well.. Actual sprite name, as in scratch. It will be used also to select this sprites in operations like <`touching (...) ?`>
 
 - `/backdrop` - there are some backdrop things. It's similar to sprites, but differs a bit.
-  - `/sprite.h` - backdrop's description
+  - `/backdrop.h` - backdrop's description
 
     ```cpp
-        namespace NS_backdrop {
-            Backdrop backdrop({ 
-                .costumeNumber = 1,
-                .costumes = {
-                    //  name            file name
-                    {L"Costume 1", L"backdrop1 (1).svg"},
-                    {L"Costume 2", L"Castle 2.png"},
-                },
-            });
+        Backdrop backdrop({ 
+            .costumeIndex = 1,
+            .costumes = {
+                //  name            file name
+                {L"Costume 1", L"backdrop1 (1).svg"},
+                {L"Costume 2", L"Castle 2.png"},
+            },
+        });
 
+        namespace NS_backdrop {
             SpriteManager manageBackdrop(&backdrop);
         }
     ```
@@ -68,7 +68,7 @@
                 .width = 95,
                 .height = 100,
                 .direction = 135,
-                .costumeNumber = 1,
+                .costumeIndex = 1,
                 .size = 100,
                 .visible = true,
                 .layerOrder = 1,
@@ -105,7 +105,7 @@
     ```
 
 - `/scripts.h` - includes all the scripts and some headers for them, so they can be initialized.
-- `/sprites.h` - includes all the sprites for initialization.
+- `/sprites.h` - includes all the sprites (and the backdrop) for initialization.
 
 ### `/runtime`
 

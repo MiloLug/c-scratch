@@ -14,7 +14,7 @@ struct SpriteDeclaration {
     float width;
     float height;
     float direction;
-    uint64_t costumeNumber;
+    uint64_t costumeIndex;
     float size;
     bool visible;
     uint64_t layerOrder;
@@ -34,7 +34,7 @@ public:
         Movable(decl.x, decl.y, decl.width, decl.height, decl.direction, decl.size),
         SpriteBase(
             ASSETS_BASE_DIR / L"sprites" / decl.safeName,
-            decl.costumeNumber - 1,
+            decl.costumeIndex - 1,
             decl.costumes
         ),
         name{decl.name},

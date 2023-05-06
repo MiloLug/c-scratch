@@ -38,6 +38,9 @@ constexpr uint64_t fastHash(const wchar_t * str) {
     return res;
 }
 
+/*
+* Returns the string, hashed with `fastHash` from runtime/utils.h
+*/
 constexpr uint64_t operator ""_H(const wchar_t * str, size_t) {
     return fastHash(str);
 }

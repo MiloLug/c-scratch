@@ -3,10 +3,11 @@
 ## Table of Contents
 
 1. [Motion](#motion)
-2. [Control](#control)
-3. [Sensing](#sensing)
-4. [Operators](#operators)
-5. [Variables](#variables)
+2. [Looks](#looks)
+3. [Control](#control)
+4. [Sensing](#sensing)
+5. [Operators](#operators)
+6. [Variables](#variables)
 
 ## Documentation - Scratch Blocks
 
@@ -145,20 +146,88 @@ Coroutine sprite_onFlagClicked(Sprite * sprite) {
     `...` NOT IMPLEMENTED
 
 - [`switch costume to (X)`]
+  - general case - `sprite.switchCostumeTo(X)`
+  - optimizations:
+    - when you've just selected a name from the dropdown:
+
+      `sprite.switchCostumeByName(L"selected costume name"_H)`
+
+- [`next costume`]
+
+    `sprite.nextCostume()`
+
+- [`switch backdrop to (X)`]
+  - the same as for sprite, but with the backdrop instead
+    - `backdrop.switchCostumeTo(X)`
+    - `backdrop.switchCostumeByName ...` etc.
+
+- [`next backdrop`]
+
+    `backdrop.nextCostume()`
+
+- [`change size by (X)`]
 
     `...` NOT IMPLEMENTED
 
-- [`say (X) for (Y) seconds`]
+- [`set size to (X) %`]
 
     `...` NOT IMPLEMENTED
 
-- [`say (X) for (Y) seconds`]
+- [`change [X] effect by (Y)`]
 
     `...` NOT IMPLEMENTED
 
-- [`say (X) for (Y) seconds`]
+- [`set [X] effect by (Y)`]
 
     `...` NOT IMPLEMENTED
+
+- [`clear graphic effect`]
+
+    `...` NOT IMPLEMENTED
+
+- [`show`]
+
+    `sprite.visible = true`
+
+- [`hide`]
+
+    `sprite.visible = false`
+
+- [`go to [front] layer`]
+
+    `SpriteManager::moveToFront(&sprite)`
+
+- [`go to [back] layer`]
+
+    `SpriteManager::moveToBack(&sprite)`
+
+- [`go [forward] (Y) layers`]
+
+    `SpriteManager::moveForward(&sprite)`
+
+- [`go [backward] (Y) layers`]
+
+    `SpriteManager::moveBackward(&sprite)`
+
+- (`costume [number]`)
+
+    `sprite.getCostumeIndex()`
+
+- (`costume [name]`)
+
+    `sprite.getCostumeName()`
+
+- (`backdrop [number]`)
+
+    `backdrop.getCostumeIndex()`
+
+- (`backdrop [name]`)
+
+    `backdrop.getCostumeName()`
+
+- (`size`)
+
+    `sprite.size`
 
 ### Sound
 
@@ -166,7 +235,33 @@ Coroutine sprite_onFlagClicked(Sprite * sprite) {
 
 ### Events
 
-...
+- [`when 🏳️ clicked`]
+
+    action: `ACTION_START`
+
+- [`when [KEY] key pressed`]
+
+    action: `ACTION_KEYDOWN|SDL_SCANCODE_KEY` where KEY is SDL key name
+
+- [`when this sprite clicked`]
+
+    action: `...` NOT IMPLEMENTED
+
+- [`when [loudness|timer] > (X)`]
+
+    action: `...` NOT IMPLEMENTED
+
+- [`when I receive [X]`]
+
+    action: `...` NOT IMPLEMENTED
+
+- [`broadcast (X)`]
+
+    `...` NOT IMPLEMENTED
+
+- [`broadcast (X) and wait`]
+
+    `...` NOT IMPLEMENTED
 
 ### Control
 
@@ -178,7 +273,7 @@ Coroutine sprite_onFlagClicked(Sprite * sprite) {
 
     `repeat (X) { ...some code; cs_yield; }`
 
-- \[`forever ...some code`\]
+- [`forever ...some code`]
 
     `forever { ...some code; cs_yield; }`
 
@@ -202,7 +297,17 @@ Coroutine sprite_onFlagClicked(Sprite * sprite) {
 
     `...` NOT IMPLEMENTED
 
-> No clone functionality rn
+- [`when I start a clone`]
+
+    `...` NOT IMPLEMENTED
+
+- [`create clone of (X)`]
+
+    `...` NOT IMPLEMENTED
+
+- [`delete this clone`]
+
+    `...` NOT IMPLEMENTED
 
 ### Sensing
 

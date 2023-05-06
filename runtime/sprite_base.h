@@ -8,6 +8,8 @@
 #include "math.h"
 #include "sdl.h"
 #include "pen/pen.h"
+#include "utils.h"
+#include "value.h"
 
 
 const std::filesystem::path ASSETS_BASE_DIR = L"assets/";
@@ -261,25 +263,36 @@ public:
 
 
 class SpriteBase {
-public:
+protected:
     const std::filesystem::path spritePath;
     const std::filesystem::path costumesPath;
-    uint64_t costumeNumber;
+    uint64_t costumesNumber;
+    uint64_t costumeIndex;
     std::vector<Costume> costumes;
-    std::unordered_map<uint64_t, uint64_t> costumesIndexes;
+    std::unordered_map<uint64_t, uint64_t> costumeIndexes;
+    std::unordered_map<uint64_t, uint64_t>::iterator costumeIndexesEnd;
+
+public:
     
     volatile bool stopScripts = false;
 
     SpriteBase(
         const std::filesystem::path &_spritePath,
-        uint64_t costumeNum,
+        uint64_t _costumeIndex,
         const std::vector<Costume> &_costumes
     ):
-        costumeNumber{costumeNum},
+        costumeIndex{_costumeIndex},
         spritePath{_spritePath},
         costumesPath{_spritePath / L"costumes"},
         costumes{_costumes}
-    {}
+    {
+        uint64_t i = 0;
+        for (const auto &costume : _costumes) {
+            costumeIndexes[fastHash(costume.name)] = i++;
+        }
+        costumeIndexesEnd = costumeIndexes.end();
+        costumesNumber = _costumes.size();
+    }
 
     void init(SDL_Renderer * renderer) {
         for (auto &costume : costumes) {
@@ -290,12 +303,59 @@ public:
         }
     }
 
+    /**
+    * This method behaves just like scratch's sprite switching.
+    * First it tries to switch using names (even if you pass a number).
+    * Then it tries to use the number as a sprite index.
+    */
+    void switchCostumeTo(Value &&value) {
+        auto found = costumeIndexes.find(fastHash(value.toString()));
+        if (found != costumeIndexesEnd) {
+            costumeIndex = found->second;
+            return;
+        }
+        if (value.number > 0 && value.number <= costumesNumber)
+            costumeIndex = value.number - 1;
+    }
+
+    void switchCostumeByIndex(uint64_t index) {
+        if (index > 0 && index <= costumesNumber)
+            costumeIndex = index - 1;
+    }
+    void switchCostumeByName(const wchar_t * name) {
+        auto found = costumeIndexes.find(fastHash(name));
+        if (found != costumeIndexesEnd)
+            costumeIndex = found->second;
+    }
+    /**
+    * For this method to work, you need to pass fastHash(L"some string"),
+    * provided by the runtime/utils.h.
+    * Also you can use just L"your string"_H
+    */
+    void switchCostumeByName(uint64_t nameHash) {
+        auto found = costumeIndexes.find(nameHash);
+        if (found != costumeIndexesEnd)
+            costumeIndex = found->second;
+    }
+
+    void nextCostume() {
+        costumeIndex = (costumeIndex + 1) % costumesNumber;
+    }
+
     SDL_Texture * getCostumeTexture() const {
-        return this->costumes[this->costumeNumber].texture;
+        return costumes[costumeIndex].texture;
     }
 
     SDL_Surface * getCostumeSurface() const {
-        return this->costumes[this->costumeNumber].surface;
+        return costumes[costumeIndex].surface;
+    }
+
+    double getCostumeIndex() {
+        return costumeIndex + 1;
+    }
+
+    const wchar_t * getCostumeName() {
+        return costumes[costumeIndex].name;
     }
 
     SDL_Surface * getCostumeTransformedSurface() {

@@ -5,7 +5,7 @@
 #include "runtime/sprite.h"
 #include "runtime/sprite_manager.h"
 
-#include "backdrop/sprite.h"
+#include "backdrop/backdrop.h"
 // same for sprites:
 
 #endif

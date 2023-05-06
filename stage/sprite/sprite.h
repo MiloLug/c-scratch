@@ -7,7 +7,7 @@ namespace NS_sprite {
         .width = 95,
         .height = 100,
         .direction = 135,
-        .costumeNumber = 1,
+        .costumeIndex = 1,
         .size = 100,
         .visible = false,
         .layerOrder = 1,
