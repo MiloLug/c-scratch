@@ -8,6 +8,7 @@
 
 struct SpriteDeclaration {
     const wchar_t * name;
+    const wchar_t * safeName;
     float x;
     float y;
     float width;
@@ -24,6 +25,7 @@ struct SpriteDeclaration {
 class Sprite: public Movable, public SpriteBase {
 public:
     const wchar_t * name;
+    const wchar_t * safeName;
     SDL_Surface * surfaceCache = NULL;  // Surface cache for the Pen's stamp
     bool visible;
     uint64_t layerOrder;
@@ -31,11 +33,12 @@ public:
     Sprite(const SpriteDeclaration &decl):
         Movable(decl.x, decl.y, decl.width, decl.height, decl.direction, decl.size),
         SpriteBase(
-            ASSETS_BASE_DIR / L"sprites" / decl.name,
+            ASSETS_BASE_DIR / L"sprites" / decl.safeName,
             decl.costumeNumber - 1,
             decl.costumes
         ),
         name{decl.name},
+        safeName{decl.safeName},
         visible{decl.visible},
         layerOrder{decl.layerOrder - 1}
     {}

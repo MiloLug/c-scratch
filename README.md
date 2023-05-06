@@ -2,7 +2,10 @@
 
 ## Documentation
 
-[Scratch blocks supported](docs/scratch_functionality.md)
+1. [Scratch blocks supported](docs/scratch_functionality.md)
+2. [Project structure](docs/project_structure.md)
+3. [About writing stage scripts etc.](docs/about_stage.md) (Not ready)
+4. [Internals](docs/internals.md) (Not ready)
 
 ## Requirements
 
@@ -27,4 +30,3 @@
 - Get rid of SDL2 gfx
 - Add atan2 from https://mazzo.li/posts/vectorized-atan2.html
 - Add [`if on edge, bounce`], along with <`touching (edge) ?`>
-- Translate some "internal" docs on the file structure and publish them

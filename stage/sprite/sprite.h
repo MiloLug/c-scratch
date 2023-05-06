@@ -1,6 +1,7 @@
 namespace NS_sprite {
     Sprite sprite({
-        .name = L"sprite",
+        .name = L"Sprite",
+        .safeName = L"sprite",
         .x = 100,
         .y = 0,
         .width = 95,
