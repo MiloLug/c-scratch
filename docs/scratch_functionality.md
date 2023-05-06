@@ -13,13 +13,13 @@
 
 All the docs here assume you have `spriteA` and `spriteB` sprites. And your current sprite is `spriteA`.
 
-Usually all your functions receive a sprite object pointer, named `sprite`.
+Usually all your functions will have access to a `sprite` object.
 
 ### Such a function example
 
 ```c++
-Coroutine sprite_onFlagClicked(Sprite * sprite) {
-    sprite->move(20);
+Coroutine sprite_onFlagClicked() {
+    sprite.move(20);
 
     stopThisScript();
 }
@@ -463,8 +463,8 @@ Coroutine sprite_onFlagClicked(Sprite * sprite) {
 Just create a function like
 
 ```c++
-Coroutine sprite_my_function(Sprite * sprite) {
-    sprite->move(20);
+Coroutine sprite_my_function() {
+    sprite.move(20);
 
     stopThisScript();
 }
@@ -476,8 +476,8 @@ Also it's better to add a template if you are going to use another arguments, si
 
 ```c++
 template<typename T1, typename T2>
-Coroutine sprite_my_function(Sprite * sprite, T1 &&arg1, T2 &&arg2) {
-    sprite->move(20);
+Coroutine sprite_my_function(T1 &&arg1, T2 &&arg2) {
+    sprite.move(20);
 
     //....
 
