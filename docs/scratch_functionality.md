@@ -187,11 +187,11 @@ Coroutine sprite_onFlagClicked() {
 
 - [`show`]
 
-    `sprite.visible = true`
+    `sprite.show()`
 
 - [`hide`]
 
-    `sprite.visible = false`
+    `sprite.hide()`
 
 - [`go to [front] layer`]
 
@@ -253,15 +253,21 @@ Coroutine sprite_onFlagClicked() {
 
 - [`when I receive [X]`]
 
-    action: `...` NOT IMPLEMENTED
+    action: `ACTION_MESSAGE|L"X"_A` where X is your action name
 
 - [`broadcast (X)`]
+  - general case - `Messages::broadcast(X)`
+  - optimizations:
+    - when you've just selected a name from the dropdown:
 
-    `...` NOT IMPLEMENTED
+      `sprite.broadcast(L"selected action name"_A)`
 
 - [`broadcast (X) and wait`]
+  - general case - `cs_wait(Messages::broadcastWait(X))`
+  - optimizations:
+    - when you've just selected a name from the dropdown:
 
-    `...` NOT IMPLEMENTED
+      `cs_wait(Messages::broadcastWait(L"selected action name"_A))`
 
 ### Control
 
@@ -295,7 +301,7 @@ Coroutine sprite_onFlagClicked() {
 
 - [`stop [other scripts in sprite]`]
 
-    `...` NOT IMPLEMENTED
+    `sprite.stopOtherScripts()`
 
 - [`when I start a clone`]
 

@@ -56,7 +56,7 @@ static void stopOtherScripts(
     std::list<ScriptManager::CoroContainer> &corosList,
     const std::list<ScriptManager::CoroContainer>::iterator &end
 ) {
-    sprite->stopOtherScripts = false;
+    sprite->__stopOtherScripts = false;
 
     corosList.erase(currentIter);
     auto corosIter = corosList.begin();
@@ -119,7 +119,7 @@ void ScriptManager::startScriptsLoop() {
             if(!coro->done()) {
                 coro->resume();
 
-                if (sprite->stopOtherScripts) {
+                if (sprite->__stopOtherScripts) {
                     // I could just inline it, but I wanted to avoid too long jump in the if
                     stopOtherScripts(sprite, coro, corosIter, activeCoros, corosEnd);
                     break;
