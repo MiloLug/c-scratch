@@ -110,23 +110,68 @@ public:
     }
 
     wchar_t * getNumberStr() {
+        constexpr uint16_t fracBaseLen = 15;
+        constexpr double minExponential = 1e+21;
+
         if (number == previousNumber && numberStrTmp) return numberStrTmp;
         previousNumber = number;
 
-        uint16_t size = swprintf(globalNumStrTmp, 325, L"%.*f", NUM_TO_STRING_FRACTION_DIGITS, number);
-        do {
-            size--;
-        } while(globalNumStrTmp[size] == L'0');
-        if (globalNumStrTmp[size] == L'.') globalNumStrTmp[size] = L'\0';
-        else globalNumStrTmp[++size] = L'\0';
+        bool useExpNotation = abs(number) >= minExponential;
+        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.15e", number) : swprintf(globalNumStrTmp, 325, L"%.15f", number);
 
-        size++;
+        // it's important to try this branch first to avoid jumps, sine no-exponential numbers are more common
+        if (!useExpNotation) {
+            do {
+                size--;
+            } while(globalNumStrTmp[size] == L'0');
+            if (globalNumStrTmp[size] == L'.') globalNumStrTmp[size] = L'\0';
+            else globalNumStrTmp[++size] = L'\0';
 
+            size++;
+
+            if (size > numberStrSize) {
+                numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
+                numberStrSize = size;
+            }
+            memcpy(numberStrTmp, globalNumStrTmp, size << 2);
+
+            return numberStrTmp;
+        }
+
+        uint16_t intEnd;
+        uint16_t fracEnd = 0;
+        uint16_t expPartStart;
+        uint16_t i = -1;
+        
+        while(globalNumStrTmp[++i] != L'.');
+        intEnd = i;
+
+        while(globalNumStrTmp[++i] != L'e') {
+            if (globalNumStrTmp[i] != L'0') fracEnd = i + 1;
+        }
+
+        expPartStart = globalNumStrTmp[i + 1] != L'0' ? i : 0;  
+
+        size = (
+            intEnd
+            + size - expPartStart
+            + (fracEnd == 0 ? 0 : fracEnd - intEnd)
+        ) + 1;
         if (size > numberStrSize) {
             numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
             numberStrSize = size;
         }
-        memcpy(numberStrTmp, globalNumStrTmp, size << 2);
+        numberStrTmp[size] = L'\0';
+
+        if (fracEnd != 0) {
+            memcpy(numberStrTmp, globalNumStrTmp, fracEnd << 2);
+            i = fracEnd;
+        } else {
+            memcpy(numberStrTmp, globalNumStrTmp, intEnd << 2);
+            i = intEnd;
+        }
+
+        memcpy(numberStrTmp + i, globalNumStrTmp + expPartStart, (size - expPartStart) << 2);
 
         return numberStrTmp;
     }
@@ -219,6 +264,10 @@ public:
     make_math_bin_op(+)
     make_math_bin_op(/)
     make_math_bin_op(*)
+
+    bool operator !() const {
+        return !number;
+    }
 
     operator double() const {
         return number;

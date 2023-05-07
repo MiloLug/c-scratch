@@ -41,14 +41,100 @@ public:
         return value.copy();
     }
 
+    static double __parseHexNum(double &sign, const wchar_t * str) {
+        if (str[0] == L'0') {
+            str += 2;
+            const wchar_t * tmpStr = str - 1;
+
+            while(iswxdigit(*(++tmpStr)));
+            if (*tmpStr == L'\0') return wcstol(str, nullptr, 16) * sign;
+        }
+
+        return 0;
+    }
+
+    static double __parseOctNum(double &sign, const wchar_t * str) {
+        if (str[0] == L'0') {
+            str += 2;
+            const wchar_t * tmpStr = str;
+
+            while(*tmpStr >= L'0' && *tmpStr <= L'7') tmpStr++;
+            if (*tmpStr == L'\0') return wcstol(str, nullptr, 8) * sign;
+        }
+
+        return 0;
+    }
+
+    static double __parseBinNum(double &sign, const wchar_t * str) {
+        if (str[0] == L'0') {
+            str += 2;
+            const wchar_t * tmpStr = str;
+
+            while(*tmpStr == L'0' || *tmpStr == L'1') tmpStr++;
+            if (*tmpStr == L'\0') return wcstol(str, nullptr, 2) * sign;
+        }
+
+        return 0;
+    }
+
+    static double __parseDecNum(double &sign, const wchar_t * str) {
+        bool hasNumbers = false;
+        bool hasExp = false;
+        wchar_t tmp;
+        const wchar_t * tmpStr = str - 1;
+
+        while(iswdigit(*(++tmpStr)));
+        hasNumbers = tmpStr - str;
+
+        if (*tmpStr == L'.') {
+            while(iswdigit(*(++tmpStr)));
+            hasNumbers = tmpStr - str - 1;
+        }
+
+        if (!hasNumbers) return 0;
+
+        if (*tmpStr == L'E' || *tmpStr == L'e') {
+            tmp = *(++tmpStr);
+            if (
+                !iswdigit(tmp)
+                && (
+                    (tmp != L'-' && tmp != L'+')
+                    || !iswdigit(*(++tmpStr))
+                )
+            )
+                return 0;
+            while(iswdigit(*(++tmpStr)));
+        }
+        
+        if (*tmpStr == L'\0') return wcstod(str, nullptr) * sign;
+
+        return 0;
+    }
+
     static inline double strToNum(const wchar_t * str, uint16_t len) {
         if (len > 326) return 0;  // > -MAX_DBL len
-        wchar_t tmp;
-        for (uint16_t i = 0; i < len; i++) {
-            tmp = str[i];
-            if (!iswdigit(tmp) && tmp != L'.' && tmp != L'-' && tmp != L'+') return 0;
+        while(iswspace(*str)) str++;
+
+        bool hasMinus = str[0] == L'-';
+        if (hasMinus || str[0] == L'+') {
+            str++;
         }
-        return wcstod(str, NULL);
+        double sign = hasMinus ? -1 : 1;
+
+        if (len == 0) return 0;
+
+        switch (str[1]) {
+            case L'x':
+                return __parseHexNum(sign, str);
+            case L'o':
+                return __parseOctNum(sign, str);
+            case L'b':
+                return __parseBinNum(sign, str);
+            default:
+                return __parseDecNum(sign, str);
+        }
+
+        return 0;
     }
 
     /*Create an empty string*/
