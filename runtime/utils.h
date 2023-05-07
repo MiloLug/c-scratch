@@ -25,7 +25,7 @@ void resetTimer();
 #endif
 
 
-constexpr uint64_t fastHash(const wchar_t * str) {
+static constexpr uint64_t fastHash(const wchar_t * str) {
     constexpr uint64_t maxOffset = 1LL << 61;
     uint64_t res = 0;
     wchar_t c = 0;
@@ -41,7 +41,7 @@ constexpr uint64_t fastHash(const wchar_t * str) {
 /*
 * Returns the string, hashed with `fastHash` from runtime/utils.h
 */
-constexpr uint64_t operator ""_H(const wchar_t * str, size_t) {
+static constexpr uint64_t operator ""_H(const wchar_t * str, size_t) {
     return fastHash(str);
 }
 

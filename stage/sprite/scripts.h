@@ -50,7 +50,7 @@ namespace NS_sprite {
                 v_math_min = arg_1;
             }
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_1() {
@@ -99,7 +99,7 @@ namespace NS_sprite {
                 * (v_speed - l_COLOR_SHIFT.get(3.0))
             );
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_10() {
@@ -114,7 +114,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_1());
             cs_wait(spriteProcedure_loop_unrolling_1());
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_100() {
@@ -129,7 +129,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_10());
             cs_wait(spriteProcedure_loop_unrolling_10());
             
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_1000() {
@@ -144,7 +144,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_100());
             cs_wait(spriteProcedure_loop_unrolling_100());
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_10000() {
@@ -159,7 +159,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_1000());
             cs_wait(spriteProcedure_loop_unrolling_1000());
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_calculate() {
@@ -205,7 +205,7 @@ namespace NS_sprite {
 
             v_frame += 1.0;
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_render() {
@@ -262,10 +262,10 @@ namespace NS_sprite {
                 cs_yield;
             }
 
-            stopThisScript();
+            co_return;
         }
 
-        static Coroutine spriteStartScript1() {
+        static Coroutine spriteStartScript1(Context * ctx) {
             l_imgData_blue.clean();
             l_imgData_green.clean();
             l_imgData_red.clean();
@@ -350,10 +350,10 @@ namespace NS_sprite {
                 cs_yield;
             }
 
-            stopThisScript();
+            co_return;
         }
 
-        static Coroutine spriteStartScript2() {
+        static Coroutine spriteStartScript2(Context * ctx) {
             forever {
                 waitUntil(v_tick == 100);
                 v_timer = timer;
@@ -365,28 +365,9 @@ namespace NS_sprite {
                 cs_yield;
             }
             
-            stopThisScript();
+            co_return;
         }
     };
-
-
-    // Coroutine testCoro() {
-    //     repeat(1) {
-    //         // for (int y = 0; y < WINDOW_HEIGHT; y++) {
-    //         //     Pen_safe(Pen::drawLine(0, y, WINDOW_WIDTH, y, 1, 0x4F0F1F9F));
-
-    //         //     cs_yield;
-    //         // }
-    //         Pen_safe(Pen::drawLine(200, 100, 200, 100, 100, 0x0000FF9F));
-    //         Pen_safe(Pen::drawLine(230, 300, 230, 300, 200, 0xFF000F9F));
-    //         Pen_safe(Pen::drawLine(100, 250, 100, 250, 300, 0xF0FF0F9F));
-
-    //         cs_yield;
-    //     }
-
-    //     stopThisScript();
-    //     // stopAll();
-    // }
 
 
     ScriptManager bindScripts({
@@ -394,8 +375,7 @@ namespace NS_sprite {
             {&sprite, {
                 Scripts::spriteStartScript1,
                 Scripts::spriteStartScript2,
-                // testCoro,
             }},
-        }},
+        }}
     });
 }

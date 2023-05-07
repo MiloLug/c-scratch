@@ -274,7 +274,7 @@ protected:
 
 public:
     
-    volatile bool stopScripts = false;
+    volatile bool __stopOtherScripts = false;
 
     SpriteBase(
         const std::filesystem::path &_spritePath,
@@ -356,6 +356,10 @@ public:
 
     const wchar_t * getCostumeName() {
         return costumes[costumeIndex].name;
+    }
+
+    void stopOtherScripts() {
+        __stopOtherScripts = true;
     }
 
     SDL_Surface * getCostumeTransformedSurface() {

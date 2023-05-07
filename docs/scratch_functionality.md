@@ -2,23 +2,32 @@
 
 ## Table of Contents
 
-1. [Motion](#motion)
-2. [Looks](#looks)
-3. [Control](#control)
-4. [Sensing](#sensing)
-5. [Operators](#operators)
-6. [Variables](#variables)
+- [C-Scratch](#c-scratch)
+  - [Table of Contents](#table-of-contents)
+  - [Documentation - Scratch Blocks](#documentation---scratch-blocks)
+  - [Scratch functions representation](#scratch-functions-representation)
+    - [Motion](#motion)
+    - [Looks](#looks)
+    - [Sound](#sound)
+    - [Events](#events)
+    - [Control](#control)
+    - [Sensing](#sensing)
+    - [Operators](#operators)
+    - [Variables](#variables)
+      - [Variables declaration](#variables-declaration)
+      - [Lists declaration](#lists-declaration)
+      - [Variables manipulations](#variables-manipulations)
+      - [Lists manipulations](#lists-manipulations)
+    - [Custom blocks](#custom-blocks)
 
 ## Documentation - Scratch Blocks
 
-All the docs here assume you have `spriteA` and `spriteB` sprites. And your current sprite is `spriteA`.
+All the docs here assume you have access to a `sprite` object.
 
-Usually all your functions will have access to a `sprite` object.
-
-### Such a function example
+Here is some function example, considering this:
 
 ```c++
-Coroutine sprite_onFlagClicked() {
+Coroutine sprite_onFlagClicked(Context * ctx) {
     sprite.move(20);
 
     stopThisScript();
@@ -187,11 +196,11 @@ Coroutine sprite_onFlagClicked() {
 
 - [`show`]
 
-    `sprite.visible = true`
+    `sprite.show()`
 
 - [`hide`]
 
-    `sprite.visible = false`
+    `sprite.hide()`
 
 - [`go to [front] layer`]
 
@@ -253,15 +262,21 @@ Coroutine sprite_onFlagClicked() {
 
 - [`when I receive [X]`]
 
-    action: `...` NOT IMPLEMENTED
+    action: `ACTION_MESSAGE|L"X"_A` where X is your action name
 
 - [`broadcast (X)`]
+  - general case - `Messages::broadcast(X)`
+  - optimizations:
+    - when you've just selected a name from the dropdown:
 
-    `...` NOT IMPLEMENTED
+      `sprite.broadcast(L"selected action name"_A)`
 
 - [`broadcast (X) and wait`]
+  - general case - `cs_wait(Messages::broadcastWait(X))`
+  - optimizations:
+    - when you've just selected a name from the dropdown:
 
-    `...` NOT IMPLEMENTED
+      `cs_wait(Messages::broadcastWait(L"selected action name"_A))`
 
 ### Control
 
@@ -295,13 +310,13 @@ Coroutine sprite_onFlagClicked() {
 
 - [`stop [other scripts in sprite]`]
 
-    `...` NOT IMPLEMENTED
+    `sprite.stopOtherScripts()`
 
 - [`when I start a clone`]
 
     `...` NOT IMPLEMENTED
 
-- [`create clone of (X)`]
+- [since`create clone of (X)`]
 
     `...` NOT IMPLEMENTED
 

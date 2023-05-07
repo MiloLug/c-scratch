@@ -1,5 +1,5 @@
-#ifndef CSCRATCH_SPRITES_H
-#define CSCRATCH_SPRITES_H
+#ifndef STAGE_SPRITES_H
+#define STAGE_SPRITES_H
 
 #include "runtime/backdrop.h"
 #include "runtime/sprite.h"

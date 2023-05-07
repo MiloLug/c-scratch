@@ -57,4 +57,7 @@ inline void Coroutine::resume() const {
 }
 
 
+struct Context {};
+
+
 #endif

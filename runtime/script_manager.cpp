@@ -12,16 +12,21 @@ constinit std::unique_ptr<ScriptManager::BindingsMap> ScriptManager::scriptBindi
 
 /*
 * Adds all scripts for the given `action` to the execution queue.
+* Returns: number of scripts activated.
 */
-void ScriptManager::triggerScripts(uint32_t action) {
+uint64_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
+    uint64_t i = 0;
     auto actionBindings = scriptBindingsStorage->find(action);
     if (actionBindings != scriptBindingsStorage->end()) {
         for (auto &[sprite, coros] : actionBindings->second) {
             for (auto &coro : coros) {
-                newActiveCoros.push({sprite, new Coroutine(coro())});
+                newActiveCoros.push({sprite, new Coroutine(coro(ctx))});
+                i++;
             }
         }
     }
+
+    return i;
 }
 
 /*
@@ -44,12 +49,34 @@ void ScriptManager::bindScripts(const BindingsMap &bindings) {
     }
 }
 
+static void stopOtherScripts(
+    SpriteBase * const &sprite,
+    Coroutine * const &coro,
+    std::list<ScriptManager::CoroContainer>::iterator &currentIter,
+    std::list<ScriptManager::CoroContainer> &corosList,
+    const std::list<ScriptManager::CoroContainer>::iterator &end
+) {
+    sprite->__stopOtherScripts = false;
+
+    corosList.erase(currentIter);
+    auto corosIter = corosList.begin();
+
+    while(corosIter != end) {
+        if (corosIter->first == sprite) {
+            delete corosIter->second;
+            corosList.erase(corosIter++);
+        }
+    }
+    corosList.push_back({sprite, coro});
+}
+
 /*
 * This loop executes all scripts triggered by `triggerScripts`
 */
 void ScriptManager::startScriptsLoop() {
     std::list<CoroContainer> activeCoros;
     CoroContainer newCoroutine;
+    auto corosEnd = activeCoros.end();
 
     #ifndef ENABLE_TURBO
         const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
@@ -70,8 +97,7 @@ void ScriptManager::startScriptsLoop() {
             previous_time += clocks_per_frame;
         #else
             #ifndef ENABLE_UNSAFE_NO_LOCKS
-                unlockCounter++;
-                if (unlockCounter == TURBO_LOCK_WINDOW_CYCLES) {
+                if (++unlockCounter == TURBO_LOCK_WINDOW_CYCLES) {
                     unlockCounter = 0;
                     Pen::pixels.release();
                     // Hope the graphics thread will have enough time to `.take()` the pixels in between.
@@ -85,14 +111,19 @@ void ScriptManager::startScriptsLoop() {
         }
 
         auto corosIter = activeCoros.begin();
-        auto corosEnd = activeCoros.end();
 
         while(corosIter != corosEnd) {
             auto &[sprite, coro] = *corosIter;
             
-            if(!coro->done() && !sprite->stopScripts) {
+            if(!coro->done()) {
                 coro->resume();
-                corosIter++;
+
+                if (!sprite->__stopOtherScripts) {
+                    corosIter++;
+                } else {
+                    stopOtherScripts(sprite, coro, corosIter, activeCoros, corosEnd);
+                    break;
+                }
             } else {
                 delete coro;
                 activeCoros.erase(corosIter++);

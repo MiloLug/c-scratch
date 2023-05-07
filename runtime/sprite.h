@@ -85,6 +85,13 @@ public:
         ));
     }
 
+    void hide() {
+        visible = false;
+    }
+    void show() {
+        visible = true;
+    }
+
     ~Sprite() {
         if (surfaceCache)
             SDL_FreeSurface(surfaceCache);
