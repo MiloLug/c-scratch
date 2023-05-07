@@ -1,5 +1,5 @@
-#ifndef CSCRATCH_SCRIPTS_H
-#define CSCRATCH_SCRIPTS_H
+#ifndef STAGE_SCRIPTS_H
+#define STAGE_SCRIPTS_H
 
 #include "runtime/sprite.h"
 #include "runtime/sdl.h"

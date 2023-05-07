@@ -2,8 +2,11 @@
 
 ## Table of Contents
 
-1. [Stage (scratch project code itself)](#stage)
-2. [Runtime](#runtime)
+- [C-Scratch](#c-scratch)
+  - [Table of Contents](#table-of-contents)
+  - [Documentation - Project Structure](#documentation---project-structure)
+    - [`/stage`](#stage)
+    - [`/runtime`](#runtime)
 
 ## Documentation - Project Structure
 
