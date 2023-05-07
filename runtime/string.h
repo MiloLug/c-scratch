@@ -47,6 +47,8 @@ public:
             const wchar_t * tmpStr = str - 1;
 
             while(iswxdigit(*(++tmpStr)));
+            tmpStr--;
+            while(isspace(*(++tmpStr)));
             if (*tmpStr == L'\0') return wcstol(str, nullptr, 16) * sign;
         }
 
@@ -59,6 +61,8 @@ public:
             const wchar_t * tmpStr = str;
 
             while(*tmpStr >= L'0' && *tmpStr <= L'7') tmpStr++;
+            tmpStr--;
+            while(isspace(*(++tmpStr)));
             if (*tmpStr == L'\0') return wcstol(str, nullptr, 8) * sign;
         }
 
@@ -71,6 +75,8 @@ public:
             const wchar_t * tmpStr = str;
 
             while(*tmpStr == L'0' || *tmpStr == L'1') tmpStr++;
+            tmpStr--;
+            while(isspace(*(++tmpStr)));
             if (*tmpStr == L'\0') return wcstol(str, nullptr, 2) * sign;
         }
 
@@ -105,6 +111,9 @@ public:
                 return 0;
             while(iswdigit(*(++tmpStr)));
         }
+        
+        tmpStr--;
+        while(isspace(*(++tmpStr)));
         
         if (*tmpStr == L'\0') return wcstod(str, nullptr) * sign;
 
