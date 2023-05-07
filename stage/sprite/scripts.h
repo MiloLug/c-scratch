@@ -50,7 +50,7 @@ namespace NS_sprite {
                 v_math_min = arg_1;
             }
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_1() {
@@ -99,7 +99,7 @@ namespace NS_sprite {
                 * (v_speed - l_COLOR_SHIFT.get(3.0))
             );
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_10() {
@@ -114,7 +114,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_1());
             cs_wait(spriteProcedure_loop_unrolling_1());
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_100() {
@@ -129,7 +129,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_10());
             cs_wait(spriteProcedure_loop_unrolling_10());
             
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_1000() {
@@ -144,7 +144,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_100());
             cs_wait(spriteProcedure_loop_unrolling_100());
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_10000() {
@@ -159,7 +159,7 @@ namespace NS_sprite {
             cs_wait(spriteProcedure_loop_unrolling_1000());
             cs_wait(spriteProcedure_loop_unrolling_1000());
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_calculate() {
@@ -205,7 +205,7 @@ namespace NS_sprite {
 
             v_frame += 1.0;
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteProcedure_render() {
@@ -262,7 +262,7 @@ namespace NS_sprite {
                 cs_yield;
             }
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteStartScript1(Context * ctx) {
@@ -350,7 +350,7 @@ namespace NS_sprite {
                 cs_yield;
             }
 
-            stopThisScript();
+            co_return;
         }
 
         static Coroutine spriteStartScript2(Context * ctx) {
@@ -365,67 +365,17 @@ namespace NS_sprite {
                 cs_yield;
             }
             
-            stopThisScript();
-        }
-
-        static Coroutine onMessage1(Context * ctx) {
-            Messages::Handler handler(ctx);
-            wprintf(L"onMessage1\n");
-            co_return;
-        }
-        static Coroutine onMessage2(Context * ctx) {
-            Messages::Handler handler(ctx);
-            wprintf(L"onMessage2\n");
-            co_return;
-        }
-        static Coroutine onMessage3(Context * ctx) {
-            Messages::Handler handler(ctx);
-            wprintf(L"onMessage3\n");
-            co_return;
-        }
-
-        static Coroutine onFlagLol(Context * ctx) {
-            cs_wait(Messages::broadcastWait(L"some message..."_A));
-            wprintf(L"onFlagLol\n");
             co_return;
         }
     };
 
 
-    // Coroutine testCoro() {
-    //     repeat(1) {
-    //         // for (int y = 0; y < WINDOW_HEIGHT; y++) {
-    //         //     Pen_safe(Pen::drawLine(0, y, WINDOW_WIDTH, y, 1, 0x4F0F1F9F));
-
-    //         //     cs_yield;
-    //         // }
-    //         Pen_safe(Pen::drawLine(200, 100, 200, 100, 100, 0x0000FF9F));
-    //         Pen_safe(Pen::drawLine(230, 300, 230, 300, 200, 0xFF000F9F));
-    //         Pen_safe(Pen::drawLine(100, 250, 100, 250, 300, 0xF0FF0F9F));
-
-    //         cs_yield;
-    //     }
-
-    //     stopThisScript();
-    //     // stopAll();
-    // }
-
-
     ScriptManager bindScripts({
         {ACTION_START, {
             {&sprite, {
-                // Scripts::spriteStartScript1,
-                // Scripts::spriteStartScript2,
-                // testCoro,
-                Scripts::onFlagLol,
+                Scripts::spriteStartScript1,
+                Scripts::spriteStartScript2,
             }},
-        }},
-        {ACTION_MESSAGE|L"some message..."_A, {
-            {&sprite, {
-                Scripts::onMessage1,
-                Scripts::onMessage2,
-                Scripts::onMessage3,
-            }},
-        }},
+        }}
     });
 }

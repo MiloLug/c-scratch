@@ -97,8 +97,7 @@ void ScriptManager::startScriptsLoop() {
             previous_time += clocks_per_frame;
         #else
             #ifndef ENABLE_UNSAFE_NO_LOCKS
-                unlockCounter++;
-                if (unlockCounter == TURBO_LOCK_WINDOW_CYCLES) {
+                if (++unlockCounter == TURBO_LOCK_WINDOW_CYCLES) {
                     unlockCounter = 0;
                     Pen::pixels.release();
                     // Hope the graphics thread will have enough time to `.take()` the pixels in between.
@@ -119,13 +118,12 @@ void ScriptManager::startScriptsLoop() {
             if(!coro->done()) {
                 coro->resume();
 
-                if (sprite->__stopOtherScripts) {
-                    // I could just inline it, but I wanted to avoid too long jump in the if
+                if (!sprite->__stopOtherScripts) {
+                    corosIter++;
+                } else {
                     stopOtherScripts(sprite, coro, corosIter, activeCoros, corosEnd);
                     break;
                 }
-
-                corosIter++;
             } else {
                 delete coro;
                 activeCoros.erase(corosIter++);
