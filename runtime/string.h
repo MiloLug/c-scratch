@@ -4,7 +4,7 @@
 #include <memory>
 #include <cstring>
 #include <cstdint>
-
+#include <limits>
 
 /*
  * This is just an inner container for wchar strings.
@@ -139,8 +139,12 @@ public:
                 return __parseOctNum(sign, str);
             case L'b':
                 return __parseBinNum(sign, str);
+            case L'n':
+                return wcsncmp(str, L"Infinity", 9) == 0 || (str[0] == L'i' && str[2] =='f')
+                    ? std::numeric_limits<double>::infinity() * sign
+                    : 0;
             default:
-                return __parseDecNum(sign, str);
+                return iswdigit(str[0]) || str[0] == L'.' ? __parseDecNum(sign, str) : 0;
         }
 
         return 0;
