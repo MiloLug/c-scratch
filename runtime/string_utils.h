@@ -13,14 +13,19 @@
     } \
     inline bool operator op(String &&s1, const wchar_t *s2) { \
         return wcscmp(s1.data, s2) op 0; \
+    } \
+    inline bool operator op(String &&s1, double s2) { \
+        return wcscmp(s1.data, toTmpString(s2).data) op 0; \
+    } \
+    inline bool operator op(double s1, String &&s2) { \
+        return wcscmp(toTmpString(s1).data, s2.data) op 0; \
+    } \
+    inline bool operator op(String &&s1, int s2) { \
+        return wcscmp(s1.data, toTmpString(s2).data) op 0; \
+    } \
+    inline bool operator op(int s1, String &&s2) { \
+        return wcscmp(toTmpString(s1).data, s2.data) op 0; \
     }
-
-
-__str_make_bool_op(==)
-__str_make_bool_op(>)
-__str_make_bool_op(<)
-__str_make_bool_op(>=)
-__str_make_bool_op(<=)
 
 
 static inline String toTmpString(const wchar_t * s1) {
@@ -41,6 +46,13 @@ static inline String toTmpString(double s1) {
     tmp.numberStrTmp = NULL;
     return String(tmp.numberStrSize-1, tmpStr, true);
 }
+
+
+__str_make_bool_op(==)
+__str_make_bool_op(>)
+__str_make_bool_op(<)
+__str_make_bool_op(>=)
+__str_make_bool_op(<=)
 
 
 String join(const String &s1, const String &s2) {
@@ -72,6 +84,13 @@ template<typename T>
 static inline String letterOf(T &&s1, uint64_t i) {
     return letterOf(toTmpString(s1), i);
 }
+
+
+static inline String operator ""_S(const wchar_t * str, size_t size) {
+    if (size != 0)
+        return toTmpString(str);
+    return String();
+} 
 
 
 #endif

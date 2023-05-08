@@ -3,6 +3,7 @@
 
 #include "config.h"
 
+#include <cmath>
 #include "math/common.h"
 #include "math/sign.h"
 #include "math/rand.h"

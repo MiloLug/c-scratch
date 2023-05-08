@@ -15,8 +15,15 @@
 #define make_bool_op(op) \
     bool operator op(Value &value) { \
         return value.type == Type::NUMBER \
-            ? number op value.number \
-            : wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.string->data) op 0; \
+            ? type == Type::NUMBER \
+                ? number op value.number \
+                : wcscmp(string->data, value.getNumberStr()) op 0 \
+            : wcscmp( \
+                type == Type::NUMBER \
+                    ? getNumberStr() \
+                    : string->data, \
+                value.string->data \
+            ) op 0; \
     } \
     template<typename T> \
     bool operator op(T * value) requires(std::is_same_v<T, const wchar_t>) { \
@@ -46,7 +53,7 @@
 class Value {
     static wchar_t globalNumStrTmp[];
 public:
-    enum Type {
+    enum Type : uint8_t {
         STRING,
         NUMBER
     };
