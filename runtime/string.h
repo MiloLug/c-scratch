@@ -140,7 +140,7 @@ public:
             case L'b':
                 return __parseBinNum(sign, str);
             case L'n':
-                return wcsncmp(str, L"Infinity", 9) == 0 || wcsncmp(str, L"inf", 3) == 0
+                return wcsncmp(str, L"Infinity", 9) == 0 || (str[0] == L'i' && str[2] =='f')
                     ? std::numeric_limits<double>::infinity() * sign
                     : 0;
             default:
