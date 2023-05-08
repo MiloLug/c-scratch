@@ -28,9 +28,6 @@
 */
 #define ENABLE_UNSAFE_NO_LOCKS
 
-// How many of the fraction part to save in some "number to string" operations
-#define NUM_TO_STRING_FRACTION_DIGITS 20
-
 
 /**** ARRAYS ****/
 /*
