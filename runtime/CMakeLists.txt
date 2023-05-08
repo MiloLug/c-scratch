@@ -10,7 +10,6 @@ target_sources(app PRIVATE
   sprite_manager.cpp
 
   string.h
-  string.cpp
   string_utils.h
 
   value.h

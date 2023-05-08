@@ -51,7 +51,9 @@
 
 
 class Value {
+protected:
     static wchar_t globalNumStrTmp[];
+    
 public:
     enum Type : uint8_t {
         STRING,
@@ -86,10 +88,10 @@ public:
         return self;
     }
 
-    Value() {}
+    constexpr Value() {}
     Value(double nValue, const wchar_t * restrict__ sValue): number(nValue), string(String::create(sValue)) {}
-    Value(double value): number(value) {}
-    Value(int value): number(value) {}
+    constexpr Value(double value): number(value) {}
+    constexpr Value(int value): number(value) {}
     Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
         number = (double)*string;
     }
@@ -99,7 +101,7 @@ public:
             string = origin.string->copy();
     }
 
-    Value * copy() const {
+    Value * restrict__ copy() const {
         Value * restrict__ copy = (Value*) malloc(sizeof(Value));
 
         copy->previousNumber = 0;
@@ -116,7 +118,7 @@ public:
         return copy;
     }
 
-    wchar_t * getNumberStr() {
+    wchar_t * restrict__ getNumberStr() {
         constexpr uint16_t fracBaseLen = 15;
         constexpr double minExponential = 1e+21;
 
@@ -203,7 +205,7 @@ public:
         return *this;
     }
 
-    Value &operator=(const wchar_t * value) {
+    Value &operator=(const wchar_t * restrict__ value) {
         if (string)
             string->set(value);
         else

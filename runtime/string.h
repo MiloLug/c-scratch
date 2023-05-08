@@ -19,7 +19,9 @@
  *   String::create(L"test test test")
  */
 class String {
-    static const wchar_t * emptyString;
+protected:
+    static constexpr const wchar_t * emptyString = L"";
+    
 public:
     uint64_t length = 0;  // number of chars
     uint64_t size = 0;  // memory taken in bytes
@@ -27,7 +29,7 @@ public:
     bool shouldMove = false;  // hint to not make any copies and just take the pointer
     bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
 
-    static inline String * create(const wchar_t * value) {
+    static String * create(const wchar_t * value) {
         String * self = (String *) malloc(sizeof(String));
         self->shouldMove = false;
         self->isWrapper = false;
@@ -37,7 +39,7 @@ public:
         return self;
     }
 
-    static inline String * create(String &value) {
+    static String * create(String &value) {
         return value.copy();
     }
 
@@ -120,7 +122,7 @@ public:
         return 0;
     }
 
-    static inline double strToNum(const wchar_t * str, uint16_t len) {
+    static double strToNum(const wchar_t * str, uint16_t len) {
         if (len > 326) return 0;  // > -MAX_DBL len
         while(iswspace(*str)) str++;
 
@@ -151,7 +153,7 @@ public:
     }
 
     /*Create an empty string*/
-    String():
+    constexpr String():
         length(0),
         data((wchar_t *)emptyString),
         size(1 << 2),
@@ -177,7 +179,7 @@ public:
     }
 
     /*Wrap and existing string*/
-    String(uint64_t _length, wchar_t * _data, bool _shouldMove = false, bool _isWrapper = false):
+    constexpr String(uint64_t _length, wchar_t * _data, bool _shouldMove = false, bool _isWrapper = false):
         length(_length),
         data(_data),
         size((_length+1) << 2),

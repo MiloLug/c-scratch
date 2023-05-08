@@ -19,8 +19,8 @@ public:
 
     struct Handler {
         Context * ctx;
-        Handler(Context * _ctx): ctx{_ctx} {}
-        Handler(::Context * _ctx): ctx{(Context *)_ctx} {}
+        constexpr Handler(Context * _ctx): ctx{_ctx} {}
+        constexpr Handler(::Context * _ctx): ctx{(Context *)_ctx} {}
         ~Handler() {
             if (ctx != nullptr) ctx->counter--;
         }
