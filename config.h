@@ -19,7 +19,7 @@
 * So in the turbo mode, main function will say 'im working with the canvas',
 *   then run 10000 operations and say 'the canvas is ready to be shown'.
 */
-#define TURBO_LOCK_WINDOW_CYCLES (WINDOW_WIDTH + WINDOW_HEIGHT)
+#define TURBO_LOCK_WINDOW_CYCLES (10000)
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms can be disabled.
@@ -48,9 +48,9 @@
 /*
 * Make the Value (storage type for strings an number) to use float instead of double.
 * But be aware the doubles can store much larger numbers (up to 325 digits), not losing
-*   speed that much. Its about a second on hundreds of millions of updates.
+*   speed that much. Its about a second on tens of millions of updates.
 */
-#define USE_VALUE_FLOAT
+// #define USE_VALUE_FLOAT
 
 
 #endif

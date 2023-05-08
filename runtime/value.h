@@ -31,21 +31,33 @@
     } \
     bool operator op(String &&value) { \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0; \
+    } \
+    bool operator op(double value) const { \
+        return number op value; \
+    } \
+    bool operator op(float value) const { \
+        return number op value; \
+    } \
+    bool operator op(int value) const { \
+        return number op value; \
     }
 
 
 #define make_math_bin_op(op) \
-    double operator op(double value) const { \
+    storage_number_t operator op(double value) const { \
         return number op value; \
     } \
-    double operator op(int value) const { \
+    storage_number_t operator op(float value) const { \
         return number op value; \
     } \
-    double operator op(Value &value) const { \
+    storage_number_t operator op(int value) const { \
+        return number op value; \
+    } \
+    storage_number_t operator op(Value &value) const { \
         return number op value.number; \
     } \
     template<typename T> \
-    double operator op(T * value) const requires(std::is_same_v<T, const wchar_t>) { \
+    storage_number_t operator op(T * value) const requires(std::is_same_v<T, const wchar_t>) { \
         return number op String::strToNum(value, wcslen(value)); \
     }
 
@@ -118,7 +130,7 @@ public:
         return copy;
     }
 
-    wchar_t * restrict__ getNumberStr() {
+    wchar_t * restrict__ &getNumberStr() {
         constexpr uint16_t fracBaseLen = 15;
         constexpr double minExponential = 1e+21;
 
@@ -274,11 +286,11 @@ public:
     make_math_bin_op(/)
     make_math_bin_op(*)
 
-    bool operator !() const {
+    bool operator !() {
         return !number;
     }
 
-    operator double() const {
+    &operator storage_number_t() {
         return number;
     }
 
