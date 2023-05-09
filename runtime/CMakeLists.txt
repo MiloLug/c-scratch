@@ -2,6 +2,7 @@ target_sources(app PRIVATE
   include_sdl.h
   sdl.h
   sdl.cpp
+  sdl_scancodes.h
 
   sprite_base.h
   sprite.h

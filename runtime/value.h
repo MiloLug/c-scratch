@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <cwchar>
-#include <cstring>
+#include <string>
 #include <memory>
 #include <type_traits>
 
@@ -13,24 +13,29 @@
 
 
 #define make_bool_op(op) \
-    bool operator op(Value &value) { \
+    constexpr bool operator op(Value &value) { \
         return value.type == Type::NUMBER \
             ? type == Type::NUMBER \
                 ? number op value.number \
-                : wcscmp(string->data, value.getNumberStr()) op 0 \
-            : wcscmp( \
+                : std::char_traits<wchar_t>::compare(string->data, value.getNumberStr(), string->length) op 0 \
+            : std::char_traits<wchar_t>::compare( \
                 type == Type::NUMBER \
                     ? getNumberStr() \
                     : string->data, \
-                value.string->data \
+                value.string->data, \
+                value.string->length \
             ) op 0; \
     } \
     template<typename T> \
-    bool operator op(T * value) requires(std::is_same_v<T, const wchar_t>) { \
-        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value) op 0; \
+    constexpr bool operator op(T * value) requires(std::is_same_v<T, const wchar_t>) { \
+        if (type == Type::STRING) { \
+            return std::char_traits<wchar_t>::compare(string->data, value, string->length) op 0; \
+        } \
+        getNumberStr(); \
+        return std::char_traits<wchar_t>::compare(numberStrTmp, value, numberStrSize-1); \
     } \
-    bool operator op(String &&value) { \
-        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0; \
+    constexpr bool operator op(String &&value) { \
+        return std::char_traits<wchar_t>::compare(type == Type::NUMBER ? getNumberStr() : string->data, value.data, value.length) op 0; \
     } \
     constexpr bool operator op(double value) const { \
         return number op value; \
@@ -57,8 +62,8 @@
         return number op value.number; \
     } \
     template<typename T> \
-    storage_number_t operator op(T * value) const requires(std::is_same_v<T, const wchar_t>) { \
-        return number op String::strToNum(value, wcslen(value)); \
+    constexpr storage_number_t operator op(T * value) const requires(std::is_same_v<T, const wchar_t>) { \
+        return number op String::strToNum(value, std::char_traits<wchar_t>::length(value)); \
     }
 
 
@@ -88,7 +93,7 @@ public:
     uint16_t numberStrSize = 0;
 
     template<typename Tv>
-    static Value * restrict__ create(Tv &&value) {
+    constexpr static Value * restrict__ create(Tv &&value) {
         Value * restrict__ self = (Value*) malloc(sizeof(Value));
         
         self->previousNumber = 0;
@@ -101,19 +106,19 @@ public:
     }
 
     constexpr Value() {}
-    Value(double nValue, const wchar_t * restrict__ sValue): number(nValue), string(String::create(sValue)) {}
+    constexpr Value(double nValue, const wchar_t * restrict__ sValue): number(nValue), string(String::create(sValue)) {}
     constexpr Value(double value): number(value) {}
     constexpr Value(int value): number(value) {}
-    Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
+    constexpr Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
         number = (double)*string;
     }
-    Value(String &&value): string(value.copy()), type(Type::STRING) {}
-    Value(const Value &origin): number(origin.number), type(origin.type) {
+    constexpr Value(String &&value): string(value.copy()), type(Type::STRING) {}
+    constexpr Value(const Value &origin): number(origin.number), type(origin.type) {
         if (origin.type == Type::STRING)
             string = origin.string->copy();
     }
 
-    Value * restrict__ copy() const {
+    constexpr Value * restrict__ copy() const {
         Value * restrict__ copy = (Value*) malloc(sizeof(Value));
 
         copy->previousNumber = 0;
@@ -130,7 +135,7 @@ public:
         return copy;
     }
 
-    wchar_t * restrict__ &getNumberStr() {
+    constexpr wchar_t * restrict__ &getNumberStr() {
         constexpr uint16_t fracBaseLen = 15;
         constexpr double minExponential = 1e+21;
 
@@ -197,11 +202,11 @@ public:
         return numberStrTmp;
     }
 
-    const wchar_t * toString() {
+    constexpr const wchar_t * toString() {
         return type == Type::STRING ? string->data : getNumberStr();
     }
 
-    Value &operator=(const Value &origin) {
+    constexpr Value &operator=(const Value &origin) {
         if (origin.type == Type::NUMBER) {
             number = origin.number;
             return *this;
@@ -217,7 +222,7 @@ public:
         return *this;
     }
 
-    Value &operator=(const wchar_t * restrict__ value) {
+    constexpr Value &operator=(const wchar_t * restrict__ value) {
         if (string)
             string->set(value);
         else
@@ -229,11 +234,11 @@ public:
         return *this;
     }
 
-    Value &operator=(String &&value) {
+    constexpr Value &operator=(String &&value) {
         return operator=(value);
     }
 
-    Value &operator=(const String &value) {
+    constexpr Value &operator=(const String &value) {
         if (string)
             string->set(value);
         else
@@ -245,31 +250,31 @@ public:
         return *this;
     }
 
-    Value &operator=(double value) {
+    constexpr Value &operator=(double value) {
         number = value;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator=(int value) {
+    constexpr Value &operator=(int value) {
         number = value;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator++(int) {
+    constexpr Value &operator++(int) {
         number++;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator--(int) {
+    constexpr Value &operator--(int) {
         number--;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator+=(double value) {
+    constexpr Value &operator+=(double value) {
         number += value;
         type = Type::NUMBER;
         return *this;
@@ -294,11 +299,11 @@ public:
         return number;
     }
 
-    operator const wchar_t *() {
+    constexpr operator const wchar_t *() {
         return type == Type::STRING ? string->data : getNumberStr();
     }
 
-    void clean() {
+    constexpr void clean() {
         if (string) {
             string->clean();
             free(string);
@@ -312,7 +317,7 @@ public:
         numberStrSize = 0;
     }
 
-    ~Value() {
+    constexpr ~Value() {
         clean();
     }
 };

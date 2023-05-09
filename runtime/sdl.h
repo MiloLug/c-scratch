@@ -5,9 +5,11 @@
 
 #include <iostream>
 #include <thread>
+#include <string>
 
 #include "include_sdl.h"
 #include "ts_synchronizer.h"
+#include "sdl_scancodes.h"
 
 
 struct MouseState {
@@ -19,6 +21,17 @@ struct MouseState {
 extern const Uint8 * keyPressed;
 extern MouseState volatile mouseState;
 extern ThreadSafeSynchronizer screenUpdateLock;
+
+
+static inline bool isKeyPressed(const String &str) {
+    return keyPressed[ScanCodesMap::getScanCode(str)];
+}
+static inline bool isKeyPressed(const wchar_t *str) {
+    return keyPressed[ScanCodesMap::getScanCode(str, std::char_traits<wchar_t>::length(str))];
+}
+static inline bool isKeyPressed(uint16_t scanCode) {
+    return keyPressed[scanCode];
+}
 
 
 class BlockWindowUpdates {

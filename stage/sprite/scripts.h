@@ -369,12 +369,12 @@ namespace NS_sprite {
         }
     };
 
-
     ScriptManager bindScripts({
         {ACTION_START, {
             {&sprite, {
                 Scripts::spriteStartScript1,
                 Scripts::spriteStartScript2,
+                // test,
             }},
         }}
     });

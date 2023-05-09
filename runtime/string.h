@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cstdint>
 #include <limits>
+#include <string>
 
 /*
  * This is just an inner container for wchar strings.
@@ -29,7 +30,7 @@ public:
     bool shouldMove = false;  // hint to not make any copies and just take the pointer
     bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
 
-    static String * create(const wchar_t * value) {
+    constexpr static String * create(const wchar_t * value) {
         String * self = (String *) malloc(sizeof(String));
         self->shouldMove = false;
         self->isWrapper = false;
@@ -39,11 +40,11 @@ public:
         return self;
     }
 
-    static String * create(String &value) {
+    static constexpr String * create(String &value) {
         return value.copy();
     }
 
-    static double __parseHexNum(double &sign, const wchar_t * str) {
+    static constexpr double __parseHexNum(double &sign, const wchar_t * str) {
         if (str[0] == L'0') {
             str += 2;
             const wchar_t * tmpStr = str - 1;
@@ -57,7 +58,7 @@ public:
         return 0;
     }
 
-    static double __parseOctNum(double &sign, const wchar_t * str) {
+    static constexpr double __parseOctNum(double &sign, const wchar_t * str) {
         if (str[0] == L'0') {
             str += 2;
             const wchar_t * tmpStr = str;
@@ -71,7 +72,7 @@ public:
         return 0;
     }
 
-    static double __parseBinNum(double &sign, const wchar_t * str) {
+    static constexpr double __parseBinNum(double &sign, const wchar_t * str) {
         if (str[0] == L'0') {
             str += 2;
             const wchar_t * tmpStr = str;
@@ -85,7 +86,7 @@ public:
         return 0;
     }
 
-    static double __parseDecNum(double &sign, const wchar_t * str) {
+    static constexpr double __parseDecNum(double &sign, const wchar_t * str) {
         bool hasNumbers = false;
         bool hasExp = false;
         wchar_t tmp;
@@ -122,7 +123,7 @@ public:
         return 0;
     }
 
-    static double strToNum(const wchar_t * str, uint16_t len) {
+    static constexpr double strToNum(const wchar_t * str, uint16_t len) {
         if (len > 326) return 0;  // > -MAX_DBL len
         while(iswspace(*str)) str++;
 
@@ -162,7 +163,7 @@ public:
     {}
 
     /*Create a string repeating the symbol from `sym`*/
-    String(wchar_t sym, uint64_t _length, bool _shouldMove = false, bool _isWrapper = false):
+    constexpr String(wchar_t sym, uint64_t _length, bool _shouldMove = false, bool _isWrapper = false):
         length(_length),
         data((wchar_t *)malloc((_length + 1) << 2)),
         size((_length + 1) << 2),
@@ -188,14 +189,14 @@ public:
     {}
 
     /*For some edgy cases*/
-    String(String &origin) {
+    constexpr String(String &origin) {
         if (origin.shouldMove)
             origin.moveTo(*this);
         else
             set(origin);
     }
 
-    void moveTo(String &destination) {
+    constexpr void moveTo(String &destination) {
         if (!destination.isWrapper && destination.data) free(destination.data);
 
         destination.length = length;
@@ -207,7 +208,7 @@ public:
         data = NULL;
     }
 
-    String * copy() {
+    constexpr String * copy() {
         String * copy = (String *) malloc(sizeof(String));
         copy->shouldMove = false;
         copy->isWrapper = false;
@@ -217,7 +218,7 @@ public:
         return copy;
     }
 
-    void set(String &origin) {
+    constexpr void set(String &origin) {
         if (origin.shouldMove && !origin.isWrapper) {
             origin.moveTo(*this);
             return;
@@ -231,8 +232,8 @@ public:
             memcpy(data, origin.data, origin.size);
     }
 
-    void set(const wchar_t * value) {
-        length = wcslen(value);
+    constexpr void set(const wchar_t * value) {
+        length = std::char_traits<wchar_t>::length(value);
         size = (length + 1) << 2;
         data = (wchar_t *) realloc((void *)data, size);
 
@@ -240,22 +241,22 @@ public:
             memcpy(data, value, size);
     }
 
-    void clean() {
+    constexpr void clean() {
         if (data && !isWrapper)
             free(data);
     }
 
-    operator const wchar_t *() const {
+    constexpr operator const wchar_t *() const {
         return data;
     }
 
-    operator double() const {
+    constexpr operator double() const {
         return strToNum(data, length);
     }
 
     // inline bool
 
-    ~String() {
+    constexpr ~String() {
         clean();
     }
 };
