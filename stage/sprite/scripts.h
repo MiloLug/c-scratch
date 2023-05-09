@@ -369,6 +369,7 @@ namespace NS_sprite {
         }
     };
 
+
     ScriptManager bindScripts({
         {ACTION_START, {
             {&sprite, {

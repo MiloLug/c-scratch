@@ -21,7 +21,7 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC)
   set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast /await ${AVX_FLAGS}")
 
 else()
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -ffast-math -fcoroutines -march=native")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -ffast-math -fcoroutines -march=native -save-temps")
   set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -ffast-math -fcoroutines -march=native")
   
 endif()

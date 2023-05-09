@@ -5,26 +5,26 @@
 #include "string.h"
 
 #define __str_make_bool_op(op) \
-    inline bool operator op(String &&s1, String &&s2) { \
-        return wcscmp(s1.data, s2.data) op 0; \
+    constexpr bool operator op(String &&s1, String &&s2) { \
+        return std::char_traits<wchar_t>::compare(s1.data, s2.data, s1.length) op 0; \
     } \
-    inline bool operator op(const wchar_t * s1, String &&s2) { \
-        return wcscmp(s1, s2.data) op 0; \
+    constexpr bool operator op(const wchar_t * s1, String &&s2) { \
+        return std::char_traits<wchar_t>::compare(s1, s2.data, s2.length) op 0; \
     } \
-    inline bool operator op(String &&s1, const wchar_t *s2) { \
-        return wcscmp(s1.data, s2) op 0; \
+    constexpr bool operator op(String &&s1, const wchar_t *s2) { \
+        return std::char_traits<wchar_t>::compare(s1.data, s2, s1.length) op 0; \
     } \
-    inline bool operator op(String &&s1, double s2) { \
-        return wcscmp(s1.data, toTmpString(s2).data) op 0; \
+    constexpr bool operator op(String &&s1, double s2) { \
+        return std::char_traits<wchar_t>::compare(s1.data, toTmpString(s2).data, s1.length) op 0; \
     } \
-    inline bool operator op(double s1, String &&s2) { \
-        return wcscmp(toTmpString(s1).data, s2.data) op 0; \
+    constexpr bool operator op(double s1, String &&s2) { \
+        return std::char_traits<wchar_t>::compare(toTmpString(s1).data, s2.data, s2.length) op 0; \
     } \
-    inline bool operator op(String &&s1, int s2) { \
-        return wcscmp(s1.data, toTmpString(s2).data) op 0; \
+    constexpr bool operator op(String &&s1, int s2) { \
+        return std::char_traits<wchar_t>::compare(s1.data, toTmpString(s2).data, s1.length) op 0; \
     } \
-    inline bool operator op(int s1, String &&s2) { \
-        return wcscmp(toTmpString(s1).data, s2.data) op 0; \
+    constexpr bool operator op(int s1, String &&s2) { \
+        return std::char_traits<wchar_t>::compare(toTmpString(s1).data, s2.data, s2.length) op 0; \
     }
 
 

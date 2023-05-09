@@ -1383,11 +1383,7 @@ public:
 
                 if (
                     *str == *s
-                    && !std::char_traits<wchar_t>::compare(
-                        str + 1,
-                        s + 1,
-                        MIN(len, std::char_traits<wchar_t>::length(s+1))
-                    )
+                    && !std::char_traits<wchar_t>::compare(str + 1, s + 1, len)
                 )
                     return wordList[key].scancode;
             }
@@ -1397,6 +1393,10 @@ public:
 
     static constexpr uint16_t getScanCode(const String &str) {
         return getScanCode(str.data, str.length);
+    }
+
+    static constexpr uint16_t getScanCode(const wchar_t * str) {
+        return getScanCode(str, std::char_traits<wchar_t>::length(str));
     }
 };
 

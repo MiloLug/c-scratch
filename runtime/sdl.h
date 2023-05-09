@@ -23,11 +23,8 @@ extern MouseState volatile mouseState;
 extern ThreadSafeSynchronizer screenUpdateLock;
 
 
-static inline bool isKeyPressed(const String &str) {
+static inline bool isKeyPressed(auto str) {
     return keyPressed[ScanCodesMap::getScanCode(str)];
-}
-static inline bool isKeyPressed(const wchar_t *str) {
-    return keyPressed[ScanCodesMap::getScanCode(str, std::char_traits<wchar_t>::length(str))];
 }
 static inline bool isKeyPressed(uint16_t scanCode) {
     return keyPressed[scanCode];
