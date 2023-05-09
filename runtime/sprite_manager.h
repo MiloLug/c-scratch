@@ -34,6 +34,9 @@ public:
     static void moveToBack(Sprite * sprite);
     static void moveToFront(Sprite * sprite);
 
+    static Sprite * getTouchingXY(float x, float y);
+    static void sendClickXY(float x, float y);
+
     static void staticInit();
 
     SpriteManager(Sprite * sprite);

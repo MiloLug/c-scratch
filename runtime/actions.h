@@ -11,7 +11,8 @@
 constexpr uint64_t
     ACTION_START = 0x1000'0000'0000'0000,
     ACTION_KEYDOWN = 0x2000'0000'0000'0000,
-    ACTION_MESSAGE = 0x3000'0000'0000'0000;
+    ACTION_MESSAGE = 0x3000'0000'0000'0000,
+    ACTION_CLICK = 0x4000'0000'0000'0000;
 
 /*
 * This is how much bits action ID takes in the action specification.
