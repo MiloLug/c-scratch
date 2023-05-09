@@ -254,7 +254,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`when this sprite clicked`]
 
-    action: `...` NOT IMPLEMENTED
+    action: `ACTION_CLICK|sprite.actionId`
 
 - [`when [loudness|timer] > (X)`]
 

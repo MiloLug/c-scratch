@@ -111,3 +111,5 @@ ScriptManager bindings({
 - `_A`: it actually means "action". This string suffix allows to hash the sting (e.g. make it some unique number) and prepare this number, so it can be used as an action parameter (can be safely mixed to it).
 
 - `_H`: returns almost the same hash as `_A`, but it's not prepared for safe action usage. In fact, this suffix will be used in any other situations that doesn't involve actions.
+
+- `_S`: returns the literal (a string), wrapped in `String()` object

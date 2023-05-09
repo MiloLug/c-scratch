@@ -59,6 +59,7 @@ void ScratchSDLWindow::loop() {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 mouseState.isButtonDown = true;
+                SpriteManager::sendClickXY(mouseState.x, mouseState.y);
                 break;
             case SDL_MOUSEBUTTONUP:
                 mouseState.isButtonDown = false;

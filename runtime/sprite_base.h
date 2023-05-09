@@ -205,7 +205,11 @@ public:
         return sqrt(xDiff * xDiff + yDiff * yDiff);
     }
 
-    bool isTouchingPointer();
+    bool isTouchingXY(float x1, float y1);
+
+    bool isTouchingPointer() {
+        return isTouchingXY(mouseState.x, mouseState.y);
+    }
 
     void penStamp();
 
@@ -244,7 +248,7 @@ public:
     {}
 
     void init(SDL_Renderer * renderer, const std::filesystem::path &baseDir) {
-        auto surface = IMG_Load((baseDir / fileName).string().c_str());
+        surface = IMG_Load((baseDir / fileName).string().c_str());
         if (surface->format->format != SDL_PIXELFORMAT_RGBA8888) {
             auto tmp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
             SDL_FreeSurface(surface);

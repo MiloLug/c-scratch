@@ -1,4 +1,5 @@
 #include "sprite_manager.h"
+#include "script_manager.h"
 #include "utils.h"
 
 
@@ -128,6 +129,23 @@ void SpriteManager::staticInit() {
     if (waitingForInit != nullptr) return;
 
     waitingForInit.reset(new SpriteList);
+}
+
+Sprite * SpriteManager::getTouchingXY(float x, float y) {
+    for (auto iter = spriteStorage.rbegin(), end = spriteStorage.rend(); iter != end; iter++) {
+        if ((*iter)->isTouchingXY(x, y)) {
+            return *iter;
+        }
+    }
+    
+    return nullptr;
+}
+
+void SpriteManager::sendClickXY(float x, float y) {
+    auto sprite = getTouchingXY(x, y);
+    if (sprite != nullptr) {
+        ScriptManager::triggerScripts(ACTION_CLICK|sprite->actionId);
+    }
 }
 
 // NON-STATIC
