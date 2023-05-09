@@ -2,6 +2,7 @@
 #include "script_manager.h"
 #include "sprite_manager.h"
 #include "pen/pen.h"
+#include "time.h"
 
 
 const Uint8 * keyPressed = SDL_GetKeyboardState(nullptr);
@@ -41,6 +42,8 @@ void ScratchSDLWindow::updateFrameTiming(std::wostream& os, float period) {
 
 void ScratchSDLWindow::loop() {
     while (ScriptManager::shouldRun) {
+        updateProgramTime();
+
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             switch(e.type) {

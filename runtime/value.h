@@ -32,28 +32,28 @@
     bool operator op(String &&value) { \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0; \
     } \
-    bool operator op(double value) const { \
+    constexpr bool operator op(double value) const { \
         return number op value; \
     } \
-    bool operator op(float value) const { \
+    constexpr bool operator op(float value) const { \
         return number op value; \
     } \
-    bool operator op(int value) const { \
+    constexpr bool operator op(int value) const { \
         return number op value; \
     }
 
 
 #define make_math_bin_op(op) \
-    storage_number_t operator op(double value) const { \
+    constexpr storage_number_t operator op(double value) const { \
         return number op value; \
     } \
-    storage_number_t operator op(float value) const { \
+    constexpr storage_number_t operator op(float value) const { \
         return number op value; \
     } \
-    storage_number_t operator op(int value) const { \
+    constexpr storage_number_t operator op(int value) const { \
         return number op value; \
     } \
-    storage_number_t operator op(Value &value) const { \
+    constexpr storage_number_t operator op(Value &value) const { \
         return number op value.number; \
     } \
     template<typename T> \
@@ -286,11 +286,11 @@ public:
     make_math_bin_op(/)
     make_math_bin_op(*)
 
-    bool operator !() {
+    constexpr bool operator !() {
         return !number;
     }
 
-    &operator storage_number_t() {
+    constexpr operator storage_number_t() {
         return number;
     }
 
