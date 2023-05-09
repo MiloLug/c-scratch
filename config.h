@@ -43,14 +43,14 @@
 * Enables fast math functions. The only disadvantage is the accuracy
 *   in some functions, but it's enough for almost any calculations
 */
-// #define ENABLE_FAST_MATH
+#define ENABLE_FAST_MATH
 
 /*
 * Make the Value (storage type for strings an number) to use float instead of double.
 * But be aware the doubles can store much larger numbers (up to 325 digits), not losing
 *   speed that much. Its about a second on tens of millions of updates.
 */
-// #define USE_VALUE_FLOAT
+#define USE_VALUE_FLOAT
 
 
 #endif

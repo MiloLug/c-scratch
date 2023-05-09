@@ -2,10 +2,12 @@
 #define CSCRATCH_CONTROL_FLOW_H
 
 #include "coroutines.h"
+#include "time.h"
 
-
-#define waitUntil(expr) while(!(expr)) co_yield NULL
 #define repeatUntil(expr) while(!(expr))
+#define waitUntil(expr) repeatUntil(expr) co_yield NULL
+
+#define waitFor(seconds) for(double end = programTime + (double)(seconds); programTime < end;) co_yield NULL
 
 #define repeat(expr) for(double __i = 0, __limit = round(expr); __i < __limit; __i++)
 
@@ -15,20 +17,15 @@
 #define stopThisScript() co_return
 
 
-static inline bool __coroNext(const Coroutine &subCoro) {
-    if (!subCoro.done()) {
-        subCoro.resume();
-        return !subCoro.done();
-    }
-    return false;
-}
-static inline bool __coroNext(void *) { return true; }
-
 #define cs_wait(coroExpr)             \
-    do {                           \
-        auto __tmp = (coroExpr);   \
-        if (__coroNext(__tmp))     \
-            co_yield __tmp;        \
+    do {                              \
+        auto __tmp = (coroExpr);      \
+        if constexpr (std::is_same_v<decltype(__tmp), Coroutine>) { \
+            __tmp.resume();           \
+            if (!__tmp.done()) co_yield __tmp; \
+        } else {                      \
+            co_yield __tmp;           \
+        }                             \
     } while(0)
 
 #define cs_yield co_yield NULL

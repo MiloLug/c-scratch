@@ -54,7 +54,7 @@ public:
         length++;
     }
 
-    inline void pop() {
+    void pop() {
         if (length) delete data[length-- + 1];
     }
 
@@ -88,7 +88,7 @@ public:
     }
 
     template<typename Tv>
-    inline double indexOf(Tv &&value) {
+    constexpr double indexOf(Tv &&value) {
         for (uint64_t i = 1; i <= length; i++) {
             if (data[i]->operator==(value)) return i;
         }
@@ -96,20 +96,20 @@ public:
     }
 
     template<typename Tv>
-    inline bool contains(Tv &&value) {
+    constexpr bool contains(Tv &&value) {
         return indexOf(value) != 0;
     }
 
     template<typename Tv>
-    inline void set(const uint64_t i, Tv &&value) {
+    constexpr void set(const uint64_t i, Tv &&value) {
         if (i <= length && i > 0) data[i]->operator=(value);
     }
 
-    inline Value &get(const uint64_t i) {
+    constexpr Value &get(const uint64_t i) {
         return (i <= length) ? *data[i] : nullValue;
     }
 
-    inline void clean() {
+    void clean() {
         for (uint64_t i = 1; i <= this->length; i++) {
             data[i]->clean();
             free(data[i]);

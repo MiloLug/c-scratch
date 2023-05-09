@@ -282,7 +282,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`wait (X) seconds`]
 
-    `...` NOT IMPLEMENTED
+    `waitFor(X)`
 
 - [`repeat (X) ...some code`]
 
@@ -392,7 +392,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
     `lengthOf(X)`
 
-- <`(X) contains (Y) ?`>
+- <`(STRING) contains (Y) ?`>
 
     `...` NOT IMPLEMENTED
 
