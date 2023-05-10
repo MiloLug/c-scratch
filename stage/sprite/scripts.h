@@ -375,7 +375,6 @@ namespace NS_sprite {
             {&sprite, {
                 Scripts::spriteStartScript1,
                 Scripts::spriteStartScript2,
-                // test,
             }},
         }}
     });
