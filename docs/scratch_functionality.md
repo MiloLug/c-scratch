@@ -397,7 +397,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - <`(STRING) contains (Y) ?`>
 
-    `...` NOT IMPLEMENTED
+    `strContains(STRING, Y)`
 
 - <`(X) mod (Y)`>
 
