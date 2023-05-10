@@ -29,7 +29,7 @@ public:
     bool shouldMove = false;  // hint to not make any copies and just take the pointer
     bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
 
-    static String * create(const wchar_t * value) {
+    static inline String * create(const wchar_t * value) {
         String * self = (String *)malloc(sizeof(String));
         self->shouldMove = false;
         self->isWrapper = false;
@@ -39,7 +39,7 @@ public:
         return self;
     }
 
-    static String * create(String & value) { return value.copy(); }
+    static inline String * create(String & value) { return value.copy(); }
 
     static double __parseHexNum(double & sign, const wchar_t * str) {
         if (str[0] == L'0') {
