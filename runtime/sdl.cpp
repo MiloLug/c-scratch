@@ -28,7 +28,7 @@ ScratchSDLWindow::ScratchSDLWindow(const char * name) {
 #endif
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 }
 
 void ScratchSDLWindow::updateFrameTiming(std::wostream & os, float period) {

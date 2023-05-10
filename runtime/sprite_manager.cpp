@@ -141,8 +141,9 @@ void SpriteManager::staticInit() {
 
 Sprite * SpriteManager::getTouchingXY(float x, float y) {
     for (auto iter = spriteStorage.rbegin(), end = spriteStorage.rend(); iter != end; iter++) {
-        if ((*iter)->isTouchingXY(x, y)) {
-            return *iter;
+        auto sprite = *iter;
+        if (sprite->visible && sprite->isTouchingXY(x, y)) {
+            return sprite;
         }
     }
 
