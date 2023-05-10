@@ -1,7 +1,6 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include "math.h"
 #include "utils.h"
 #include "value.h"
 

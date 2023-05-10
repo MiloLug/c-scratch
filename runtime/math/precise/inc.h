@@ -1,6 +1,8 @@
 #ifndef CSCRATCH_PRECISE_MATH_H
 #define CSCRATCH_PRECISE_MATH_H
 
+#include "runtime/math/common.h"
+
 #include <cfloat>
 #include <cmath>
 #include <cstdint>

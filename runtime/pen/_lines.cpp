@@ -2,7 +2,7 @@
 
 #include "_fig.h"
 #include "_pixel.h"
-#include "runtime/math.h"
+#include "runtime/math/common.h"
 
 #include <emmintrin.h>
 #include <immintrin.h>
@@ -196,8 +196,9 @@ namespace Pen {
         }
     }
 
-    void
-    drawLineRounded(int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color) {
+    void drawLineRounded(
+        int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color
+    ) {
         d >>= 1;
         bool yLonger = false;
         int64_t shortLen = y2 - y1;
@@ -284,4 +285,4 @@ namespace Pen {
                     drawLineRounded(x1, y1, x2, y2, d, color);
             }
     }
-}  // namespace Pen
+}

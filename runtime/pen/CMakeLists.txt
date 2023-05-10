@@ -13,4 +13,6 @@ target_sources(app PRIVATE
 
   _stamp.h
   _stamp.cpp
+
+  _safe_block.h
 )

@@ -1,6 +1,3 @@
-#include "config.h"
-#ifndef ENABLE_FAST_MATH
-
 /* origin: FreeBSD /usr/src/lib/msun/src/k_cos.c */
 /*
  * ====================================================
@@ -51,7 +48,8 @@
  *         any extra precision in w.
  */
 
-    #include "runtime/math.h"
+#include "inc.h"
+
 
 static const double C1 = 4.16666666666666019037e-02, /* 0x3FA55555, 0x5555554C */
     C2 = -1.38888888888741095749e-03, /* 0xBF56C16C, 0x16C15177 */
@@ -61,7 +59,7 @@ static const double C1 = 4.16666666666666019037e-02, /* 0x3FA55555, 0x5555554C *
     C6 = -1.13596475577881948265e-11; /* 0xBDA8FAE9, 0xBE8838D4 */
 
 double __cos(double x, double y) {
-    double_t hz, z, r, w;
+    double hz, z, r, w;
 
     z = x * x;
     w = z * z;
@@ -70,6 +68,3 @@ double __cos(double x, double y) {
     w = 1.0 - hz;
     return w + (((1.0 - w) - hz) + (z * r - x * y));
 }
-
-
-#endif

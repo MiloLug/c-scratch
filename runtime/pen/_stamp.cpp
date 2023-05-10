@@ -1,7 +1,7 @@
 #include "_stamp.h"
 
 #include "_pixel.h"
-#include "runtime/math.h"
+#include "runtime/math/common.h"
 
 
 namespace Pen {
@@ -49,4 +49,4 @@ namespace Pen {
             canvasP += canvasSkip;
         }
     }
-}  // namespace Pen
+}

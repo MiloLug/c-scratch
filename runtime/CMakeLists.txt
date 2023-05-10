@@ -11,14 +11,11 @@ target_sources(app PRIVATE
   sprite_manager.cpp
 
   string.h
-  string_utils.h
 
   value.h
   value.cpp
 
   array.h
-
-  math.h
 
   coroutines.h
   
@@ -40,3 +37,4 @@ target_sources(app PRIVATE
 
 add_subdirectory("math")
 add_subdirectory("pen")
+add_subdirectory("string_utils")

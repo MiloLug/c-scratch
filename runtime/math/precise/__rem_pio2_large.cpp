@@ -1,6 +1,3 @@
-#include "config.h"
-#ifndef ENABLE_FAST_MATH
-
 /* origin: FreeBSD /usr/src/lib/msun/src/k_rem_pio2.c */
 /*
  * ====================================================
@@ -125,7 +122,8 @@
  * to produce the hexadecimal values shown.
  */
 
-    #include "runtime/math.h"
+#include "inc.h"
+
 
 static const int init_jk[] = {3, 4, 4, 6}; /* initial value for jk */
 
@@ -151,7 +149,7 @@ static const int32_t ipio2[] = {
     0x91615E, 0xE61B08, 0x659985, 0x5F14A0, 0x68408D, 0xFFD880, 0x4D7327, 0x310606, 0x1556CA,
     0x73A8C9, 0x60E27B, 0xC08C6B,
 
-    #if LDBL_MAX_EXP > 1024
+#if LDBL_MAX_EXP > 1024
     0x47C419, 0xC367CD, 0xDCE809, 0x2A8359, 0xC4768B, 0x961CA6, 0xDDAF44, 0xD15719, 0x053EA5,
     0xFF0705, 0x3F7E33, 0xE832C2, 0xDE4F98, 0x327DBB, 0xC33D26, 0xEF6B1E, 0x5EF89F, 0x3A1F35,
     0xCAF27F, 0x1D87F1, 0x21907C, 0x7C246A, 0xFA6ED5, 0x772D30, 0x433B15, 0xC614B5, 0x9D19C3,
@@ -222,7 +220,7 @@ static const int32_t ipio2[] = {
     0xE75614, 0x08F121, 0x2A9DB5, 0x4D7E6F, 0x5119A5, 0xABF9B5, 0xD6DF82, 0x61DD96, 0x023616,
     0x9F3AC4, 0xA1A283, 0x6DED72, 0x7A8D39, 0xA9B882, 0x5C326B, 0x5B2746, 0xED3400, 0x7700D2,
     0x55F4FC, 0x4D5901, 0x8071E0,
-    #endif
+#endif
 };
 
 static const double PIo2[] = {
@@ -441,6 +439,3 @@ recompute:
     }
     return n & 7;
 }
-
-
-#endif

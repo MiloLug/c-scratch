@@ -1,8 +1,10 @@
-#ifndef C_SCRATCH_UTILS_H
-#define C_SCRATCH_UTILS_H
+#ifndef CSCRATCH_STRING_UTILS_OPERATIONS_H
+#define CSCRATCH_STRING_UTILS_OPERATIONS_H
 
-#include "string.h"
-#include "value.h"
+#include "_bmh_search.h"
+#include "runtime/string.h"
+#include "runtime/value.h"
+
 
 #define __str_make_bool_op(op)                                                                     \
     inline bool operator op(String && s1, String && s2) { return wcscmp(s1.data, s2.data) op 0; }  \
@@ -25,7 +27,7 @@
 static constexpr String toTmpString(const wchar_t * s1) {
     return String(std::char_traits<wchar_t>::length(s1), (wchar_t *)s1, true, true);
 }
-static inline const String & toTmpString(const String & s1) { return s1; }
+static constexpr const String & toTmpString(const String & s1) { return s1; }
 static inline String toTmpString(Value & s1) {
     if (s1.type == Value::Type::STRING)
         return String(s1.string->length, s1.string->data, true, true);
@@ -81,5 +83,14 @@ static constexpr String operator""_S(const wchar_t * str, size_t size) {
     return String();
 }
 
+
+static bool strContains(const String & haystack, const String & needle) {
+    return BMHSearch::findIn(haystack.data, haystack.length, needle.data, needle.length)
+        != haystack.length;
+}
+template<typename T1, typename T2>
+static inline bool strContains(T1 && haystack, T2 && needle) {
+    return strContains(toTmpString(haystack), toTmpString(needle));
+}
 
 #endif
