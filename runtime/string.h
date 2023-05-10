@@ -52,8 +52,7 @@ public:
             tmpStr--;
             while (isspace(*(++tmpStr)))
                 ;
-            if (*tmpStr == L'\0')
-                return wcstol(str, nullptr, 16) * sign;
+            if (*tmpStr == L'\0') return wcstol(str, nullptr, 16) * sign;
         }
 
         return 0;
@@ -68,8 +67,7 @@ public:
             tmpStr--;
             while (isspace(*(++tmpStr)))
                 ;
-            if (*tmpStr == L'\0')
-                return wcstol(str, nullptr, 8) * sign;
+            if (*tmpStr == L'\0') return wcstol(str, nullptr, 8) * sign;
         }
 
         return 0;
@@ -84,8 +82,7 @@ public:
             tmpStr--;
             while (isspace(*(++tmpStr)))
                 ;
-            if (*tmpStr == L'\0')
-                return wcstol(str, nullptr, 2) * sign;
+            if (*tmpStr == L'\0') return wcstol(str, nullptr, 2) * sign;
         }
 
         return 0;
@@ -107,8 +104,7 @@ public:
             hasNumbers = tmpStr - str - 1;
         }
 
-        if (!hasNumbers)
-            return 0;
+        if (!hasNumbers) return 0;
 
         if (*tmpStr == L'E' || *tmpStr == L'e') {
             tmp = *(++tmpStr);
@@ -122,15 +118,13 @@ public:
         while (isspace(*(++tmpStr)))
             ;
 
-        if (*tmpStr == L'\0')
-            return wcstod(str, nullptr) * sign;
+        if (*tmpStr == L'\0') return wcstod(str, nullptr) * sign;
 
         return 0;
     }
 
     static double strToNum(const wchar_t * str, uint16_t len) {
-        if (len > 326)
-            return 0;  // > -MAX_DBL len
+        if (len > 326) return 0;  // > -MAX_DBL len
         while (iswspace(*str)) str++;
 
         bool hasMinus = str[0] == L'-';
@@ -139,8 +133,7 @@ public:
         }
         double sign = hasMinus ? -1 : 1;
 
-        if (len == 0)
-            return 0;
+        if (len == 0) return 0;
 
         switch (str[1]) {
             case L'x':
@@ -203,8 +196,7 @@ public:
     }
 
     void moveTo(String & destination) {
-        if (!destination.isWrapper && destination.data)
-            free(destination.data);
+        if (!destination.isWrapper && destination.data) free(destination.data);
 
         destination.length = length;
         destination.size = size;
@@ -235,8 +227,7 @@ public:
         size = origin.size;
         data = (wchar_t *)realloc((void *)data, origin.size);
 
-        if (data)
-            memcpy(data, origin.data, origin.size);
+        if (data) memcpy(data, origin.data, origin.size);
     }
 
     void set(const wchar_t * value) {
@@ -244,13 +235,11 @@ public:
         size = (length + 1) << 2;
         data = (wchar_t *)realloc((void *)data, size);
 
-        if (data)
-            memcpy(data, value, size);
+        if (data) memcpy(data, value, size);
     }
 
     constexpr void clean() {
-        if (data && !isWrapper)
-            free(data);
+        if (data && !isWrapper) free(data);
     }
 
     constexpr operator const wchar_t *() const { return data; }

@@ -5,12 +5,16 @@
 #include "value.h"
 
 #define __str_make_bool_op(op)                                                                     \
-    bool operator op(String && s1, String && s2) { return wcscmp(s1.data, s2.data) op 0; }                \
-    bool operator op(const wchar_t * s1, String && s2) { return wcscmp(s1, s2.data) op 0; }               \
-    bool operator op(String && s1, const wchar_t * s2) { return wcscmp(s1.data, s2) op 0; }               \
-    bool operator op(String && s1, double s2) { return wcscmp(s1.data, toTmpString(s2).data) op 0; }      \
-    bool operator op(double s1, String && s2) { return wcscmp(toTmpString(s1).data, s2.data) op 0; }      \
-    bool operator op(String && s1, int s2) { return wcscmp(s1.data, toTmpString(s2).data) op 0; }         \
+    bool operator op(String && s1, String && s2) { return wcscmp(s1.data, s2.data) op 0; }         \
+    bool operator op(const wchar_t * s1, String && s2) { return wcscmp(s1, s2.data) op 0; }        \
+    bool operator op(String && s1, const wchar_t * s2) { return wcscmp(s1.data, s2) op 0; }        \
+    bool operator op(String && s1, double s2) {                                                    \
+        return wcscmp(s1.data, toTmpString(s2).data) op 0;                                         \
+    }                                                                                              \
+    bool operator op(double s1, String && s2) {                                                    \
+        return wcscmp(toTmpString(s1).data, s2.data) op 0;                                         \
+    }                                                                                              \
+    bool operator op(String && s1, int s2) { return wcscmp(s1.data, toTmpString(s2).data) op 0; }  \
     bool operator op(int s1, String && s2) { return wcscmp(toTmpString(s1).data, s2.data) op 0; }
 
 
@@ -69,8 +73,7 @@ static String letterOf(T && s1, uint64_t i) {
 
 
 static constexpr String operator""_S(const wchar_t * str, size_t size) {
-    if (size != 0)
-        return String(size, (wchar_t *)str, true, true);
+    if (size != 0) return String(size, (wchar_t *)str, true, true);
     return String();
 }
 

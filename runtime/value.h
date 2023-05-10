@@ -97,8 +97,7 @@ public:
     }
     Value(String && value): string(value.copy()), type(Type::STRING) {}
     Value(const Value & origin): number(origin.number), type(origin.type) {
-        if (origin.type == Type::STRING)
-            string = origin.string->copy();
+        if (origin.type == Type::STRING) string = origin.string->copy();
     }
 
     Value * restrict__ copy() const {
@@ -112,8 +111,7 @@ public:
         copy->number = number;
 
         // speed up numeric operations a little by avoiding jumps in case of NUMBER type
-        if (type == Type::NUMBER)
-            return copy;
+        if (type == Type::NUMBER) return copy;
 
         copy->string = string->copy();
         return copy;
@@ -123,8 +121,7 @@ public:
         constexpr uint16_t fracBaseLen = 15;
         constexpr double minExponential = 1e+21;
 
-        if (number == previousNumber && numberStrTmp)
-            return numberStrTmp;
+        if (number == previousNumber && numberStrTmp) return numberStrTmp;
         previousNumber = number;
 
         bool useExpNotation = abs(number) >= minExponential;
@@ -162,8 +159,7 @@ public:
         intEnd = i;
 
         while (globalNumStrTmp[++i] != L'e') {
-            if (globalNumStrTmp[i] != L'0')
-                fracEnd = i + 1;
+            if (globalNumStrTmp[i] != L'0') fracEnd = i + 1;
         }
 
         expPartStart = globalNumStrTmp[i + 1] != L'0' ? i : 0;
