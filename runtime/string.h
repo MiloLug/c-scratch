@@ -5,7 +5,6 @@
 #include <cstring>
 #include <limits>
 #include <memory>
-#include <string>
 
 /*
  * This is just an inner container for wchar strings.
@@ -231,7 +230,7 @@ public:
     }
 
     void set(const wchar_t * value) {
-        length = std::char_traits<wchar_t>::length(value);
+        length = wcslen(value);
         size = (length + 1) << 2;
         data = (wchar_t *)realloc((void *)data, size);
 
