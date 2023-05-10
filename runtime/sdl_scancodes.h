@@ -2,15 +2,16 @@
 #define CSCRATCH_SDL_SCANCODES_H
 
 #include "include_sdl.h"
+#include "runtime/math/common.h"
+#include "string.h"
+
 #include <cstdint>
 #include <cwchar>
 #include <string>
-#include "string.h"
-#include "runtime/math/common.h"
 
 
 struct KeyData {
-    const wchar_t *name;
+    const wchar_t * name;
     uint16_t scancode;
 };
 
@@ -18,32 +19,24 @@ struct KeyData {
 class ScanCodesMap {
 protected:
     static constexpr uint32_t asso_values[] = {
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 30, 5, 1294, 440, 1294, 245, 20, 455,
-        220, 155, 210, 0, 430, 165, 420, 410, 150, 140,
-        130, 190, 235, 195, 265, 295, 350, 365, 15, 450,
-        160, 385, 85, 1294, 75, 105, 180, 80, 320, 240,
-        185, 445, 355, 175, 425, 5, 360, 25, 380, 275,
-        280, 415, 270, 250, 435, 305, 370, 330, 215, 405,
-        400, 395, 390, 375, 50, 1294, 345, 90, 255, 65,
-        110, 10, 260, 285, 145, 160, 125, 0, 30, 20,
-        135, 120, 100, 210, 60, 95, 55, 75, 340, 325,
-        315, 85, 15, 35, 25, 30, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
-        1294, 1294, 1294, 1294, 1294, 1294, 1294
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 30,   5,    1294, 440,  1294, 245,  20,   455,  220,  155,  210,  0,    430,
+        165,  420,  410,  150,  140,  130,  190,  235,  195,  265,  295,  350,  365,  15,   450,
+        160,  385,  85,   1294, 75,   105,  180,  80,   320,  240,  185,  445,  355,  175,  425,
+        5,    360,  25,   380,  275,  280,  415,  270,  250,  435,  305,  370,  330,  215,  405,
+        400,  395,  390,  375,  50,   1294, 345,  90,   255,  65,   110,  10,   260,  285,  145,
+        160,  125,  0,    30,   20,   135,  120,  100,  210,  60,   95,   55,   75,   340,  325,
+        315,  85,   15,   35,   25,   30,   1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294, 1294,
+        1294, 1294,
     };
 
     static constexpr KeyData wordList[] = {
@@ -1340,29 +1333,29 @@ protected:
         {L""},
         {L""},
         {L""},
-        {L"www", SDL_SCANCODE_WWW}
+        {L"www", SDL_SCANCODE_WWW},
     };
 
-    static constexpr uint32_t hash(const wchar_t *str, uint64_t len) {
+    static constexpr uint32_t hash(const wchar_t * str, uint64_t len) {
         uint32_t hval = len;
 
         switch (hval) {
-        default:
-            hval += asso_values[static_cast<uint32_t>(str[7])];
-        /*FALLTHROUGH*/
-        case 7:
-        case 6:
-        case 5:
-        case 4:
-        case 3:
-            hval += asso_values[static_cast<uint32_t>(str[2] + 1)];
-        /*FALLTHROUGH*/
-        case 2:
-            hval += asso_values[static_cast<uint32_t>(str[1])];
-        /*FALLTHROUGH*/
-        case 1:
-            hval += asso_values[static_cast<uint32_t>(str[0])];
-            break;
+            default:
+                hval += asso_values[static_cast<uint32_t>(str[7])];
+            /*FALLTHROUGH*/
+            case 7:
+            case 6:
+            case 5:
+            case 4:
+            case 3:
+                hval += asso_values[static_cast<uint32_t>(str[2] + 1)];
+            /*FALLTHROUGH*/
+            case 2:
+                hval += asso_values[static_cast<uint32_t>(str[1])];
+            /*FALLTHROUGH*/
+            case 1:
+                hval += asso_values[static_cast<uint32_t>(str[0])];
+                break;
         }
         return hval + asso_values[static_cast<uint32_t>(str[len - 1])];
     }
@@ -1379,19 +1372,16 @@ public:
             uint32_t key = hash(str, len);
 
             if (key <= MAX_HASH_VALUE) {
-                const wchar_t *s = wordList[key].name;
+                const wchar_t * s = wordList[key].name;
 
-                if (
-                    *str == *s
-                    && !std::char_traits<wchar_t>::compare(str + 1, s + 1, len)
-                )
+                if (*str == *s && !std::char_traits<wchar_t>::compare(str + 1, s + 1, len))
                     return wordList[key].scancode;
             }
         }
         return 0;
     }
 
-    static constexpr uint16_t getScanCode(const String &str) {
+    static constexpr uint16_t getScanCode(const String & str) {
         return getScanCode(str.data, str.length);
     }
 
@@ -1400,7 +1390,7 @@ public:
     }
 };
 
-static constexpr uint16_t operator ""_K(const wchar_t * str, uint64_t size) {
+static constexpr uint16_t operator""_K(const wchar_t * str, uint64_t size) {
     return ScanCodesMap::getScanCode(str, size);
 }
 
