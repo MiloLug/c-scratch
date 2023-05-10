@@ -28,7 +28,7 @@
             return wcscmp(string->data, value) op 0;                                               \
         }                                                                                          \
         getNumberStr();                                                                            \
-        return wcscmp(numberStrTmp, value, numberStrSize - 1);         \
+        return wcscmp(numberStrTmp, value, numberStrSize - 1);                                     \
     }                                                                                              \
     bool operator op(String && value) {                                                            \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
@@ -44,10 +44,10 @@
     constexpr storage_number_t operator op(int value) const { return number op value; }            \
     constexpr storage_number_t operator op(Value & value) const { return number op value.number; } \
     template<typename T>                                                                           \
-    storage_number_t operator op(T * value) const                                        \
+    storage_number_t operator op(T * value) const                                                  \
         requires(std::is_same_v<T, const wchar_t>)                                                 \
     {                                                                                              \
-        return number op String::strToNum(value, wcslen(value));        \
+        return number op String::strToNum(value, wcslen(value));                                   \
     }
 
 
@@ -87,12 +87,12 @@ public:
     }
 
     constexpr Value() {}
-    Value(double nValue, const wchar_t * restrict__ sValue)
-      : number(nValue), string(String::create(sValue)) {}
+    Value(double nValue, const wchar_t * restrict__ sValue):
+        number(nValue),
+        string(String::create(sValue)) {}
     constexpr Value(double value): number(value) {}
     constexpr Value(int value): number(value) {}
-    Value(const wchar_t * restrict__ value)
-      : string(String::create(value)), type(Type::STRING) {
+    Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
         number = (double)*string;
     }
     Value(String && value): string(value.copy()), type(Type::STRING) {}
@@ -133,7 +133,9 @@ public:
 
         // it's important to try this branch first to avoid jumps, sine no-exponential numbers are more common
         if (!useExpNotation) {
-            do { size--; } while (globalNumStrTmp[size] == L'0');
+            do {
+                size--;
+            } while (globalNumStrTmp[size] == L'0');
             if (globalNumStrTmp[size] == L'.')
                 globalNumStrTmp[size] = L'\0';
             else
@@ -186,9 +188,7 @@ public:
         return numberStrTmp;
     }
 
-    const wchar_t * toString() {
-        return type == Type::STRING ? string->data : getNumberStr();
-    }
+    const wchar_t * toString() { return type == Type::STRING ? string->data : getNumberStr(); }
 
     Value & operator=(const Value & origin) {
         if (origin.type == Type::NUMBER) {
@@ -277,9 +277,7 @@ public:
 
     constexpr operator storage_number_t() { return number; }
 
-    operator const wchar_t *() {
-        return type == Type::STRING ? string->data : getNumberStr();
-    }
+    operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
 
     void clean() {
         if (string) {
