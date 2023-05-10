@@ -30,7 +30,7 @@ public:
     bool shouldMove = false;  // hint to not make any copies and just take the pointer
     bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
 
-    constexpr static String * create(const wchar_t * value) {
+    static String * create(const wchar_t * value) {
         String * self = (String *) malloc(sizeof(String));
         self->shouldMove = false;
         self->isWrapper = false;
@@ -40,11 +40,11 @@ public:
         return self;
     }
 
-    static constexpr String * create(String &value) {
+    static String * create(String &value) {
         return value.copy();
     }
 
-    static constexpr double __parseHexNum(double &sign, const wchar_t * str) {
+    static double __parseHexNum(double &sign, const wchar_t * str) {
         if (str[0] == L'0') {
             str += 2;
             const wchar_t * tmpStr = str - 1;
@@ -58,7 +58,7 @@ public:
         return 0;
     }
 
-    static constexpr double __parseOctNum(double &sign, const wchar_t * str) {
+    static double __parseOctNum(double &sign, const wchar_t * str) {
         if (str[0] == L'0') {
             str += 2;
             const wchar_t * tmpStr = str;
@@ -72,7 +72,7 @@ public:
         return 0;
     }
 
-    static constexpr double __parseBinNum(double &sign, const wchar_t * str) {
+    static double __parseBinNum(double &sign, const wchar_t * str) {
         if (str[0] == L'0') {
             str += 2;
             const wchar_t * tmpStr = str;
@@ -86,7 +86,7 @@ public:
         return 0;
     }
 
-    static constexpr double __parseDecNum(double &sign, const wchar_t * str) {
+    static double __parseDecNum(double &sign, const wchar_t * str) {
         bool hasNumbers = false;
         bool hasExp = false;
         wchar_t tmp;
@@ -123,7 +123,7 @@ public:
         return 0;
     }
 
-    static constexpr double strToNum(const wchar_t * str, uint16_t len) {
+    static double strToNum(const wchar_t * str, uint16_t len) {
         if (len > 326) return 0;  // > -MAX_DBL len
         while(iswspace(*str)) str++;
 
@@ -163,7 +163,7 @@ public:
     {}
 
     /*Create a string repeating the symbol from `sym`*/
-    constexpr String(wchar_t sym, uint64_t _length, bool _shouldMove = false, bool _isWrapper = false):
+    String(wchar_t sym, uint64_t _length, bool _shouldMove = false, bool _isWrapper = false):
         length(_length),
         data((wchar_t *)malloc((_length + 1) << 2)),
         size((_length + 1) << 2),
@@ -189,14 +189,14 @@ public:
     {}
 
     /*For some edgy cases*/
-    constexpr String(String &origin) {
+    String(String &origin) {
         if (origin.shouldMove)
             origin.moveTo(*this);
         else
             set(origin);
     }
 
-    constexpr void moveTo(String &destination) {
+    void moveTo(String &destination) {
         if (!destination.isWrapper && destination.data) free(destination.data);
 
         destination.length = length;
@@ -208,7 +208,7 @@ public:
         data = NULL;
     }
 
-    constexpr String * copy() {
+    String * copy() {
         String * copy = (String *) malloc(sizeof(String));
         copy->shouldMove = false;
         copy->isWrapper = false;
@@ -218,7 +218,7 @@ public:
         return copy;
     }
 
-    constexpr void set(String &origin) {
+    void set(String &origin) {
         if (origin.shouldMove && !origin.isWrapper) {
             origin.moveTo(*this);
             return;
@@ -232,7 +232,7 @@ public:
             memcpy(data, origin.data, origin.size);
     }
 
-    constexpr void set(const wchar_t * value) {
+    void set(const wchar_t * value) {
         length = std::char_traits<wchar_t>::length(value);
         size = (length + 1) << 2;
         data = (wchar_t *) realloc((void *)data, size);
@@ -250,7 +250,7 @@ public:
         return data;
     }
 
-    constexpr operator double() const {
+    operator double() const {
         return strToNum(data, length);
     }
 
