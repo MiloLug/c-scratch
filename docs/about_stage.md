@@ -113,3 +113,5 @@ ScriptManager bindings({
 - `_H`: returns almost the same hash as `_A`, but it's not prepared for safe action usage. In fact, this suffix will be used in any other situations that doesn't involve actions.
 
 - `_S`: returns the literal (a string), wrapped in `String()` object
+
+- `_K`: returns SDL scan code for the given name. 0 if there is no such a key

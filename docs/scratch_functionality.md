@@ -254,7 +254,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`when this sprite clicked`]
 
-    action: `ACTION_CLICK|sprite.actionId`
+    action: `ACTION_CLICK|sprite.actionId` where `sprite` is your sprite
 
 - [`when [loudness|timer] > (X)`]
 
@@ -347,8 +347,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
     `sprite->getSpriteDistance(&sprite)`
 
 - <`key (KEY) pressed?`>
+  - general case - `isKeyPressed(X)` where `X` is a name, variable or SDL scan-code
+  - optimizations:
+    - when you've just selected a key from the dropdown:
 
-    `keyPressed[SDL_SCANCODE_KEY]` where KEY is SDL key name
+    `keyPressed[SDL_SCANCODE_KEY]`
 
 - <`mouse down?`>
 

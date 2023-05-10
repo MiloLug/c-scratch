@@ -1,82 +1,67 @@
 #ifndef VALUE_H
 #define VALUE_H
 
+#include "config.h"
+#include "string.h"
+#include "utils.h"
+
 #include <cstdint>
 #include <cwchar>
-#include <cstring>
 #include <memory>
 #include <type_traits>
 
-#include "utils.h"
-#include "config.h"
-#include "string.h"
+
+#define make_bool_op(op)                                                                           \
+    bool operator op(Value & value) {                                                              \
+        return value.type == Type::NUMBER                                                          \
+            ? type == Type::NUMBER ? number op value.number                                        \
+                                   : wcscmp(string->data, value.getNumberStr()) op 0               \
+            : wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.string->data)     \
+                  op 0;                                                                            \
+    }                                                                                              \
+    template<typename T>                                                                           \
+    bool operator op(T * value)                                                                    \
+        requires(std::is_same_v<T, const wchar_t>)                                                 \
+    {                                                                                              \
+        if (type == Type::STRING) {                                                                \
+            return wcscmp(string->data, value) op 0;                                               \
+        }                                                                                          \
+        getNumberStr();                                                                            \
+        return wcscmp(numberStrTmp, value, numberStrSize - 1);                                     \
+    }                                                                                              \
+    bool operator op(String && value) {                                                            \
+        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
+    }                                                                                              \
+    constexpr bool operator op(double value) const { return number op value; }                     \
+    constexpr bool operator op(float value) const { return number op value; }                      \
+    constexpr bool operator op(int value) const { return number op value; }
 
 
-#define make_bool_op(op) \
-    bool operator op(Value &value) { \
-        return value.type == Type::NUMBER \
-            ? type == Type::NUMBER \
-                ? number op value.number \
-                : wcscmp(string->data, value.getNumberStr()) op 0 \
-            : wcscmp( \
-                type == Type::NUMBER \
-                    ? getNumberStr() \
-                    : string->data, \
-                value.string->data \
-            ) op 0; \
-    } \
-    template<typename T> \
-    bool operator op(T * value) requires(std::is_same_v<T, const wchar_t>) { \
-        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value) op 0; \
-    } \
-    bool operator op(String &&value) { \
-        return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0; \
-    } \
-    constexpr bool operator op(double value) const { \
-        return number op value; \
-    } \
-    constexpr bool operator op(float value) const { \
-        return number op value; \
-    } \
-    constexpr bool operator op(int value) const { \
-        return number op value; \
-    }
-
-
-#define make_math_bin_op(op) \
-    constexpr storage_number_t operator op(double value) const { \
-        return number op value; \
-    } \
-    constexpr storage_number_t operator op(float value) const { \
-        return number op value; \
-    } \
-    constexpr storage_number_t operator op(int value) const { \
-        return number op value; \
-    } \
-    constexpr storage_number_t operator op(Value &value) const { \
-        return number op value.number; \
-    } \
-    template<typename T> \
-    storage_number_t operator op(T * value) const requires(std::is_same_v<T, const wchar_t>) { \
-        return number op String::strToNum(value, wcslen(value)); \
+#define make_math_bin_op(op)                                                                       \
+    constexpr storage_number_t operator op(double value) const { return number op value; }         \
+    constexpr storage_number_t operator op(float value) const { return number op value; }          \
+    constexpr storage_number_t operator op(int value) const { return number op value; }            \
+    constexpr storage_number_t operator op(Value & value) const { return number op value.number; } \
+    template<typename T>                                                                           \
+    storage_number_t operator op(T * value) const                                                  \
+        requires(std::is_same_v<T, const wchar_t>)                                                 \
+    {                                                                                              \
+        return number op String::strToNum(value, wcslen(value));                                   \
     }
 
 
 class Value {
 protected:
     static wchar_t globalNumStrTmp[];
-    
-public:
-    enum Type : uint8_t {
-        STRING,
-        NUMBER
-    };
 
-    #ifdef USE_VALUE_FLOAT
-        typedef float storage_number_t;
-    #else
-        typedef double storage_number_t;
-    #endif
+public:
+    enum Type : uint8_t { STRING, NUMBER };
+
+#ifdef USE_VALUE_FLOAT
+    typedef float storage_number_t;
+#else
+    typedef double storage_number_t;
+#endif
 
     Type type = Type::NUMBER;
 
@@ -88,9 +73,9 @@ public:
     uint16_t numberStrSize = 0;
 
     template<typename Tv>
-    static Value * restrict__ create(Tv &&value) {
-        Value * restrict__ self = (Value*) malloc(sizeof(Value));
-        
+    static Value * restrict__ create(Tv && value) {
+        Value * restrict__ self = (Value *)malloc(sizeof(Value));
+
         self->previousNumber = 0;
         self->string = NULL;
         self->numberStrTmp = NULL;
@@ -101,20 +86,21 @@ public:
     }
 
     constexpr Value() {}
-    Value(double nValue, const wchar_t * restrict__ sValue): number(nValue), string(String::create(sValue)) {}
+    Value(double nValue, const wchar_t * restrict__ sValue):
+        number(nValue),
+        string(String::create(sValue)) {}
     constexpr Value(double value): number(value) {}
     constexpr Value(int value): number(value) {}
     Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
         number = (double)*string;
     }
-    Value(String &&value): string(value.copy()), type(Type::STRING) {}
-    Value(const Value &origin): number(origin.number), type(origin.type) {
-        if (origin.type == Type::STRING)
-            string = origin.string->copy();
+    Value(String && value): string(value.copy()), type(Type::STRING) {}
+    Value(const Value & origin): number(origin.number), type(origin.type) {
+        if (origin.type == Type::STRING) string = origin.string->copy();
     }
 
     Value * restrict__ copy() const {
-        Value * restrict__ copy = (Value*) malloc(sizeof(Value));
+        Value * restrict__ copy = (Value *)malloc(sizeof(Value));
 
         copy->previousNumber = 0;
         copy->string = NULL;
@@ -130,7 +116,7 @@ public:
         return copy;
     }
 
-    wchar_t * restrict__ &getNumberStr() {
+    wchar_t * restrict__ & getNumberStr() {
         constexpr uint16_t fracBaseLen = 15;
         constexpr double minExponential = 1e+21;
 
@@ -138,15 +124,18 @@ public:
         previousNumber = number;
 
         bool useExpNotation = abs(number) >= minExponential;
-        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.15e", number) : swprintf(globalNumStrTmp, 325, L"%.15f", number);
+        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.15e", number)
+                                       : swprintf(globalNumStrTmp, 325, L"%.15f", number);
 
         // it's important to try this branch first to avoid jumps, sine no-exponential numbers are more common
         if (!useExpNotation) {
             do {
                 size--;
-            } while(globalNumStrTmp[size] == L'0');
-            if (globalNumStrTmp[size] == L'.') globalNumStrTmp[size] = L'\0';
-            else globalNumStrTmp[++size] = L'\0';
+            } while (globalNumStrTmp[size] == L'0');
+            if (globalNumStrTmp[size] == L'.')
+                globalNumStrTmp[size] = L'\0';
+            else
+                globalNumStrTmp[++size] = L'\0';
 
             size++;
 
@@ -163,21 +152,18 @@ public:
         uint16_t fracEnd = 0;
         uint16_t expPartStart;
         uint16_t i = -1;
-        
-        while(globalNumStrTmp[++i] != L'.');
+
+        while (globalNumStrTmp[++i] != L'.')
+            ;
         intEnd = i;
 
-        while(globalNumStrTmp[++i] != L'e') {
+        while (globalNumStrTmp[++i] != L'e') {
             if (globalNumStrTmp[i] != L'0') fracEnd = i + 1;
         }
 
-        expPartStart = globalNumStrTmp[i + 1] != L'0' ? i : 0;  
+        expPartStart = globalNumStrTmp[i + 1] != L'0' ? i : 0;
 
-        size = (
-            intEnd
-            + size - expPartStart
-            + (fracEnd == 0 ? 0 : fracEnd - intEnd)
-        ) + 1;
+        size = (intEnd + size - expPartStart + (fracEnd == 0 ? 0 : fracEnd - intEnd)) + 1;
         if (size > numberStrSize) {
             numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
             numberStrSize = size;
@@ -197,11 +183,9 @@ public:
         return numberStrTmp;
     }
 
-    const wchar_t * toString() {
-        return type == Type::STRING ? string->data : getNumberStr();
-    }
+    const wchar_t * toString() { return type == Type::STRING ? string->data : getNumberStr(); }
 
-    Value &operator=(const Value &origin) {
+    Value & operator=(const Value & origin) {
         if (origin.type == Type::NUMBER) {
             number = origin.number;
             return *this;
@@ -213,11 +197,11 @@ public:
         else
             string = origin.string->copy();
         type = Type::STRING;
-        
+
         return *this;
     }
 
-    Value &operator=(const wchar_t * restrict__ value) {
+    Value & operator=(const wchar_t * restrict__ value) {
         if (string)
             string->set(value);
         else
@@ -229,11 +213,9 @@ public:
         return *this;
     }
 
-    Value &operator=(String &&value) {
-        return operator=(value);
-    }
+    Value & operator=(String && value) { return operator=(value); }
 
-    Value &operator=(const String &value) {
+    Value & operator=(const String & value) {
         if (string)
             string->set(value);
         else
@@ -245,58 +227,52 @@ public:
         return *this;
     }
 
-    Value &operator=(double value) {
+    Value & operator=(double value) {
         number = value;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator=(int value) {
+    Value & operator=(int value) {
         number = value;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator++(int) {
+    Value & operator++(int) {
         number++;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator--(int) {
+    Value & operator--(int) {
         number--;
         type = Type::NUMBER;
         return *this;
     }
 
-    Value &operator+=(double value) {
+    Value & operator+=(double value) {
         number += value;
         type = Type::NUMBER;
         return *this;
     }
 
-    make_bool_op(<=)
-    make_bool_op(>=)
-    make_bool_op(<)
-    make_bool_op(>)
-    make_bool_op(==)
+    make_bool_op(<=);
+    make_bool_op(>=);
+    make_bool_op(<);
+    make_bool_op(>);
+    make_bool_op(==);
 
-    make_math_bin_op(-)
-    make_math_bin_op(+)
-    make_math_bin_op(/)
-    make_math_bin_op(*)
+    make_math_bin_op(-);
+    make_math_bin_op(+);
+    make_math_bin_op(/);
+    make_math_bin_op(*);
 
-    constexpr bool operator !() {
-        return !number;
-    }
+    bool operator!() { return !number; }
 
-    constexpr operator storage_number_t() {
-        return number;
-    }
+    constexpr operator storage_number_t() { return number; }
 
-    operator const wchar_t *() {
-        return type == Type::STRING ? string->data : getNumberStr();
-    }
+    operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
 
     void clean() {
         if (string) {
@@ -312,9 +288,7 @@ public:
         numberStrSize = 0;
     }
 
-    ~Value() {
-        clean();
-    }
+    ~Value() { clean(); }
 };
 
 
