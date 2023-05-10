@@ -1,10 +1,11 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "config.h"
-#include <list>
-#include "sprite_base.h"
 #include "actions.h"
+#include "config.h"
+#include "sprite_base.h"
+
+#include <list>
 
 
 struct SpriteDeclaration {
@@ -33,50 +34,38 @@ public:
     bool visible;
     uint64_t layerOrder;
 
-    Sprite(const SpriteDeclaration &decl):
+    Sprite(const SpriteDeclaration & decl):
         Movable(decl.x, decl.y, decl.width, decl.height, decl.direction, decl.size),
         SpriteBase(
-            ASSETS_BASE_DIR / L"sprites" / decl.safeName,
-            decl.costumeIndex - 1,
-            decl.costumes
+            ASSETS_BASE_DIR / L"sprites" / decl.safeName, decl.costumeIndex - 1, decl.costumes
         ),
         name{decl.name},
         safeName{decl.safeName},
         visible{decl.visible},
         layerOrder{decl.layerOrder - 1},
         id{fastHash(decl.name)},
-        actionId{id & ~ACTION_ID_MASK}
-    {}
+        actionId{id & ~ACTION_ID_MASK} {}
 
     bool isTouchingXY(float x1, float y1) {
         const auto tmpSurface = getCostumeTransformedSurface();
 
-        const auto
-            cOffsetX = tmpSurface->w / 2,
-            cOffsetY = tmpSurface->h / 2;
+        const auto cOffsetX = tmpSurface->w / 2, cOffsetY = tmpSurface->h / 2;
 
-        if (
-            x1 > (x + cOffsetX)
-            || x1 < (x - cOffsetX)
-            || y1 > (y + cOffsetY)
-            || y1 < (y - cOffsetY)
-        )
+        if (x1 > (x + cOffsetX) || x1 < (x - cOffsetX) || y1 > (y + cOffsetY) ||
+            y1 < (y - cOffsetY))
             return false;
-        
-        const uint64_t
-            pixelX = round(x1 - x + cOffsetX),
-            pixelY = round(y - y1 + cOffsetY);
-        
+
+        const uint64_t pixelX = round(x1 - x + cOffsetX), pixelY = round(y - y1 + cOffsetY);
+
         return (((uint32_t *)tmpSurface->pixels)[tmpSurface->w * pixelY + pixelX] >> 24) != 0;
     }
 
     SDL_Surface * getCostumeTransformedSurface() {
         if (!shouldUpdateSurfaceCache) return surfaceCache;
-        
-        if (surfaceCache != NULL)
-            SDL_FreeSurface(surfaceCache);
+
+        if (surfaceCache != NULL) SDL_FreeSurface(surfaceCache);
         surfaceCache = rotozoomSurface(getCostumeSurface(), -direction, 1, 1);
-        
+
         return surfaceCache;
     }
 
@@ -90,16 +79,11 @@ public:
         ));
     }
 
-    void hide() {
-        visible = false;
-    }
-    void show() {
-        visible = true;
-    }
+    void hide() { visible = false; }
+    void show() { visible = true; }
 
     ~Sprite() {
-        if (surfaceCache)
-            SDL_FreeSurface(surfaceCache);
+        if (surfaceCache) SDL_FreeSurface(surfaceCache);
     }
 };
 

@@ -6,14 +6,14 @@
 
 
 template<typename T>
-class ThreadSafeContainer
-{
+class ThreadSafeContainer {
 private:
     std::atomic<bool> taken;
+
 public:
     volatile T value;
-    
-    ThreadSafeContainer(T &&_value): value(_value) {}
+
+    ThreadSafeContainer(T && _value): value(_value) {}
 
     void take() {
         bool isTaken;
@@ -25,7 +25,8 @@ public:
 
     void release() {
         bool isTaken = true;
-        while (!taken.compare_exchange_weak(isTaken, false));
+        while (!taken.compare_exchange_weak(isTaken, false))
+            ;
     }
 };
 

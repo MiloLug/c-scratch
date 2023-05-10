@@ -2,14 +2,13 @@
 #define RUNTIME_SDL_H
 
 #include "config.h"
+#include "include_sdl.h"
+#include "sdl_scancodes.h"
+#include "ts_synchronizer.h"
 
 #include <iostream>
-#include <thread>
 #include <string>
-
-#include "include_sdl.h"
-#include "ts_synchronizer.h"
-#include "sdl_scancodes.h"
+#include <thread>
 
 
 struct MouseState {
@@ -23,12 +22,8 @@ extern MouseState volatile mouseState;
 extern ThreadSafeSynchronizer screenUpdateLock;
 
 
-static inline bool isKeyPressed(auto str) {
-    return keyPressed[ScanCodesMap::getScanCode(str)];
-}
-static inline bool isKeyPressed(uint16_t scanCode) {
-    return keyPressed[scanCode];
-}
+static inline bool isKeyPressed(auto str) { return keyPressed[ScanCodesMap::getScanCode(str)]; }
+static inline bool isKeyPressed(uint16_t scanCode) { return keyPressed[scanCode]; }
 
 
 class BlockWindowUpdates {
@@ -41,13 +36,14 @@ public:
 class ScratchSDLWindow {
 private:
     void loop();
+
 public:
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    SDL_Window * window;
+    SDL_Renderer * renderer;
 
     ScratchSDLWindow(const char * name);
 
-    void updateFrameTiming(std::wostream& os = std::wcout, float period = 2.0f);
+    void updateFrameTiming(std::wostream & os = std::wcout, float period = 2.0f);
     std::thread runLoop();
 
     ~ScratchSDLWindow();

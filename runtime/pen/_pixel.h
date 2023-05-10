@@ -1,10 +1,11 @@
 #ifndef CSCRATCH_PEN_PIXEL_H
 #define CSCRATCH_PEN_PIXEL_H
 
-#include <cstdint>
 #include "config.h"
 #include "runtime/include_sdl.h"
 #include "runtime/mutex.h"
+
+#include <cstdint>
 
 
 #if !defined ENABLE_TURBO && !defined ENABLE_UNSAFE_NO_LOCKS
@@ -14,7 +15,11 @@
     * After execution, sets `hasChanges` variable to tell the renderer to update the image.
     * Returns 1
     */
-    #define Pen_safe(code) Pen::pixels.take(); code; Pen::hasChanges = true; Pen::pixels.release()
+    #define Pen_safe(code)                                                                         \
+        Pen::pixels.take();                                                                        \
+        code;                                                                                      \
+        Pen::hasChanges = true;                                                                    \
+        Pen::pixels.release()
 #else
     /*
     * Should block the canvas for rendering while executing the code
@@ -23,14 +28,14 @@
     * After execution, sets `hasChanges` variable to tell the renderer to update the image.
     * Returns 1
     */
-    #define Pen_safe(code) code; Pen::hasChanges = true
+    #define Pen_safe(code)                                                                         \
+        code;                                                                                      \
+        Pen::hasChanges = true
 #endif
 
 
 namespace Pen {
-    static constexpr const int64_t
-        canvasWidth = WINDOW_WIDTH,
-        canvasHeight = WINDOW_HEIGHT;
+    static constexpr const int64_t canvasWidth = WINDOW_WIDTH, canvasHeight = WINDOW_HEIGHT;
     static constexpr const uint64_t canvasSize = canvasWidth * canvasHeight;
 
     extern SDL_Texture * texture;
@@ -38,9 +43,7 @@ namespace Pen {
     extern uint32_t volatile pixelBuffer[canvasSize];
     extern Mutex pixels;
 
-    static inline void eraseAll() {
-        memset((void *)pixelBuffer, 0x00, canvasSize << 2);
-    }
+    static inline void eraseAll() { memset((void *)pixelBuffer, 0x00, canvasSize << 2); }
 
     static inline void drawPixel(int64_t x, int64_t y, uint64_t color) {
         if (x < 0 || x >= canvasWidth || y < 0 || y >= canvasHeight) return;
@@ -62,7 +65,7 @@ namespace Pen {
             pixelBuffer[pos] = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
         }
     }
-}
+}  // namespace Pen
 
 
 #endif

@@ -1,13 +1,13 @@
 #include "config.h"
 #include "runtime/debug.h"
+#include "runtime/script_manager.h"
 #include "runtime/sdl.h"
 #include "runtime/sprite_manager.h"
-#include "runtime/script_manager.h"
-#include "stage/sprites.h"
 #include "stage/scripts.h"
+#include "stage/sprites.h"
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char * argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         wprintf(L"SDL initialization error\n");
         return 1;
@@ -15,10 +15,10 @@ int main(int argc, char* argv[]) {
 
     ScratchSDLWindow window{APP_WINDOW_NAME};
 
-    #ifdef DEBUG
-        printDebugInfo(window);
-    #endif
-    
+#ifdef DEBUG
+    printDebugInfo(window);
+#endif
+
     SpriteManager::staticInit();
     ScriptManager::staticInit();
 

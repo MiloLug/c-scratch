@@ -1,9 +1,8 @@
 #include "pen.h"
 
 
-namespace Pen
-{
-    Initializer::Initializer(SDL_Renderer *renderer) {
+namespace Pen {
+    Initializer::Initializer(SDL_Renderer * renderer) {
         if (!initialized) {
             initialized = true;
             texture = SDL_CreateTexture(
@@ -26,4 +25,4 @@ namespace Pen
         texture = NULL;
     }
     volatile bool Initializer::initialized = false;
-};
+};  // namespace Pen

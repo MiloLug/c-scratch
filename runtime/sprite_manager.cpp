@@ -1,4 +1,5 @@
 #include "sprite_manager.h"
+
 #include "script_manager.h"
 #include "utils.h"
 
@@ -11,9 +12,7 @@ constinit Backdrop * SpriteManager::backdrop = nullptr;
 
 // STATIC
 
-void SpriteManager::add(Sprite * sprite) {
-    waitingForInit->push_back(sprite);
-}
+void SpriteManager::add(Sprite * sprite) { waitingForInit->push_back(sprite); }
 
 void SpriteManager::renderBackdrop(SDL_Renderer * renderer) {
     if (backdrop) {
@@ -27,26 +26,36 @@ void SpriteManager::initBackdrop(SDL_Renderer * renderer) {
     }
     backdrop->init(renderer);
 
-    #ifdef DEBUG
-        wprintf(L"Backdrop initialization: OK\n");
-    #endif
+#ifdef DEBUG
+    wprintf(L"Backdrop initialization: OK\n");
+#endif
 }
 
 void SpriteManager::renderSprites(SDL_Renderer * renderer) {
-    for (auto &sprite : spriteStorage) {
+    for (auto & sprite : spriteStorage) {
         if (sprite->visible)
-            SDL_RenderCopyExF(renderer, sprite->getCostumeTexture(), NULL, &sprite->pos, sprite->direction, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyExF(
+                renderer,
+                sprite->getCostumeTexture(),
+                NULL,
+                &sprite->pos,
+                sprite->direction,
+                NULL,
+                SDL_FLIP_NONE
+            );
     }
 }
 void SpriteManager::initSprites(SDL_Renderer * renderer) {
-    for (auto &sprite : *waitingForInit) {
+    for (auto & sprite : *waitingForInit) {
         if (managedSprites.contains(sprite)) continue;
 
         sprite->init(renderer);
         managedSprites.insert(sprite);
 
         const auto maxLayer = spriteStorage.size();
-        const auto layer = MAX(MIN(sprite->layerOrder - 1, maxLayer), 0);  // layerOrder starts from 1 on declaration
+        const auto layer =
+            MAX(MIN(sprite->layerOrder - 1, maxLayer),
+                0);  // layerOrder starts from 1 on declaration
         auto listIter = spriteStorage.begin();
         uint64_t i = 0;
 
@@ -60,7 +69,8 @@ void SpriteManager::initSprites(SDL_Renderer * renderer) {
                 (*listIter)->layerOrder++;
             }
         } else {
-            for (; i < layer; i++, listIter++);
+            for (; i < layer; i++, listIter++)
+                ;
 
             spriteStorage.insert(listIter, sprite);
 
@@ -69,10 +79,10 @@ void SpriteManager::initSprites(SDL_Renderer * renderer) {
             }
             spriteStorage.erase(listIter);
         }
-        
-        #ifdef DEBUG
-            wprintf(L"Sprites initialization: %ls OK\n", sprite->name);
-        #endif
+
+#ifdef DEBUG
+        wprintf(L"Sprites initialization: %ls OK\n", sprite->name);
+#endif
     }
 
     waitingForInit->clear();
@@ -89,9 +99,10 @@ void SpriteManager::moveByLayers(Sprite * sprite, int64_t layersNumber) {
     auto listIter = spriteStorage.begin();
     uint64_t i = 0;
     sprite->layerOrder = newLayer;
-        
+
     if (newLayer < oldLayer) {
-        for (; i < newLayer; i++, listIter++);
+        for (; i < newLayer; i++, listIter++)
+            ;
 
         spriteStorage.insert(listIter, sprite);
 
@@ -100,7 +111,8 @@ void SpriteManager::moveByLayers(Sprite * sprite, int64_t layersNumber) {
         }
         spriteStorage.erase(listIter);
     } else {
-        for (; i < oldLayer; i++, listIter++);
+        for (; i < oldLayer; i++, listIter++)
+            ;
 
         spriteStorage.erase(listIter++);
 
@@ -118,12 +130,8 @@ void SpriteManager::moveForward(Sprite * sprite, int64_t layersNumber) {
     moveByLayers(sprite, layersNumber);
 }
 
-void SpriteManager::moveToBack(Sprite * sprite) {
-    moveByLayers(sprite, -spriteStorage.size());
-}
-void SpriteManager::moveToFront(Sprite * sprite) {
-    moveByLayers(sprite, spriteStorage.size());
-}
+void SpriteManager::moveToBack(Sprite * sprite) { moveByLayers(sprite, -spriteStorage.size()); }
+void SpriteManager::moveToFront(Sprite * sprite) { moveByLayers(sprite, spriteStorage.size()); }
 
 void SpriteManager::staticInit() {
     if (waitingForInit != nullptr) return;
@@ -137,14 +145,14 @@ Sprite * SpriteManager::getTouchingXY(float x, float y) {
             return *iter;
         }
     }
-    
+
     return nullptr;
 }
 
 void SpriteManager::sendClickXY(float x, float y) {
     auto sprite = getTouchingXY(x, y);
     if (sprite != nullptr) {
-        ScriptManager::triggerScripts(ACTION_CLICK|sprite->actionId);
+        ScriptManager::triggerScripts(ACTION_CLICK | sprite->actionId);
     }
 }
 
@@ -155,6 +163,4 @@ SpriteManager::SpriteManager(Sprite * sprite) {
     add(sprite);
 }
 
-SpriteManager::SpriteManager(Backdrop * _backdrop) {
-    backdrop = _backdrop;
-}
+SpriteManager::SpriteManager(Backdrop * _backdrop) { backdrop = _backdrop; }

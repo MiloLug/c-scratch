@@ -1,8 +1,9 @@
 #include "time.h"
+
 #include <chrono>
 
-using std::chrono::high_resolution_clock;
 using std::chrono::duration;
+using std::chrono::high_resolution_clock;
 
 
 volatile double programTime = 0;
@@ -14,10 +15,6 @@ void updateProgramTime() {
     programTime = duration<double>(high_resolution_clock::now() - programStartTime).count();
 }
 
-double __getTime() {
-    return programTime - timeStartTime;
-}
+double __getTime() { return programTime - timeStartTime; }
 
-void resetTimer() {
-    timeStartTime = programTime;
-}
+void resetTimer() { timeStartTime = programTime; }

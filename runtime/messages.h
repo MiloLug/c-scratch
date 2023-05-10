@@ -1,14 +1,15 @@
 #ifndef CSCRATCH_MESSAGE_MANAGER_H
 #define CSCRATCH_MESSAGE_MANAGER_H
 
+#include "actions.h"
+#include "control_flow.h"
+#include "coroutines.h"
+#include "script_manager.h"
+#include "utils.h"
+#include "value.h"
+
 #include <unordered_map>
 #include <vector>
-#include "utils.h"
-#include "actions.h"
-#include "script_manager.h"
-#include "value.h"
-#include "coroutines.h"
-#include "control_flow.h"
 
 
 class Messages {
@@ -32,7 +33,7 @@ public:
     static void broadcast(const wchar_t * msg) {
         ScriptManager::triggerScripts(ACTION_MESSAGE | strToActionParam(msg));
     }
-    static void broadcast(Value &&value) {
+    static void broadcast(Value && value) {
         ScriptManager::triggerScripts(ACTION_MESSAGE | strToActionParam(value.toString()));
     }
 
@@ -51,7 +52,7 @@ public:
     static Coroutine broadcastWait(const wchar_t * msg) {
         return broadcastWait(strToActionParam(msg));
     }
-    static Coroutine broadcastWait(Value &&value) {
+    static Coroutine broadcastWait(Value && value) {
         return broadcastWait(strToActionParam(value.toString()));
     }
 };

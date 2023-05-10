@@ -1,11 +1,12 @@
 #include "_lines.h"
+
 #include "_fig.h"
 #include "_pixel.h"
 #include "runtime/math.h"
-#include <immintrin.h>
 
-#include <math.h>
 #include <emmintrin.h>
+#include <immintrin.h>
+#include <math.h>
 
 namespace Pen {
     static inline void drawLine2(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t color) {
@@ -25,8 +26,7 @@ namespace Pen {
             decInc = (shortLen << 16) / longLen;
 
         if (yLonger) {
-            if (longLen > 0)
-            {
+            if (longLen > 0) {
                 longLen += y1;
                 for (int64_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawSquare2(j >> 16, y1, color);
@@ -44,8 +44,7 @@ namespace Pen {
 
         if (longLen > 0) {
             longLen += x1;
-            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
-            {
+            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1) {
                 drawSquare2(x1, j >> 16, color);
                 j += decInc;
             }
@@ -73,70 +72,65 @@ namespace Pen {
         auto rowEnd = pixelBuffer + canvasWidth * y + x2;
         const uint32_t srcA = color & 0xFF;
 
-        #if defined(__AVX2__)
-            __m256i colorVec = _mm256_set1_epi32(color);
-            __m256i alphaVec = _mm256_set1_epi32(srcA);
-            __m256i t = _mm256_set1_epi32(0xFF);
+#if defined(__AVX2__)
+        __m256i colorVec = _mm256_set1_epi32(color);
+        __m256i alphaVec = _mm256_set1_epi32(srcA);
+        __m256i t = _mm256_set1_epi32(0xFF);
 
-            while (rowStart + 8 <= rowEnd) {
-                __m256i rbMask = _mm256_set1_epi32(0x00FF00FF);
-                __m256i gMask = _mm256_set1_epi32(0x00FF0000);
-                __m256i aMask = _mm256_set1_epi32(0x000000FF);
+        while (rowStart + 8 <= rowEnd) {
+            __m256i rbMask = _mm256_set1_epi32(0x00FF00FF);
+            __m256i gMask = _mm256_set1_epi32(0x00FF0000);
+            __m256i aMask = _mm256_set1_epi32(0x000000FF);
 
-                __m256i bgColorVec = _mm256_loadu_si256((__m256i*)(rowStart));
-                __m256i resAVec = _mm256_add_epi32(
-                    alphaVec,
-                    _mm256_srli_epi32(
-                        _mm256_mullo_epi32(bgColorVec & aMask, t - alphaVec),
-                        8
-                    )
-                );
+            __m256i bgColorVec = _mm256_loadu_si256((__m256i *)(rowStart));
+            __m256i resAVec = _mm256_add_epi32(
+                alphaVec, _mm256_srli_epi32(_mm256_mullo_epi32(bgColorVec & aMask, t - alphaVec), 8)
+            );
 
-                __m256i rbVec = (bgColorVec >> 8) & rbMask;
-                __m256i gVec = bgColorVec & gMask;
+            __m256i rbVec = (bgColorVec >> 8) & rbMask;
+            __m256i gVec = bgColorVec & gMask;
 
-                rbVec += _mm256_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
-                gVec += _mm256_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
+            rbVec += _mm256_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
+            gVec += _mm256_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
 
-                _mm256_storeu_si256((__m256i*)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec);
-                
-                rowStart += 8;
-            }
-        #elif defined(__AVX__)
-            __m128i colorVec = _mm_set1_epi32(color);
-            __m128i alphaVec = _mm_set1_epi32(srcA);
-            __m128i t = _mm_set1_epi32(0xFF);
+            _mm256_storeu_si256(
+                (__m256i *)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec
+            );
 
-            while (rowStart + 4 <= rowEnd) {
-                __m128i rbMask = _mm_set1_epi32(0x00FF00FF);
-                __m128i gMask = _mm_set1_epi32(0x00FF0000);
-                __m128i aMask = _mm_set1_epi32(0x000000FF);
+            rowStart += 8;
+        }
+#elif defined(__AVX__)
+        __m128i colorVec = _mm_set1_epi32(color);
+        __m128i alphaVec = _mm_set1_epi32(srcA);
+        __m128i t = _mm_set1_epi32(0xFF);
 
-                __m128i bgColorVec = _mm_loadu_si128((__m128i*)(rowStart));
-                __m128i resAVec = _mm_add_epi32(
-                    alphaVec,
-                    _mm_srli_epi32(
-                        _mm_mullo_epi32(bgColorVec & aMask, t - alphaVec),
-                        8
-                    )
-                );
+        while (rowStart + 4 <= rowEnd) {
+            __m128i rbMask = _mm_set1_epi32(0x00FF00FF);
+            __m128i gMask = _mm_set1_epi32(0x00FF0000);
+            __m128i aMask = _mm_set1_epi32(0x000000FF);
 
-                __m128i rbVec = (bgColorVec >> 8) & rbMask;
-                __m128i gVec = bgColorVec & gMask;
+            __m128i bgColorVec = _mm_loadu_si128((__m128i *)(rowStart));
+            __m128i resAVec = _mm_add_epi32(
+                alphaVec, _mm_srli_epi32(_mm_mullo_epi32(bgColorVec & aMask, t - alphaVec), 8)
+            );
 
-                rbVec += _mm_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
-                gVec += _mm_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
+            __m128i rbVec = (bgColorVec >> 8) & rbMask;
+            __m128i gVec = bgColorVec & gMask;
 
-                _mm_storeu_si128((__m128i*)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec);
-                
-                rowStart += 4;
-            }
-        #endif
-        
+            rbVec += _mm_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
+            gVec += _mm_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
+
+            _mm_storeu_si128(
+                (__m128i *)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec
+            );
+
+            rowStart += 4;
+        }
+#endif
+
         if (rowStart <= rowEnd) {
             if (srcA == 0xFF) {
-                for (; rowStart <= rowEnd; rowStart++)
-                    *rowStart = color;
+                for (; rowStart <= rowEnd; rowStart++) *rowStart = color;
             } else {
                 for (; rowStart <= rowEnd; rowStart++) {
                     const uint32_t bgColor = *rowStart;
@@ -171,8 +165,7 @@ namespace Pen {
             decInc = (shortLen << 16) / longLen;
 
         if (yLonger) {
-            if (longLen > 0)
-            {
+            if (longLen > 0) {
                 longLen += y1;
                 for (int64_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawPixel(j >> 16, y1, color);
@@ -190,8 +183,7 @@ namespace Pen {
 
         if (longLen > 0) {
             longLen += x1;
-            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
-            {
+            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1) {
                 drawPixel(x1, j >> 16, color);
                 j += decInc;
             }
@@ -204,7 +196,8 @@ namespace Pen {
         }
     }
 
-    void drawLineRounded(int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color) {
+    void
+    drawLineRounded(int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color) {
         d >>= 1;
         bool yLonger = false;
         int64_t shortLen = y2 - y1;
@@ -222,8 +215,7 @@ namespace Pen {
             decInc = (shortLen << 16) / longLen;
 
         if (yLonger) {
-            if (longLen > 0)
-            {
+            if (longLen > 0) {
                 longLen += y1;
                 for (int64_t j = 0x8000 + (x1 << 16); y1 <= longLen; ++y1) {
                     drawCircle(j >> 16, y1, d, color);
@@ -241,8 +233,7 @@ namespace Pen {
 
         if (longLen > 0) {
             longLen += x1;
-            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1)
-            {
+            for (int64_t j = 0x8000 + (y1 << 16); x1 <= longLen; ++x1) {
                 drawCircle(x1, j >> 16, d, color);
                 j += decInc;
             }
@@ -259,8 +250,8 @@ namespace Pen {
         if (!d) return;
 
         if (y1 == y2) {
-            if (x1 == x2)
-                switch (d) {
+            if (x1 == x2) switch (d)
+                {
                     case 1:
                         drawPixel(x1, y1, color);
                         break;
@@ -293,4 +284,4 @@ namespace Pen {
                     drawLineRounded(x1, y1, x2, y2, d, color);
             }
     }
-}
+}  // namespace Pen

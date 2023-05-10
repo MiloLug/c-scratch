@@ -7,6 +7,7 @@
 class Mutex {
 private:
     std::atomic<bool> taken;
+
 public:
     void take() {
         bool isTaken;
@@ -18,7 +19,8 @@ public:
 
     void release() {
         bool isTaken = true;
-        while (!taken.compare_exchange_weak(isTaken, false));
+        while (!taken.compare_exchange_weak(isTaken, false))
+            ;
     }
 };
 

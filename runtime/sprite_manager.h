@@ -1,12 +1,13 @@
 #ifndef SPRITE_MANAGER_H
 #define SPRITE_MANAGER_H
 
-#include <list>
-#include <unordered_set>
-#include <memory>
+#include "backdrop.h"
 #include "include_sdl.h"
 #include "sprite.h"
-#include "backdrop.h"
+
+#include <list>
+#include <memory>
+#include <unordered_set>
 
 
 class SpriteManager {

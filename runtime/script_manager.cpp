@@ -1,12 +1,15 @@
 #include "script_manager.h"
-#include <list>
-#include <ctime>
+
 #include "coroutines.h"
+
+#include <ctime>
+#include <list>
 
 
 volatile bool ScriptManager::shouldRun = true;
 ThreadSafeQueue<ScriptManager::CoroContainer> ScriptManager::newActiveCoros;
-constinit std::unique_ptr<ScriptManager::BindingsMap> ScriptManager::scriptBindingsStorage = nullptr;
+constinit std::unique_ptr<ScriptManager::BindingsMap> ScriptManager::scriptBindingsStorage =
+    nullptr;
 
 // STATIC
 
@@ -18,8 +21,8 @@ uint64_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
     uint64_t i = 0;
     auto actionBindings = scriptBindingsStorage->find(action);
     if (actionBindings != scriptBindingsStorage->end()) {
-        for (auto &[sprite, coros] : actionBindings->second) {
-            for (auto &coro : coros) {
+        for (auto & [sprite, coros] : actionBindings->second) {
+            for (auto & coro : coros) {
                 newActiveCoros.push({sprite, new Coroutine(coro(ctx))});
                 i++;
             }
@@ -33,14 +36,13 @@ uint64_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
 * Merges `bindings` to the bindings storage, so you can dynamically add new scripts
 * without losing old ones.
 */
-void ScriptManager::bindScripts(const BindingsMap &bindings) {
-    for (auto &[action, actionSprites] : bindings) {
-
+void ScriptManager::bindScripts(const BindingsMap & bindings) {
+    for (auto & [action, actionSprites] : bindings) {
         auto globalActionBindings = scriptBindingsStorage->find(action);
         if (globalActionBindings != scriptBindingsStorage->end()) {
-            auto &globalActionSprites = (*globalActionBindings).second;
+            auto & globalActionSprites = (*globalActionBindings).second;
 
-            for (auto &sprite : actionSprites) {
+            for (auto & sprite : actionSprites) {
                 globalActionSprites.push_back(sprite);
             }
         } else {
@@ -50,18 +52,18 @@ void ScriptManager::bindScripts(const BindingsMap &bindings) {
 }
 
 static void stopOtherScripts(
-    SpriteBase * const &sprite,
-    Coroutine * const &coro,
-    std::list<ScriptManager::CoroContainer>::iterator &currentIter,
-    std::list<ScriptManager::CoroContainer> &corosList,
-    const std::list<ScriptManager::CoroContainer>::iterator &end
+    SpriteBase * const & sprite,
+    Coroutine * const & coro,
+    std::list<ScriptManager::CoroContainer>::iterator & currentIter,
+    std::list<ScriptManager::CoroContainer> & corosList,
+    const std::list<ScriptManager::CoroContainer>::iterator & end
 ) {
     sprite->__stopOtherScripts = false;
 
     corosList.erase(currentIter);
     auto corosIter = corosList.begin();
 
-    while(corosIter != end) {
+    while (corosIter != end) {
         if (corosIter->first == sprite) {
             delete corosIter->second;
             corosList.erase(corosIter++);
@@ -78,44 +80,43 @@ void ScriptManager::startScriptsLoop() {
     CoroContainer newCoroutine;
     auto corosEnd = activeCoros.end();
 
-    #ifndef ENABLE_TURBO
-        const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
-        clock_t previous_time = clock();
-    #else
-        #ifndef ENABLE_UNSAFE_NO_LOCKS
-            int32_t unlockCounter = 0;
-            Pen::pixels.take();
-        #endif
+#ifndef ENABLE_TURBO
+    const int clocks_per_frame = CLOCKS_PER_SEC / NON_TURBO_CALCULATION_FPS;
+    clock_t previous_time = clock();
+#else
+    #ifndef ENABLE_UNSAFE_NO_LOCKS
+    int32_t unlockCounter = 0;
+    Pen::pixels.take();
     #endif
+#endif
 
     triggerScripts(ACTION_START);
 
     while (shouldRun) {
-        #ifndef ENABLE_TURBO
-            if (int(clock() - previous_time) < clocks_per_frame)
-                continue;
-            previous_time += clocks_per_frame;
-        #else
-            #ifndef ENABLE_UNSAFE_NO_LOCKS
-                if (++unlockCounter == TURBO_LOCK_WINDOW_CYCLES) {
-                    unlockCounter = 0;
-                    Pen::pixels.release();
-                    // Hope the graphics thread will have enough time to `.take()` the pixels in between.
-                    Pen::pixels.take();
-                }
-            #endif
-        #endif
-        
-        while(newActiveCoros.pop(newCoroutine)) {
+#ifndef ENABLE_TURBO
+        if (int(clock() - previous_time) < clocks_per_frame) continue;
+        previous_time += clocks_per_frame;
+#else
+    #ifndef ENABLE_UNSAFE_NO_LOCKS
+        if (++unlockCounter == TURBO_LOCK_WINDOW_CYCLES) {
+            unlockCounter = 0;
+            Pen::pixels.release();
+            // Hope the graphics thread will have enough time to `.take()` the pixels in between.
+            Pen::pixels.take();
+        }
+    #endif
+#endif
+
+        while (newActiveCoros.pop(newCoroutine)) {
             activeCoros.push_back(newCoroutine);
         }
 
         auto corosIter = activeCoros.begin();
 
-        while(corosIter != corosEnd) {
-            auto &[sprite, coro] = *corosIter;
-            
-            if(!coro->done()) {
+        while (corosIter != corosEnd) {
+            auto & [sprite, coro] = *corosIter;
+
+            if (!coro->done()) {
                 coro->resume();
 
                 if (!sprite->__stopOtherScripts) {
@@ -131,11 +132,11 @@ void ScriptManager::startScriptsLoop() {
         }
     }
 
-    #ifdef ENABLE_TURBO
-        #ifndef ENABLE_UNSAFE_NO_LOCKS
-            Pen::pixels.release();
-        #endif
+#ifdef ENABLE_TURBO
+    #ifndef ENABLE_UNSAFE_NO_LOCKS
+    Pen::pixels.release();
     #endif
+#endif
 }
 
 void ScriptManager::staticInit() {
@@ -146,7 +147,7 @@ void ScriptManager::staticInit() {
 
 // NON-STATIC
 
-ScriptManager::ScriptManager(const BindingsMap &bindings) {
+ScriptManager::ScriptManager(const BindingsMap & bindings) {
     staticInit();
     bindScripts(bindings);
 }

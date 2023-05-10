@@ -1,10 +1,15 @@
 #ifndef CSCRATCH_UTILS_H
 #define CSCRATCH_UTILS_H
 
-#include <ctime>
 #include <cstdint>
+#include <ctime>
 
-#define SWAP(a, b) ({auto __tmp = (b); b = a; a = __tmp;})
+#define SWAP(a, b)                                                                                 \
+    ({                                                                                             \
+        auto __tmp = (b);                                                                          \
+        b = a;                                                                                     \
+        a = __tmp;                                                                                 \
+    })
 
 #if defined(__clang__)
     #define restrict__ __restrict
@@ -21,10 +26,8 @@ static constexpr uint64_t fastHash(const wchar_t * str) {
     constexpr uint64_t maxOffset = 1LL << 61;
     uint64_t res = 0;
     wchar_t c = 0;
-    while((c = *(str++)) != L'\0') {
-        res = res >= maxOffset
-            ? (res >> 7) ^ c
-            : (res << 3) ^ c;
+    while ((c = *(str++)) != L'\0') {
+        res = res >= maxOffset ? (res >> 7) ^ c : (res << 3) ^ c;
     }
 
     return res;
@@ -33,9 +36,7 @@ static constexpr uint64_t fastHash(const wchar_t * str) {
 /*
 * Returns the string, hashed with `fastHash` from runtime/utils.h
 */
-static constexpr uint64_t operator ""_H(const wchar_t * str, size_t) {
-    return fastHash(str);
-}
+static constexpr uint64_t operator""_H(const wchar_t * str, size_t) { return fastHash(str); }
 
 
 #endif
