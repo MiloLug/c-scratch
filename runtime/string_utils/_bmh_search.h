@@ -1,10 +1,10 @@
 #ifndef BMH_SEARCH_ALG_H
 #define BMH_SEARCH_ALG_H
 
+#include <climits>
 #include <cstdint>
 #include <cwchar>
 #include <vector>
-#include <climits>
 
 
 namespace BMHSearch {

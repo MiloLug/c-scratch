@@ -17,7 +17,7 @@
             ? type == Type::NUMBER ? number op value.number                                        \
                                    : wcscmp(string->data, value.getNumberStr()) op 0               \
             : wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.string->data)     \
-                  op 0;                                                                            \
+                op 0;                                                                              \
     }                                                                                              \
     template<typename T>                                                                           \
     bool operator op(T * value)                                                                    \

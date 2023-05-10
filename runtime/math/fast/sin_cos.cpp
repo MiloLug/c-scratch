@@ -1082,8 +1082,8 @@ static inline int32_t fastSinInt(int32_t angle) {
         v1 = angle;
     }
     v0 &= TABLE_MASK;
-    v1 = sin90[v0] +
-        (int32_t)(((int64_t)(sin90[v0 + 1] - sin90[v0]) * (v1 & INTERP_MASK)) >> INTERP_BITS);
+    v1 = sin90[v0]
+        + (int32_t)(((int64_t)(sin90[v0 + 1] - sin90[v0]) * (v1 & INTERP_MASK)) >> INTERP_BITS);
 
     return (angle >> INTERP_BITS) & NEGATE_BIT ? v1 : -v1;
 }

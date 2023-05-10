@@ -196,8 +196,9 @@ namespace Pen {
         }
     }
 
-    void
-    drawLineRounded(int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color) {
+    void drawLineRounded(
+        int64_t x1, int64_t y1, int64_t x2, int64_t y2, int64_t d, uint64_t color
+    ) {
         d >>= 1;
         bool yLonger = false;
         int64_t shortLen = y2 - y1;

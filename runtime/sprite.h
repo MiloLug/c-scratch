@@ -51,8 +51,8 @@ public:
 
         const auto cOffsetX = tmpSurface->w / 2, cOffsetY = tmpSurface->h / 2;
 
-        if (x1 > (x + cOffsetX) || x1 < (x - cOffsetX) || y1 > (y + cOffsetY) ||
-            y1 < (y - cOffsetY))
+        if (x1 > (x + cOffsetX) || x1 < (x - cOffsetX) || y1 > (y + cOffsetY)
+            || y1 < (y - cOffsetY))
             return false;
 
         const uint64_t pixelX = round(x1 - x + cOffsetX), pixelY = round(y - y1 + cOffsetY);

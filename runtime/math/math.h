@@ -1,8 +1,8 @@
 #ifndef CSCRATCH_MATH_H
 #define CSCRATCH_MATH_H
 
-#include "config.h"
 #include "common.h"
+#include "config.h"
 #include "rand.h"
 #include "sign.h"
 
