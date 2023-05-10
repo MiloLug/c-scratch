@@ -25,4 +25,4 @@ namespace Pen {
         texture = NULL;
     }
     volatile bool Initializer::initialized = false;
-};  // namespace Pen
+}

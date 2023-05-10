@@ -9,4 +9,4 @@ namespace Pen {
     volatile bool hasChanges = true;
     uint32_t volatile pixelBuffer[canvasSize];
     Mutex pixels;
-}  // namespace Pen
+}

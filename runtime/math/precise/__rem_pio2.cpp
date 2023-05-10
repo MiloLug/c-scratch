@@ -1,6 +1,3 @@
-#include "config.h"
-#ifndef ENABLE_FAST_MATH
-
 /* origin: FreeBSD /usr/src/lib/msun/src/e_rem_pio2.c */
 /*
  * ====================================================
@@ -20,13 +17,14 @@
  * use __rem_pio2_large() for large x
  */
 
-    #include "runtime/math.h"
+#include "inc.h"
 
-    #if FLT_EVAL_METHOD == 0 || FLT_EVAL_METHOD == 1
-        #define EPS DBL_EPSILON
-    #elif FLT_EVAL_METHOD == 2
-        #define EPS LDBL_EPSILON
-    #endif
+#if FLT_EVAL_METHOD == 0 || FLT_EVAL_METHOD == 1
+    #define EPS DBL_EPSILON
+#elif FLT_EVAL_METHOD == 2
+    #define EPS LDBL_EPSILON
+#endif
+
 
 /*
  * invpio2:  53 bits of 2/pi
@@ -178,6 +176,3 @@ int __rem_pio2(double x, double * y) {
     y[1] = ty[1];
     return n;
 }
-
-
-#endif

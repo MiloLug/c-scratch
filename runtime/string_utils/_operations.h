@@ -1,8 +1,9 @@
-#ifndef C_SCRATCH_UTILS_H
-#define C_SCRATCH_UTILS_H
+#ifndef CSCRATCH_STRING_UTILS_OPERATIONS_H
+#define CSCRATCH_STRING_UTILS_OPERATIONS_H
 
-#include "string.h"
-#include "value.h"
+#include "runtime/string.h"
+#include "runtime/value.h"
+
 
 #define __str_make_bool_op(op)                                                                     \
     inline bool operator op(String && s1, String && s2) { return wcscmp(s1.data, s2.data) op 0; }  \

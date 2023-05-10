@@ -2,7 +2,7 @@
 
 #include "_fig.h"
 #include "_pixel.h"
-#include "runtime/math.h"
+#include "runtime/math/common.h"
 
 #include <emmintrin.h>
 #include <immintrin.h>
@@ -284,4 +284,4 @@ namespace Pen {
                     drawLineRounded(x1, y1, x2, y2, d, color);
             }
     }
-}  // namespace Pen
+}

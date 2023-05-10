@@ -4,6 +4,7 @@
 #include "_fig.h"
 #include "_lines.h"
 #include "_pixel.h"
+#include "_safe_block.h"
 #include "_stamp.h"
 #include "config.h"
 #include "runtime/include_sdl.h"
@@ -18,7 +19,7 @@ namespace Pen {
     private:
         static volatile bool initialized;
     };
-};  // namespace Pen
+}
 
 
 #endif

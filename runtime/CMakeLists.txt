@@ -18,8 +18,6 @@ target_sources(app PRIVATE
 
   array.h
 
-  math.h
-
   coroutines.h
   
   script_manager.h

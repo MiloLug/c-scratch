@@ -80,3 +80,4 @@ BraceWrapping:
     SplitEmptyRecord: false
     SplitEmptyNamespace: false
 
+FixNamespaceComments: false
