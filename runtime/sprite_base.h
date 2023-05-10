@@ -75,7 +75,7 @@ public:
     uint32_t penColor = 0xFFAF9F3F;
 
     Movable(float _x, float _y, float w, float h, float dir, float _size):
-        direction(direction - 90.0f),
+        direction(dir - 90.0f),
         size{_size},
         x{__boundXUnsafe(_x)},
         y{__boundYUnsafe(_y)},
@@ -234,6 +234,9 @@ public:
 
     void init(SDL_Renderer * renderer, const std::filesystem::path & baseDir) {
         surface = IMG_Load((baseDir / fileName).string().c_str());
+        if (!surface) {
+            wprintf(L"Error: no costume file '%ls'\n", fileName);
+        }
         if (surface->format->format != SDL_PIXELFORMAT_RGBA8888) {
             auto tmp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
             SDL_FreeSurface(surface);

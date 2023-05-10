@@ -64,7 +64,7 @@ public:
         if (!shouldUpdateSurfaceCache) return surfaceCache;
 
         if (surfaceCache != NULL) SDL_FreeSurface(surfaceCache);
-        surfaceCache = rotozoomSurface(getCostumeSurface(), -direction, 1, 1);
+        surfaceCache = rotozoomSurface(getCostumeSurface(), -direction, size / 100.0, 1);
 
         return surfaceCache;
     }

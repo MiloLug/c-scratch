@@ -91,6 +91,7 @@ public:
         string(String::create(sValue)) {}
     constexpr Value(double value): number(value) {}
     constexpr Value(int value): number(value) {}
+    constexpr Value(uint64_t value): number(value) {}
     Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
         number = (double)*string;
     }
