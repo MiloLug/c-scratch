@@ -4,11 +4,9 @@
 /**** COMMON ****/
 #define APP_WINDOW_NAME "Light simulation project"
 
-#define WINDOW_WIDTH 460.0f
-#define WINDOW_HEIGHT 320.0f
+#define WINDOW_WIDTH 480.0f
+#define WINDOW_HEIGHT 360.0f
 
-// Enables some useful outputs such as "sprite X is initialized"
-#define DEBUG
 // Enables "turbo" mode. No FPS limits will be applied
 #define ENABLE_TURBO
 #define NON_TURBO_CALCULATION_FPS 60
@@ -27,6 +25,13 @@
 *   but in *some* cases the app may crash (but it's highly unlikely as tests show).
 */
 #define ENABLE_UNSAFE_NO_LOCKS
+
+/*
+* Disables limits on the sprites coordinates
+* Consequences: overflows (and undefined behaviour of some calculation) in case you set them to 
+*   numbers higher then 4294967084
+*/
+#define NO_COORDINATES_LIMITATION
 
 
 /**** ARRAYS ****/
@@ -47,10 +52,19 @@
 
 /*
 * Make the Value (storage type for strings an number) to use float instead of double.
-* But be aware the doubles can store much larger numbers (up to 325 digits), not losing
-*   speed that much. Its about a second on tens of millions of updates.
+* But be aware the doubles can store much larger numbers, not losing
+*   speed that much. Its about a second on hundreds of millions of updates.
+*
+* Also the original scratch is written in JS, where numbers are doubles by default, so it can be
+*   incompatible with some projects in this case
 */
 #define USE_VALUE_FLOAT
 
+/**** DEBUGGING ****/
+// Enables some useful outputs such as "sprite X is initialized"
+#define DEBUG
+
+// Enables semi-transparent boxes for the Pen::stamp
+// #define PEN_STAMP_DEBUG
 
 #endif
