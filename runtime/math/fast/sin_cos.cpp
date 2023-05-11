@@ -1,14 +1,5 @@
-#include "config.h"
-#ifdef ENABLE_FAST_MATH
+#include "inc.h"
 
-    #include "runtime/math.h"
-
-    #include <cstdio>
-
-
-/*
-* The number of bits of our data type: here 16 (sizeof operator returns bytes).
-*/
 
 const constexpr double Q31 = 1.0 / (double)INT32_MAX;
 
@@ -1091,8 +1082,8 @@ static inline int32_t fastSinInt(int32_t angle) {
         v1 = angle;
     }
     v0 &= TABLE_MASK;
-    v1 = sin90[v0] +
-        (int32_t)(((int64_t)(sin90[v0 + 1] - sin90[v0]) * (v1 & INTERP_MASK)) >> INTERP_BITS);
+    v1 = sin90[v0]
+        + (int32_t)(((int64_t)(sin90[v0 + 1] - sin90[v0]) * (v1 & INTERP_MASK)) >> INTERP_BITS);
 
     return (angle >> INTERP_BITS) & NEGATE_BIT ? v1 : -v1;
 }
@@ -1110,6 +1101,3 @@ double degCos(double _angle) {
     if (angle < 0) angle += INT32_OVERFLOW;
     return -fastSinInt(angle - (int32_t)(((int64_t)INT32_MAX * 270) / 360)) * Q31;
 }
-
-
-#endif

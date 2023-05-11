@@ -11,6 +11,10 @@
 #include <thread>
 
 
+constexpr float WINDOW_CENTER_X = WINDOW_WIDTH / 2.0f;
+constexpr float WINDOW_CENTER_Y = WINDOW_HEIGHT / 2.0f;
+
+
 struct MouseState {
     int32_t x = 0;
     int32_t y = 0;

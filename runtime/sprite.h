@@ -71,7 +71,6 @@ public:
         x1 = (float)tmpSurface->w / 2.0 + (x1 - x) + pUnrotatedPoint.x - 1.0f;
         y1 = (float)tmpSurface->h / 2.0 + (y - y1) - pUnrotatedPoint.y - 1.0f;
 
-
         if (x1 < 0 || y1 < 0 || x1 >= tmpSurface->w || y1 >= tmpSurface->h) return false;
 
         return (((uint32_t *)tmpSurface->pixels)[(uint64_t)(tmpSurface->w * round(y1) + round(x1))]

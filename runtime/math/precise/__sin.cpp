@@ -1,6 +1,3 @@
-#include "config.h"
-#ifndef ENABLE_FAST_MATH
-
 /* origin: FreeBSD /usr/src/lib/msun/src/k_sin.c */
 /*
  * ====================================================
@@ -42,7 +39,7 @@
  *              sin(x) = x + (S1*x + (x *(r-y/2)+y))
  */
 
-    #include "runtime/math.h"
+#include "inc.h"
 
 static const double S1 = -1.66666666666666324348e-01, /* 0xBFC55555, 0x55555549 */
     S2 = 8.33333333332248946124e-03, /* 0x3F811111, 0x1110F8A6 */
@@ -60,6 +57,3 @@ double __sin(double x, double y, int iy) {
     v = z * x;
     return iy == 0 ? x + v * (S1 + z * r) : x - ((z * (0.5 * y - v * r) - y) - v * S1);
 }
-
-
-#endif

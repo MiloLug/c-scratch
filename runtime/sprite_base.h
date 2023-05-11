@@ -2,7 +2,7 @@
 #define SPRITE_BASE_H
 
 #include "config.h"
-#include "math.h"
+#include "math/math.h"
 #include "pen/pen.h"
 #include "sdl.h"
 #include "utils.h"

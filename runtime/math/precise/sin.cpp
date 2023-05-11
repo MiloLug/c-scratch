@@ -1,6 +1,3 @@
-#include "config.h"
-#ifndef ENABLE_FAST_MATH
-
 /* origin: FreeBSD /usr/src/lib/msun/src/s_sin.c */
 /*
  * ====================================================
@@ -43,7 +40,8 @@
  *      TRIG(x) returns trig(x) nearly rounded
  */
 
-    #include "runtime/math.h"
+#include "inc.h"
+
 
 double radSin(double x) {
     double y[2];
@@ -78,6 +76,3 @@ double radSin(double x) {
             return -__cos(y[0], y[1]);
     }
 }
-
-
-#endif

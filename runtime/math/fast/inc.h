@@ -1,7 +1,11 @@
 #ifndef CSCRATCH_FAST_MATH_H
 #define CSCRATCH_FAST_MATH_H
 
+#include "runtime/math/common.h"
+
+#include <cmath>
 #include <cstdint>
+#include <cstdio>
 
 
 void printSinTable(int64_t tableSize);
