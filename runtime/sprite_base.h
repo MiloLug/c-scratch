@@ -338,7 +338,7 @@ public:
 
     void penStamp();
 
-    void penSetColor(uint32_t color) {
+    force_inline__ void penSetColor(uint32_t color) {
         penColor = color << 8 | ((color >> 24) == 0 ? 0xFF : color >> 24);
     }
 
