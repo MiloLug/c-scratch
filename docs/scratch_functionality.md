@@ -159,7 +159,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
   - optimizations:
     - when you've just selected a name from the dropdown:
 
-      - `sprite.switchCostumeByName(L"selected costume name"_H)`
+      - `sprite.switchCostumeByNameHash(L"selected costume name"_H)`
       - `sprite.switchCostumeByIndex(costume's X index)` where the index starts from 1
 
 - [`next costume`]
@@ -177,11 +177,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`change size by (X)`]
 
-    `...` NOT IMPLEMENTED
+    `sprite.changeSize(X)`
 
 - [`set size to (X) %`]
 
-    `...` NOT IMPLEMENTED
+    `sprite.setSize(X)`
 
 - [`change [X] effect by (Y)`]
 

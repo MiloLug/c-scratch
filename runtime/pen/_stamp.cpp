@@ -2,9 +2,25 @@
 
 #include "_pixel.h"
 #include "runtime/math.h"
+#include "runtime/utils.h"
 
 
 namespace Pen {
+    force_inline__ void stampDebug(uint32_t * pixel) {
+        const uint32_t fill = 0x00FF00;
+        const uint8_t alpha = 0x9F;
+
+        const uint32_t bgColor = *pixel;
+        const uint32_t resA = alpha + ((bgColor & 0xFF) * (255 - alpha) >> 8);
+
+        uint32_t rb = bgColor >> 8 & 0x00FF00FF;
+        uint32_t g = bgColor & 0x00FF0000;
+        rb += ((fill >> 8 & 0x00FF00FF) - rb) * alpha >> 8;
+        g += ((fill & 0x00FF0000) - g) * alpha >> 8;
+
+        *pixel = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
+    }
+
     void stamp(int64_t x, int64_t y, SDL_Surface * surface) {
         const int32_t surDrawW = (canvasWidth - x - surface->w) < 0 ? canvasWidth - x : surface->w;
         const int32_t surDrawH =
@@ -35,7 +51,7 @@ namespace Pen {
                     *canvasP = surPix;
                 } else {
                     const uint32_t bgColor = *canvasP;
-                    uint32_t resA = alpha + ((bgColor & 0xFF) * (255 - alpha) >> 8);
+                    const uint32_t resA = alpha + ((bgColor & 0xFF) * (255 - alpha) >> 8);
 
                     uint32_t rb = bgColor >> 8 & 0x00FF00FF;
                     uint32_t g = bgColor & 0x00FF0000;
@@ -44,9 +60,13 @@ namespace Pen {
 
                     *canvasP = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
                 }
+
+#ifdef PEN_STAMP_DEBUG
+                stampDebug(canvasP);
+#endif
             }
             surP += surSkip;
             canvasP += canvasSkip;
         }
     }
-}  // namespace Pen
+}

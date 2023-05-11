@@ -13,8 +13,6 @@ struct SpriteDeclaration {
     const wchar_t * safeName;
     float x;
     float y;
-    float width;
-    float height;
     float direction;
     uint64_t costumeIndex;
     float size;
@@ -25,6 +23,20 @@ struct SpriteDeclaration {
 
 
 class Sprite: public Movable, public SpriteBase {
+protected:
+    force_inline__ void onCostumeSwitch() {
+        if (currentCostume != &costumes[costumeIndex]) {
+            currentCostume = &costumes[costumeIndex];
+
+            pPointOrig.x = currentCostume->pX;
+            pPointOrig.y = currentCostume->pY;
+            wOrig = currentCostume->w;
+            hOrig = currentCostume->h;
+
+            updateOffsetsAndPoints();
+        }
+    }
+
 public:
     const wchar_t * name;
     const wchar_t * safeName;
@@ -35,10 +47,17 @@ public:
     uint64_t layerOrder;
 
     Sprite(const SpriteDeclaration & decl):
-        Movable(decl.x, decl.y, decl.width, decl.height, decl.direction, decl.size),
-        SpriteBase(
-            ASSETS_BASE_DIR / L"sprites" / decl.safeName, decl.costumeIndex - 1, decl.costumes
+        Movable(
+            decl.x,
+            decl.y,
+            decl.costumes[decl.costumeIndex - 1].pX,
+            decl.costumes[decl.costumeIndex - 1].pY,
+            decl.costumes[decl.costumeIndex - 1].w,
+            decl.costumes[decl.costumeIndex - 1].h,
+            decl.direction,
+            decl.size
         ),
+        SpriteBase(ASSETS_BASE_DIR / L"sprites" / decl.safeName, decl.costumeIndex, decl.costumes),
         name{decl.name},
         safeName{decl.safeName},
         visible{decl.visible},
@@ -49,22 +68,23 @@ public:
     bool isTouchingXY(float x1, float y1) {
         const auto tmpSurface = getCostumeTransformedSurface();
 
-        const auto cOffsetX = tmpSurface->w / 2, cOffsetY = tmpSurface->h / 2;
+        x1 = (float)tmpSurface->w / 2.0 + (x1 - x) + pUnrotatedPoint.x - 1.0f;
+        y1 = (float)tmpSurface->h / 2.0 + (y - y1) - pUnrotatedPoint.y - 1.0f;
 
-        if (x1 > (x + cOffsetX) || x1 < (x - cOffsetX) || y1 > (y + cOffsetY) ||
-            y1 < (y - cOffsetY))
-            return false;
 
-        const uint64_t pixelX = round(x1 - x + cOffsetX), pixelY = round(y - y1 + cOffsetY);
+        if (x1 < 0 || y1 < 0 || x1 >= tmpSurface->w || y1 >= tmpSurface->h) return false;
 
-        return (((uint32_t *)tmpSurface->pixels)[tmpSurface->w * pixelY + pixelX] >> 24) != 0;
+        return (((uint32_t *)tmpSurface->pixels)[(uint64_t)(tmpSurface->w * round(y1) + round(x1))]
+                & 0xFF)
+            != 0;
     }
 
     SDL_Surface * getCostumeTransformedSurface() {
         if (!shouldUpdateSurfaceCache) return surfaceCache;
 
         if (surfaceCache != NULL) SDL_FreeSurface(surfaceCache);
-        surfaceCache = rotozoomSurface(getCostumeSurface(), -direction, size / 100.0, 1);
+        auto src = getCostumeSurface();
+        surfaceCache = rotozoomSurface(src, -direction, pos.h / src->h, 1);
 
         return surfaceCache;
     }
@@ -73,8 +93,8 @@ public:
         auto tmp = getCostumeTransformedSurface();
 
         Pen_safe(Pen::stamp(
-            round(WINDOW_CENTER_X - (float)tmp->w / 2.0 + x),
-            round(WINDOW_CENTER_Y - (float)tmp->h / 2.0 - y),
+            round(WINDOW_CENTER_X - (float)tmp->w / 2.0 + x - pUnrotatedPoint.x),
+            round(WINDOW_CENTER_Y - (float)tmp->h / 2.0 - y + pUnrotatedPoint.y),
             tmp
         ));
     }

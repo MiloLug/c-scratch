@@ -22,6 +22,17 @@
 #endif
 
 
+#ifndef force_inline__
+    #if defined(_MSC_VER)
+        #define force_inline__ __forceinline
+    #elif ((defined(__GNUC__) && (__GNUC__ >= 4)) || defined(__clang__))
+        #define force_inline__ __attribute__((always_inline)) inline
+    #else
+        #define force_inline__ inline
+    #endif
+#endif
+
+
 static constexpr uint64_t fastHash(const wchar_t * str) {
     constexpr uint64_t maxOffset = 1LL << 61;
     uint64_t res = 0;

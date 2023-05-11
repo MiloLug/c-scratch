@@ -19,12 +19,7 @@ const std::filesystem::path ASSETS_BASE_DIR = L"assets/";
 // The compiler can't inline it for some reason, when used as a function
 #define __penDrawLine(x1, y1, x2, y2)                                                              \
     Pen::drawLine(                                                                                 \
-        x1 + centerOffsetX,                                                                        \
-        y1 + centerOffsetY,                                                                        \
-        x2 + centerOffsetX,                                                                        \
-        y2 + centerOffsetY,                                                                        \
-        penSize,                                                                                   \
-        penColor                                                                                   \
+        x1 + pPointLT.x, y1 + pPointLT.y, x2 + pPointLT.x, y2 + pPointLT.y, penSize, penColor      \
     )
 
 #define __boundX(x)                                                                                \
@@ -60,12 +55,20 @@ public:
 
     float direction;
     float size;
+    float sizeScaled;
     float x;
     float y;
-    float centerOffsetX;
-    float centerOffsetY;
-    float windowCenterOffsetX;
-    float windowCenterOffsetY;
+    float wOrig;
+    float hOrig;
+    SDL_FPoint pPointOrig;
+    SDL_FPoint pPoint;
+    SDL_FPoint pPointLT;
+    SDL_FPoint pRotationOffset;  // offset for the surface rotation
+    SDL_FPoint pUnrotatedPoint;  // pivot with rotation offset cancellation
+    float centerOffsetLTX;
+    float centerOffsetLTY;
+    float windowOffsetLTX;
+    float windowOffsetLTY;
 
     SDL_FRect pos;
 
@@ -74,26 +77,87 @@ public:
     uint32_t penSize = 1;
     uint32_t penColor = 0xFFAF9F3F;
 
-    Movable(float _x, float _y, float w, float h, float dir, float _size):
+    Movable(
+        float _x, float _y, float pivotX, float pivotY, float w, float h, float dir, float _size
+    ):
         direction(dir - 90.0f),
         size{_size},
+        sizeScaled{_size / 100.0f},
         x{__boundXUnsafe(_x)},
         y{__boundYUnsafe(_y)},
-        centerOffsetX{w / 2.0f},
-        centerOffsetY{h / 2.0f},
-        windowCenterOffsetX{WINDOW_CENTER_X - centerOffsetX},
-        windowCenterOffsetY{WINDOW_CENTER_Y - centerOffsetY},
+        wOrig{w},
+        hOrig{h},
+        pPointOrig{
+            .x{pivotX},
+            .y{pivotY},
+        },
+        pPoint{
+            .x{pivotX * sizeScaled},
+            .y{pivotY * sizeScaled},
+        },
+        pPointLT{
+            .x{(w * sizeScaled) / 2.0f + pPoint.x},
+            .y{(h * sizeScaled) / 2.0f - pPoint.y},
+        },
+        windowOffsetLTX{WINDOW_CENTER_X - pPointLT.x},
+        windowOffsetLTY{WINDOW_CENTER_Y - pPointLT.y},
         pos{
-            .x{windowCenterOffsetX + __boundXUnsafe(_x)},
-            .y{windowCenterOffsetY - __boundYUnsafe(_y)},
-            .w{w},
-            .h{h},
-        } {}
+            .x{windowOffsetLTX + __boundXUnsafe(_x)},
+            .y{windowOffsetLTY - __boundYUnsafe(_y)},
+            .w{w * sizeScaled},
+            .h{h * sizeScaled},
+        } {
+        updateRotationOffset();
+    }
+
+    force_inline__ void updateRotationOffset() {
+        const auto tCos = degCos(direction);
+        const auto tSin = degSin(direction);
+
+        pRotationOffset.x = tCos * pPoint.x - tSin * pPoint.y - pPoint.x;
+        pRotationOffset.y = tSin * pPoint.x + tCos * pPoint.y - pPoint.y;
+
+        pUnrotatedPoint.x = pPoint.x - pRotationOffset.x;
+        pUnrotatedPoint.y = pPoint.y - pRotationOffset.y;
+    }
+
+    /*
+    * This function updates everything related to scaling and pivot position
+    */
+    force_inline__ void updateOffsetsAndPoints() {
+        sizeScaled = size / 100.0f;
+        pos.w = wOrig * sizeScaled;
+        pos.h = hOrig * sizeScaled;
+        pPoint.x = pPointOrig.x * sizeScaled;
+        pPoint.y = pPointOrig.y * sizeScaled;
+        pPointLT.x = pos.w / 2.0f + pPoint.x;
+        pPointLT.y = pos.h / 2.0f - pPoint.y;
+        windowOffsetLTX = WINDOW_CENTER_X - pPointLT.x;
+        windowOffsetLTY = WINDOW_CENTER_Y - pPointLT.y;
+        pos.x = windowOffsetLTX + x;
+        pos.y = windowOffsetLTY - y;
+
+        updateRotationOffset();
+
+        shouldUpdateSurfaceCache = true;
+    }
+
+    void setPivotXY(float x, float y) {
+        pPointOrig.x = x;
+        pPointOrig.y = y;
+        updateOffsetsAndPoints();
+    }
+
+    void setDim(float w, float h) {
+        wOrig = w;
+        hOrig = h;
+        updateOffsetsAndPoints();
+    }
 
     void setX(float _x) {
         x = __boundXUnsafe(_x);
         _x = pos.x;
-        pos.x = windowCenterOffsetX + x;
+        pos.x = windowOffsetLTX + x;
 
         if (isPenDown) Pen_safe(__penDrawLine(_x, pos.y, pos.x, pos.y));
     }
@@ -101,7 +165,7 @@ public:
     void setY(float _y) {
         y = __boundYUnsafe(_y);
         _y = pos.y;
-        pos.y = windowCenterOffsetY - y;
+        pos.y = windowOffsetLTY - y;
 
         if (isPenDown) Pen_safe(__penDrawLine(pos.x, _y, pos.x, pos.y));
     }
@@ -109,11 +173,11 @@ public:
     void goXY(float _x, float _y) {
         x = __boundXUnsafe(_x);
         _x = pos.x;
-        pos.x = windowCenterOffsetX + x;
+        pos.x = windowOffsetLTX + x;
 
         y = __boundYUnsafe(_y);
         _y = pos.y;
-        pos.y = windowCenterOffsetY - y;
+        pos.y = windowOffsetLTY - y;
 
         if (isPenDown) Pen_safe(__penDrawLine(_x, _y, pos.x, pos.y));
     }
@@ -132,7 +196,7 @@ public:
     void changeX(float offset) {
         x = __boundX(x + offset);
         offset = pos.x;
-        pos.x = windowCenterOffsetX + x;
+        pos.x = windowOffsetLTX + x;
 
         if (isPenDown) Pen_safe(__penDrawLine(offset, pos.y, pos.x, pos.y));
     }
@@ -140,7 +204,7 @@ public:
     void changeY(float offset) {
         y = __boundY(y + offset);
         offset = pos.y;
-        pos.y = windowCenterOffsetY - y;
+        pos.y = windowOffsetLTY - y;
 
         if (isPenDown) Pen_safe(__penDrawLine(pos.x, offset, pos.x, pos.y));
     }
@@ -150,6 +214,8 @@ public:
 
         direction += angle;
         direction = fmod(direction, 360.0);
+
+        updateRotationOffset();
     }
 
     void turnLeft(float angle) {
@@ -157,21 +223,29 @@ public:
 
         direction -= angle;
         direction = fmod(direction, 360.0);
+
+        updateRotationOffset();
     }
 
     void point(float angle) {
         shouldUpdateSurfaceCache = true;
         direction = fmod(angle - 90.0, 360.0);
+
+        updateRotationOffset();
     }
 
     void pointTowardsPointer() {
         shouldUpdateSurfaceCache = true;
         direction = (atan2(mouseState.x - x, mouseState.y - y) - M_PI_2) / M_RAD;
+
+        updateRotationOffset();
     }
 
     void pointTowardsSprite(Movable * sprite) {
         shouldUpdateSurfaceCache = true;
         direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
+
+        updateRotationOffset();
     }
 
     void move(float distance) {
@@ -181,8 +255,8 @@ public:
         float oldX = pos.x;
         float oldY = pos.y;
 
-        pos.x = windowCenterOffsetX + x;
-        pos.y = windowCenterOffsetY - y;
+        pos.x = windowOffsetLTX + x;
+        pos.y = windowOffsetLTY - y;
 
         if (isPenDown) Pen_safe(__penDrawLine(oldX, oldY, pos.x, pos.y));
     }
@@ -205,6 +279,20 @@ public:
 
     bool isTouchingPointer() { return isTouchingXY(mouseState.x, mouseState.y); }
 
+    void setSize(float _size) {
+        if (_size != size) {
+            size = _size;
+            updateOffsetsAndPoints();
+        }
+    }
+
+    void changeSize(float t) {
+        if (t != 0) {
+            size += t;
+            updateOffsetsAndPoints();
+        }
+    }
+
     void penStamp();
 
     void penSetColor(uint32_t color) {
@@ -226,11 +314,28 @@ class Costume {
 public:
     const wchar_t * name;
     const wchar_t * fileName;
+    float w;
+    float h;
+    float pX;
+    float pY;
 
     SDL_Surface * surface = NULL;
     SDL_Texture * texture = NULL;
 
-    Costume(const wchar_t * _name, const wchar_t * _fileName): name{_name}, fileName{_fileName} {}
+    Costume(
+        const wchar_t * _name,
+        const wchar_t * _fileName,
+        float pivotX,
+        float pivotY,
+        float _w,
+        float _h
+    ):
+        name{_name},
+        fileName{_fileName},
+        w{_w},
+        h{_h},
+        pX{pivotX},
+        pY{pivotY} {}
 
     void init(SDL_Renderer * renderer, const std::filesystem::path & baseDir) {
         surface = IMG_Load((baseDir / fileName).string().c_str());
@@ -260,9 +365,12 @@ protected:
     const std::filesystem::path costumesPath;
     uint64_t costumesNumber;
     uint64_t costumeIndex;
+    Costume * currentCostume;
     std::vector<Costume> costumes;
     std::unordered_map<uint64_t, uint64_t> costumeIndexes;
     std::unordered_map<uint64_t, uint64_t>::iterator costumeIndexesEnd;
+
+    force_inline__ void onCostumeSwitch() { currentCostume = &costumes[costumeIndex]; }
 
 public:
     volatile bool __stopOtherScripts = false;
@@ -272,7 +380,7 @@ public:
         uint64_t _costumeIndex,
         const std::vector<Costume> & _costumes
     ):
-        costumeIndex{_costumeIndex},
+        costumeIndex{_costumeIndex - 1},
         spritePath{_spritePath},
         costumesPath{_spritePath / L"costumes"},
         costumes{_costumes} {
@@ -282,6 +390,7 @@ public:
         }
         costumeIndexesEnd = costumeIndexes.end();
         costumesNumber = _costumes.size();
+        currentCostume = &costumes[costumeIndex];
     }
 
     void init(SDL_Renderer * renderer) {
@@ -302,37 +411,51 @@ public:
         auto found = costumeIndexes.find(fastHash(value.toString()));
         if (found != costumeIndexesEnd) {
             costumeIndex = found->second;
-            return;
+        } else if (value.number > 0 && value.number <= costumesNumber) {
+            costumeIndex = value.number - 1;
         }
-        if (value.number > 0 && value.number <= costumesNumber) costumeIndex = value.number - 1;
+
+        onCostumeSwitch();
+    }
+    void switchCostumeTo(String && str) {
+        auto found = costumeIndexes.find(fastHash(str.data));
+        if (found != costumeIndexesEnd) {
+            costumeIndex = found->second;
+        } else {
+            auto num = String::strToNum(str, str.length);
+            if (num > 0 && num <= costumesNumber) costumeIndex = num - 1;
+        }
+
+        onCostumeSwitch();
+    }
+    void switchCostumeTo(const wchar_t * str) {
+        switchCostumeTo(String(wcslen(str), (wchar_t *)str, true, true));
     }
 
     void switchCostumeByIndex(uint64_t index) {
         if (index > 0 && index <= costumesNumber) costumeIndex = index - 1;
-    }
-    void switchCostumeByName(const wchar_t * name) {
-        auto found = costumeIndexes.find(fastHash(name));
-        if (found != costumeIndexesEnd) costumeIndex = found->second;
+        onCostumeSwitch();
     }
     /**
     * For this method to work, you need to pass fastHash(L"some string"),
     * provided by the runtime/utils.h.
     * Also you can use just L"your string"_H
     */
-    void switchCostumeByName(uint64_t nameHash) {
+    void switchCostumeByNameHash(uint64_t nameHash) {
         auto found = costumeIndexes.find(nameHash);
         if (found != costumeIndexesEnd) costumeIndex = found->second;
+        onCostumeSwitch();
     }
 
     void nextCostume() { costumeIndex = (costumeIndex + 1) % costumesNumber; }
 
-    SDL_Texture * getCostumeTexture() const { return costumes[costumeIndex].texture; }
+    SDL_Texture * getCostumeTexture() const { return currentCostume->texture; }
 
-    SDL_Surface * getCostumeSurface() const { return costumes[costumeIndex].surface; }
+    SDL_Surface * getCostumeSurface() const { return currentCostume->surface; }
 
     double getCostumeIndex() { return costumeIndex + 1; }
 
-    const wchar_t * getCostumeName() { return costumes[costumeIndex].name; }
+    const wchar_t * getCostumeName() { return currentCostume->name; }
 
     void stopOtherScripts() { __stopOtherScripts = true; }
 

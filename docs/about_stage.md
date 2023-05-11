@@ -5,6 +5,9 @@
 - [C-Scratch](#c-scratch)
   - [Table of Contents](#table-of-contents)
   - [Documentation - About Stage](#documentation---about-stage)
+  - [Sprites](#sprites)
+    - [Declaring a new sprite](#declaring-a-new-sprite)
+  - [Scripts](#scripts)
     - [Coroutines](#coroutines)
     - [Actions](#actions)
     - [Calling other coroutines](#calling-other-coroutines)
@@ -12,6 +15,43 @@
     - [Literal suffixes](#literal-suffixes)
 
 ## Documentation - About Stage
+
+## Sprites
+
+### Declaring a new sprite
+
+To declare a sprite, you have to specify all the basic sprite information.
+And then just add it to the manager with `SpriteManager`'s constructor or by calling
+`SpriteManager::add(&sprite)`:
+
+> All the values correspond to Scratch's logic, so indexes are 1 based and the direction is 90deg based.
+
+```cpp
+Sprite sprite({
+    .name = L"Sprite Name",
+    .safeName = L"Sprite_Name",
+    .x = 20,
+    .y = 20,
+    .direction = 90,
+    .costumeIndex = 1,
+    .size = 100,
+    .visible = false,
+    .layerOrder = 1,
+    .costumes = {
+        //  name            file name        pX, pY, width, height
+        {L"Costume 1", L"backdrop1 (1).svg",  0,  0,  10,    20},
+        {L"Costume 2", L"Castle 2.png",       0,  0,  10,    20},
+    },
+});
+
+SpriteManager manageSprite(&sprite);
+```
+
+Where `pX` and `pY` are coordinates of the costume pivot relative to it's _real_ center.
+
+E.g. if `width` = 10 and `height` = 20, then coordinates of pivot placed in top left corner will be `pX` = -5, `pY` = 10.
+
+## Scripts
 
 ### Coroutines
 

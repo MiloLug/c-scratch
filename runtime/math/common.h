@@ -57,4 +57,7 @@ const constexpr uint32_t INT32_MAX = (1 << (INT32_BITS - 1)) - 1;
 #define MIN_UNSAFE(a, b) ((a) < (b) ? (a) : (b))
 
 
+#define DISTANCE0_UNSAFE(x, y) sqrt((x) * (x) + (y) * (y))
+
+
 #endif

@@ -20,7 +20,7 @@ AlwaysBreakBeforeMultilineStrings: 'true'
 AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackArguments: 'false'
 BinPackParameters: 'false'
-BreakBeforeBinaryOperators: None
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: 'true'
 ColumnLimit: '100'
 CompactNamespaces: 'false'
@@ -80,3 +80,4 @@ BraceWrapping:
     SplitEmptyRecord: false
     SplitEmptyNamespace: false
 
+FixNamespaceComments: false

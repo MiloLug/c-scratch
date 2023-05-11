@@ -23,9 +23,9 @@
         Backdrop backdrop({ 
             .costumeIndex = 1,
             .costumes = {
-                //  name            file name
-                {L"Costume 1", L"backdrop1 (1).svg"},
-                {L"Costume 2", L"Castle 2.png"},
+                //  name            file name        center X, Y, sprite width, height
+                {L"Costume 1", L"backdrop1 (1).svg",        0, 0,          10,    20},
+                {L"Costume 2", L"Castle 2.png",             0, 0,          10,    20},
             },
         });
 
@@ -76,7 +76,7 @@
                 .visible = true,
                 .layerOrder = 1,
                 .costumes = {
-                    {L"Costume 1", L"costume1.png"},
+                    {L"Costume 1", L"costume1.png", 0, 0, 20, 20},
                 },
             });
 
