@@ -42,103 +42,103 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`move (X) steps`]
 
-    `sprite->move(X)`
+    `sprite.move(X)`
 
 - [`turn right (X) degrees`]
 
-    `sprite->turnRight(X)`
+    `sprite.turnRight(X)`
 
 - [`turn left (X) degrees`]
 
-    `sprite->turnLeft(X)`
+    `sprite.turnLeft(X)`
 
 - [`go to (random position)`]
 
-    `sprite->goToRandomPosition()`
+    `sprite.goToRandomPosition()`
 
 - [`go to (mouse-pointer)`]
 
-    `sprite->goToPointer()`
+    `sprite.goToPointer()`
 
 - [`go to (sprite)`]
 
-    `sprite->goToSprite(&sprite)`
+    `sprite.goToSprite(&sprite)`
 
 - [`go to x: (X) y: (Y)`]
 
-    `sprite->goXY(X, Y)`
+    `sprite.goXY(X, Y)`
 
 - [`glide (T) secs to (random position)`]
 
-    `cs_wait(sprite->glideToRandomPosition(T))` NOT IMPLEMENTED
+    `cs_wait(sprite.glideToRandomPosition(T))` NOT IMPLEMENTED
 
 - [`glide (T) secs to (mouse-pointer)`]
 
-    `cs_wait(sprite->glideToPointer(T))` NOT IMPLEMENTED
+    `cs_wait(sprite.glideToPointer(T))` NOT IMPLEMENTED
 
 - [`glide (T) secs to (sprite)`]
 
-    `cs_wait(sprite->glideToSprite(&sprite))` NOT IMPLEMENTED
+    `cs_wait(sprite.glideToSprite(&sprite))` NOT IMPLEMENTED
 
 - [`glide (T) secs to x: (X) y: (Y)`]
 
-    `cs_wait(sprite->glideXY(T, X, Y))` NOT IMPLEMENTED
+    `cs_wait(sprite.glideXY(T, X, Y))` NOT IMPLEMENTED
 
 - [`point in direction (X)`]
 
-    `sprite->point(X)`
+    `sprite.point(X)`
 
 - [`point towards (mouse-pointer)`]
 
-    `sprite->pointTowardsPointer()`
+    `sprite.pointTowardsPointer()`
 
 - [`point towards (sprite)`]
 
-    `sprite->pointTowardsSprite(&sprite)`
+    `sprite.pointTowardsSprite(&sprite)`
 
 - [`change x by (N)`]
 
-    `sprite->changeX(N)`
+    `sprite.changeX(N)`
 
 - [`set x to (N)`]
 
-    `sprite->setX(N)`
+    `sprite.setX(N)`
 
 - [`change y by (N)`]
 
-    `sprite->changeY(N)`
+    `sprite.changeY(N)`
 
 - [`set y to (N)`]
 
-    `sprite->setY(N)`
+    `sprite.setY(N)`
 
 - [`if on edge, bounce`]
 
-    `sprite->edgeBounce()` NOT IMPLEMENTED
+    `sprite.edgeBounce()` NOT IMPLEMENTED
 
 - [`set rotation style [left-right]`]
 
-    `sprite->setRotationStyle(Sprite::ROT_LEFT_RIGHT)` NOT IMPLEMENTED
+    `sprite.setRotationStyle(Sprite::ROT_LEFT_RIGHT)` NOT IMPLEMENTED
 
 - [`set rotation style [left-right]`]
 
-    `sprite->setRotationStyle(Sprite::ROT_NONE)` NOT IMPLEMENTED
+    `sprite.setRotationStyle(Sprite::ROT_NONE)` NOT IMPLEMENTED
 
 - [`set rotation style [left-right]`]
 
-    `sprite->setRotationStyle(Sprite::ROT_ALL_AROUND)` NOT IMPLEMENTED
+    `sprite.setRotationStyle(Sprite::ROT_ALL_AROUND)` NOT IMPLEMENTED
 
 - (`x position`)
 
-    `sprite->x`
+    `sprite.getX()`
 
 - (`y position`)
 
-    `sprite->y`
+    `sprite.getY()`
 
 - (`direction`)
 
-    `sprite->getDirection()`
+    `sprite.getDirection()`
 
 ### Looks
 
@@ -237,7 +237,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - (`size`)
 
-    `sprite.size`
+    `sprite.getSize()`
 
 ### Sound
 
@@ -329,23 +329,23 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - <`touching (mouse-pointer) ?`>
 
-    `sprite->isTouchingPointer()`
+    `sprite.isTouchingPointer()`
 
 - <`touching (edge) ?`>
 
-    `sprite->isTouchingEdge()` NOT IMPLEMENTED
+    `sprite.isTouchingEdge()` NOT IMPLEMENTED
 
 - <`touching (sprite) ?`>
 
-    `sprite->isTouchingSprite(&sprite)` NOT IMPLEMENTED
+    `sprite.isTouchingSprite(&sprite)` NOT IMPLEMENTED
 
 - (`distance to (mouse-pointer)`)
 
-    `sprite->getPointerDistance()`
+    `sprite.getPointerDistance()`
 
 - (`distance to (sprite)`)
 
-    `sprite->getSpriteDistance(&sprite)`
+    `sprite.getSpriteDistance(&sprite)`
 
 - <`key (KEY) pressed?`>
   - general case - `isKeyPressed(X)` where `X` is a name, variable or SDL scan-code

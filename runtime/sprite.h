@@ -79,7 +79,7 @@ public:
     }
 
     SDL_Surface * getCostumeTransformedSurface() {
-        if (!shouldUpdateSurfaceCache) return surfaceCache;
+        if (!shouldUpdateTransformCache) return surfaceCache;
 
         if (surfaceCache != NULL) SDL_FreeSurface(surfaceCache);
         auto src = getCostumeSurface();
@@ -98,8 +98,8 @@ public:
         ));
     }
 
-    void hide() { visible = false; }
-    void show() { visible = true; }
+    force_inline__ void hide() { visible = false; }
+    force_inline__ void show() { visible = true; }
 
     ~Sprite() {
         if (surfaceCache) SDL_FreeSurface(surfaceCache);

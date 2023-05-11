@@ -38,9 +38,9 @@ void SpriteManager::renderSprites(SDL_Renderer * renderer) {
                 renderer,
                 sprite->getCostumeTexture(),
                 NULL,
-                &sprite->pos,
-                sprite->direction,
-                &sprite->pPointLT,
+                &sprite->getRectLT(),
+                sprite->getDirectionLT(),
+                &sprite->getPivotLT(),
                 SDL_FLIP_NONE
             );
     }

@@ -214,7 +214,7 @@ public:
         return *this;
     }
 
-    Value & operator=(String && value) { return operator=(value); }
+    force_inline__ Value & operator=(String && value) { return operator=(value); }
 
     Value & operator=(const String & value) {
         if (string)
@@ -269,11 +269,13 @@ public:
     make_math_bin_op(/);
     make_math_bin_op(*);
 
-    bool operator!() { return !number; }
+    force_inline__ bool operator!() { return !number; }
 
     constexpr operator storage_number_t() { return number; }
 
-    operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
+    force_inline__ operator const wchar_t *() {
+        return type == Type::STRING ? string->data : getNumberStr();
+    }
 
     void clean() {
         if (string) {

@@ -16,48 +16,57 @@
 const std::filesystem::path ASSETS_BASE_DIR = L"assets/";
 
 
-// The compiler can't inline it for some reason, when used as a function
 #define __penDrawLine(x1, y1, x2, y2)                                                              \
     Pen::drawLine(                                                                                 \
         x1 + pPointLT.x, y1 + pPointLT.y, x2 + pPointLT.x, y2 + pPointLT.y, penSize, penColor      \
     )
 
-#define __boundX(x)                                                                                \
-    ({                                                                                             \
-        auto __x = (x);                                                                            \
-        __x > MAX_X ? MAX_X : (__x < -MAX_X ? -MAX_X : __x);                                       \
-    })
-#define __boundY(y)                                                                                \
-    ({                                                                                             \
-        auto __y = (y);                                                                            \
-        __y > MAX_Y ? MAX_Y : (__y < -MAX_Y ? -MAX_Y : __y);                                       \
-    })
-#define __boundXUnsafe(x) (x > MAX_X ? MAX_X : (x < -MAX_X ? -MAX_X : x))
-#define __boundYUnsafe(y) (y > MAX_Y ? MAX_Y : (y < -MAX_Y ? -MAX_Y : y))
+#ifdef NO_COORDINATES_LIMITATION
+    #define __boundX(x) (x)
+    #define __boundY(y) (y)
+    #define __boundXUnsafe(x) (x)
+    #define __boundYUnsafe(y) (y)
+    #define __boundXMove(x, d) ((x) + (d))
+    #define __boundYMove(y, d) ((y) + (d))
+#else
+    #define __boundX(x)                                                                            \
+        ({                                                                                         \
+            auto __x = (x);                                                                        \
+            __x > MAX_X ? MAX_X : (__x < -MAX_X ? -MAX_X : __x);                                   \
+        })
+    #define __boundY(y)                                                                            \
+        ({                                                                                         \
+            auto __y = (y);                                                                        \
+            __y > MAX_Y ? MAX_Y : (__y < -MAX_Y ? -MAX_Y : __y);                                   \
+        })
+    #define __boundXUnsafe(x) (x > MAX_X ? MAX_X : (x < -MAX_X ? -MAX_X : x))
+    #define __boundYUnsafe(y) (y > MAX_Y ? MAX_Y : (y < -MAX_Y ? -MAX_Y : y))
 
-#define __boundXMove(x, d)                                                                         \
-    ({                                                                                             \
-        float __x2 = (x) + (d);                                                                    \
-        __x2 > MAX_X ? MAX_X : (__x2 < -MAX_X ? -MAX_X : __x2);                                    \
-    })
+    #define __boundXMove(x, d)                                                                     \
+        ({                                                                                         \
+            float __x2 = (x) + (d);                                                                \
+            __x2 > MAX_X ? MAX_X : (__x2 < -MAX_X ? -MAX_X : __x2);                                \
+        })
 
-#define __boundYMove(y, d)                                                                         \
-    ({                                                                                             \
-        float __y2 = (y) + (d);                                                                    \
-        __y2 > MAX_X ? MAX_X : (__y2 < -MAX_X ? -MAX_X : __y2);                                    \
-    })
+    #define __boundYMove(y, d)                                                                     \
+        ({                                                                                         \
+            float __y2 = (y) + (d);                                                                \
+            __y2 > MAX_X ? MAX_X : (__y2 < -MAX_X ? -MAX_X : __y2);                                \
+        })
+#endif
 
 
 class Movable {
-public:
+protected:
     static constexpr float MAX_X = 30000.0f;
     static constexpr float MAX_Y = 30000.0f;
 
     float direction;
     float size;
-    float sizeScaled;
     float x;
     float y;
+
+    float sizeScaled;
     float wOrig;
     float hOrig;
     SDL_FPoint pPointOrig;
@@ -72,43 +81,11 @@ public:
 
     SDL_FRect pos;
 
-    bool shouldUpdateSurfaceCache = true;
+    bool shouldUpdateTransformCache = true;
     bool isPenDown = false;
     uint32_t penSize = 1;
     uint32_t penColor = 0xFFAF9F3F;
 
-    Movable(
-        float _x, float _y, float pivotX, float pivotY, float w, float h, float dir, float _size
-    ):
-        direction(dir - 90.0f),
-        size{_size},
-        sizeScaled{_size / 100.0f},
-        x{__boundXUnsafe(_x)},
-        y{__boundYUnsafe(_y)},
-        wOrig{w},
-        hOrig{h},
-        pPointOrig{
-            .x{pivotX},
-            .y{pivotY},
-        },
-        pPoint{
-            .x{pivotX * sizeScaled},
-            .y{pivotY * sizeScaled},
-        },
-        pPointLT{
-            .x{(w * sizeScaled) / 2.0f + pPoint.x},
-            .y{(h * sizeScaled) / 2.0f - pPoint.y},
-        },
-        windowOffsetLTX{WINDOW_CENTER_X - pPointLT.x},
-        windowOffsetLTY{WINDOW_CENTER_Y - pPointLT.y},
-        pos{
-            .x{windowOffsetLTX + __boundXUnsafe(_x)},
-            .y{windowOffsetLTY - __boundYUnsafe(_y)},
-            .w{w * sizeScaled},
-            .h{h * sizeScaled},
-        } {
-        updateRotationOffset();
-    }
 
     force_inline__ void updateRotationOffset() {
         const auto tCos = degCos(direction);
@@ -139,20 +116,46 @@ public:
 
         updateRotationOffset();
 
-        shouldUpdateSurfaceCache = true;
+        shouldUpdateTransformCache = true;
     }
 
-    void setPivotXY(float x, float y) {
-        pPointOrig.x = x;
-        pPointOrig.y = y;
-        updateOffsetsAndPoints();
+public:
+    Movable(
+        float _x, float _y, float pivotX, float pivotY, float w, float h, float dir, float _size
+    ):
+        direction{dir - 90.0f},
+        size{_size},
+        sizeScaled{_size / 100.0f},
+        x{__boundXUnsafe(_x)},
+        y{__boundYUnsafe(_y)},
+        wOrig{w},
+        hOrig{h},
+        pPointOrig{
+            .x{pivotX},
+            .y{pivotY},
+        },
+        pPoint{
+            .x{pivotX * sizeScaled},
+            .y{pivotY * sizeScaled},
+        },
+        pPointLT{
+            .x{(w * sizeScaled) / 2.0f + pPoint.x},
+            .y{(h * sizeScaled) / 2.0f - pPoint.y},
+        },
+        windowOffsetLTX{WINDOW_CENTER_X - pPointLT.x},
+        windowOffsetLTY{WINDOW_CENTER_Y - pPointLT.y},
+        pos{
+            .x{windowOffsetLTX + __boundXUnsafe(_x)},
+            .y{windowOffsetLTY - __boundYUnsafe(_y)},
+            .w{w * sizeScaled},
+            .h{h * sizeScaled},
+        } {
+        updateRotationOffset();
     }
 
-    void setDim(float w, float h) {
-        wOrig = w;
-        hOrig = h;
-        updateOffsetsAndPoints();
-    }
+    /*
+    * Coordinates & Movements
+    */
 
     void setX(float _x) {
         x = __boundXUnsafe(_x);
@@ -170,6 +173,14 @@ public:
         if (isPenDown) Pen_safe(__penDrawLine(pos.x, _y, pos.x, pos.y));
     }
 
+    void setPivotXY(float x, float y) {
+        pPointOrig.x = x;
+        pPointOrig.y = y;
+        updateOffsetsAndPoints();
+    }
+
+    force_inline__ const SDL_FPoint & getPivotLT() { return pPointLT; }
+
     void goXY(float _x, float _y) {
         x = __boundXUnsafe(_x);
         _x = pos.x;
@@ -180,6 +191,19 @@ public:
         pos.y = windowOffsetLTY - y;
 
         if (isPenDown) Pen_safe(__penDrawLine(_x, _y, pos.x, pos.y));
+    }
+
+    void move(float distance) {
+        x = __boundXMove(x, distance * (float)degCos(direction));
+        y = __boundYMove(y, -distance * (float)degSin(direction));
+
+        float oldX = pos.x;
+        float oldY = pos.y;
+
+        pos.x = windowOffsetLTX + x;
+        pos.y = windowOffsetLTY - y;
+
+        if (isPenDown) Pen_safe(__penDrawLine(oldX, oldY, pos.x, pos.y));
     }
 
     void goToPinter() { goXY(mouseState.x, mouseState.y); }
@@ -209,8 +233,16 @@ public:
         if (isPenDown) Pen_safe(__penDrawLine(pos.x, offset, pos.x, pos.y));
     }
 
+    force_inline__ const float & getX() { return x; }
+
+    force_inline__ const float & getY() { return y; }
+
+    /*
+    * Rotation
+    */
+
     void turnRight(float angle) {
-        shouldUpdateSurfaceCache = true;
+        shouldUpdateTransformCache = true;
 
         direction += angle;
         direction = fmod(direction, 360.0);
@@ -219,7 +251,7 @@ public:
     }
 
     void turnLeft(float angle) {
-        shouldUpdateSurfaceCache = true;
+        shouldUpdateTransformCache = true;
 
         direction -= angle;
         direction = fmod(direction, 360.0);
@@ -228,40 +260,33 @@ public:
     }
 
     void point(float angle) {
-        shouldUpdateSurfaceCache = true;
+        shouldUpdateTransformCache = true;
         direction = fmod(angle - 90.0, 360.0);
 
         updateRotationOffset();
     }
 
     void pointTowardsPointer() {
-        shouldUpdateSurfaceCache = true;
+        shouldUpdateTransformCache = true;
         direction = (atan2(mouseState.x - x, mouseState.y - y) - M_PI_2) / M_RAD;
 
         updateRotationOffset();
     }
 
     void pointTowardsSprite(Movable * sprite) {
-        shouldUpdateSurfaceCache = true;
+        shouldUpdateTransformCache = true;
         direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
 
         updateRotationOffset();
     }
 
-    void move(float distance) {
-        x = __boundXMove(x, distance * (float)degCos(direction));
-        y = __boundYMove(y, -distance * (float)degSin(direction));
+    force_inline__ float getDirection() const { return fmod(direction + 90.0, 360.0); }
 
-        float oldX = pos.x;
-        float oldY = pos.y;
+    force_inline__ const float & getDirectionLT() { return direction; }
 
-        pos.x = windowOffsetLTX + x;
-        pos.y = windowOffsetLTY - y;
-
-        if (isPenDown) Pen_safe(__penDrawLine(oldX, oldY, pos.x, pos.y));
-    }
-
-    float getDirection() const { return fmod(direction + 90.0, 360.0); }
+    /*
+    * Sensing
+    */
 
     float getPointerDistance() {
         const auto xDiff = mouseState.x - pos.x;
@@ -277,7 +302,19 @@ public:
 
     bool isTouchingXY(float x1, float y1);
 
-    bool isTouchingPointer() { return isTouchingXY(mouseState.x, mouseState.y); }
+    force_inline__ bool isTouchingPointer() { return isTouchingXY(mouseState.x, mouseState.y); }
+
+    /*
+    * Dimensions
+    */
+
+    force_inline__ const SDL_FRect & getRectLT() { return pos; }
+
+    void setDim(float w, float h) {
+        wOrig = w;
+        hOrig = h;
+        updateOffsetsAndPoints();
+    }
 
     void setSize(float _size) {
         if (_size != size) {
@@ -286,6 +323,8 @@ public:
         }
     }
 
+    force_inline__ const float & getSize() { return size; }
+
     void changeSize(float t) {
         if (t != 0) {
             size += t;
@@ -293,20 +332,24 @@ public:
         }
     }
 
+    /*
+    * Pen Tools
+    */
+
     void penStamp();
 
     void penSetColor(uint32_t color) {
         penColor = color << 8 | ((color >> 24) == 0 ? 0xFF : color >> 24);
     }
 
-    void penSetSize(double size) { penSize = round(MAX_UNSAFE(size, 0)); }
+    force_inline__ void penSetSize(double size) { penSize = round(MAX_UNSAFE(size, 0)); }
 
     void penDown() {
         isPenDown = true;
         Pen_safe(__penDrawLine(pos.x, pos.y, pos.x, pos.y));
     }
 
-    void penUp() { isPenDown = false; }
+    force_inline__ void penUp() { isPenDown = false; }
 };
 
 
