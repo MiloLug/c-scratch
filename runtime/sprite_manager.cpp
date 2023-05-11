@@ -40,7 +40,7 @@ void SpriteManager::renderSprites(SDL_Renderer * renderer) {
                 NULL,
                 &sprite->pos,
                 sprite->direction,
-                NULL,
+                &sprite->pPointLT,
                 SDL_FLIP_NONE
             );
     }
