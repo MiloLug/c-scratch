@@ -189,6 +189,7 @@ public:
     Value & operator=(const Value & origin) {
         if (origin.type == Type::NUMBER) {
             number = origin.number;
+	    type = Type::NUMBER;
             return *this;
         }
 
@@ -214,7 +215,7 @@ public:
         return *this;
     }
 
-    force_inline__ Value & operator=(String && value) { return operator=(value); }
+    Value & operator=(String && value) { return operator=(value); }
 
     Value & operator=(const String & value) {
         if (string)
@@ -269,29 +270,29 @@ public:
     make_math_bin_op(/);
     make_math_bin_op(*);
 
-    force_inline__ bool operator!() { return !number; }
+    bool operator!() { return !number; }
 
     constexpr operator storage_number_t() { return number; }
 
-    force_inline__ operator const wchar_t *() {
+    operator const wchar_t *() {
         return type == Type::STRING ? string->data : getNumberStr();
     }
 
-    void clean() {
-        if (string) {
-            string->clean();
-            free(string);
-        }
+    constexpr void clean() {
         if (numberStrTmp) {
             free(numberStrTmp);
+	    numberStrTmp = NULL;
+	    numberStrSize = 0;
         }
-
-        string = NULL;
-        numberStrTmp = NULL;
-        numberStrSize = 0;
+	
+	if (string) {
+            string->clean();
+            free(string);
+	    string = NULL;
+        }
     }
 
-    ~Value() { clean(); }
+    constexpr ~Value() { clean(); }
 };
 
 
