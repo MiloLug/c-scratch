@@ -8,6 +8,19 @@
 #include <cstdint>
 
 
+#define __Pen_drawPixelOnPointer_unsafe(__bgPointer, __color, __srcAlpha)                          \
+    const uint32_t bgColor = *(__bgPointer);                                                       \
+    uint32_t bgA = bgColor & 0xFF;                                                                 \
+    uint32_t resA = __srcAlpha + (bgA * (255 - __srcAlpha) >> 8);                                  \
+                                                                                                   \
+    uint32_t rb = bgColor >> 8 & 0x00FF00FF;                                                       \
+    uint32_t g = bgColor & 0x00FF0000;                                                             \
+    rb += (((__color) >> 8 & 0x00FF00FF) - rb) * __srcAlpha >> 8;                                  \
+    g += (((__color)&0x00FF0000) - g) * __srcAlpha >> 8;                                           \
+                                                                                                   \
+    *(__bgPointer) = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
+
+
 namespace Pen {
     static constexpr int64_t canvasWidth = WINDOW_WIDTH, canvasHeight = WINDOW_HEIGHT;
     static constexpr uint64_t canvasSize = canvasWidth * canvasHeight;

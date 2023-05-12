@@ -50,15 +50,7 @@ namespace Pen {
                 if (alpha == 0xFF) {
                     *canvasP = surPix;
                 } else {
-                    const uint32_t bgColor = *canvasP;
-                    const uint32_t resA = alpha + ((bgColor & 0xFF) * (255 - alpha) >> 8);
-
-                    uint32_t rb = bgColor >> 8 & 0x00FF00FF;
-                    uint32_t g = bgColor & 0x00FF0000;
-                    rb += ((surPix >> 8 & 0x00FF00FF) - rb) * alpha >> 8;
-                    g += ((surPix & 0x00FF0000) - g) * alpha >> 8;
-
-                    *canvasP = (rb & 0x00FF00FF) << 8 | (g & 0x00FF0000) | resA;
+                    __Pen_drawPixelOnPointer_unsafe(canvasP, surPix, alpha);
                 }
 
 #ifdef PEN_STAMP_DEBUG

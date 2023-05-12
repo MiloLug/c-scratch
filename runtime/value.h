@@ -34,13 +34,17 @@
     }                                                                                              \
     constexpr bool operator op(double value) const { return number op value; }                     \
     constexpr bool operator op(float value) const { return number op value; }                      \
-    constexpr bool operator op(int value) const { return number op value; }
+    constexpr bool operator op(int value) const { return number op value; }                        \
+    constexpr bool operator op(int64_t value) const { return number op value; }                    \
+    constexpr bool operator op(uint64_t value) const { return number op value; }
 
 
 #define make_math_bin_op(op)                                                                       \
     constexpr storage_number_t operator op(double value) const { return number op value; }         \
     constexpr storage_number_t operator op(float value) const { return number op value; }          \
     constexpr storage_number_t operator op(int value) const { return number op value; }            \
+    constexpr storage_number_t operator op(int64_t value) const { return number op value; }        \
+    constexpr storage_number_t operator op(uint64_t value) const { return number op value; }       \
     constexpr storage_number_t operator op(Value & value) const { return number op value.number; } \
     template<typename T>                                                                           \
     storage_number_t operator op(T * value) const                                                  \
@@ -189,7 +193,7 @@ public:
     Value & operator=(const Value & origin) {
         if (origin.type == Type::NUMBER) {
             number = origin.number;
-	    type = Type::NUMBER;
+            type = Type::NUMBER;
             return *this;
         }
 
@@ -274,21 +278,19 @@ public:
 
     constexpr operator storage_number_t() { return number; }
 
-    operator const wchar_t *() {
-        return type == Type::STRING ? string->data : getNumberStr();
-    }
+    operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
 
     constexpr void clean() {
         if (numberStrTmp) {
             free(numberStrTmp);
-	    numberStrTmp = NULL;
-	    numberStrSize = 0;
+            numberStrTmp = NULL;
+            numberStrSize = 0;
         }
-	
-	if (string) {
+
+        if (string) {
             string->clean();
             free(string);
-	    string = NULL;
+            string = NULL;
         }
     }
 
