@@ -7,6 +7,8 @@
 #include "sdl.h"
 #include "utils.h"
 #include "value.h"
+#include "coroutines.h"
+#include "control_flow.h"
 
 #include <filesystem>
 #include <unordered_map>
@@ -82,6 +84,8 @@ protected:
     SDL_FRect pos;
 
     bool shouldUpdateTransformCache = true;
+    bool draggingEnabled = false;
+
     bool isPenDown = false;
     uint32_t penSize = 1;
     uint32_t penColor = 0xFFAF9F3F;
@@ -173,6 +177,26 @@ public:
         if (isPenDown) Pen_safe(__penDrawLine(pos.x, _y, pos.x, pos.y));
     }
 
+    void changeX(float offset) {
+        x = __boundX(x + offset);
+        offset = pos.x;
+        pos.x = windowOffsetLTX + x;
+
+        if (isPenDown) Pen_safe(__penDrawLine(offset, pos.y, pos.x, pos.y));
+    }
+
+    void changeY(float offset) {
+        y = __boundY(y + offset);
+        offset = pos.y;
+        pos.y = windowOffsetLTY - y;
+
+        if (isPenDown) Pen_safe(__penDrawLine(pos.x, offset, pos.x, pos.y));
+    }
+
+    force_inline__ const float getX() { return x; }
+
+    force_inline__ const float getY() { return y; }
+
     void setPivotXY(float x, float y) {
         pPointOrig.x = x;
         pPointOrig.y = y;
@@ -217,25 +241,29 @@ public:
 
     void goToSprite(Movable * sprite) { goXY(sprite->x, sprite->y); }
 
-    void changeX(float offset) {
-        x = __boundX(x + offset);
-        offset = pos.x;
-        pos.x = windowOffsetLTX + x;
+    Coroutine startDragging() {
+        float xOffset = mouseState.x - x;
+        float yOffset = mouseState.y - y;
 
-        if (isPenDown) Pen_safe(__penDrawLine(offset, pos.y, pos.x, pos.y));
+        while(draggingEnabled && mouseState.isButtonDown) {
+            goXY(mouseState.x - xOffset, mouseState.y - yOffset);
+            cs_yield;
+        }
+        
+        co_return;
     }
 
-    void changeY(float offset) {
-        y = __boundY(y + offset);
-        offset = pos.y;
-        pos.y = windowOffsetLTY - y;
-
-        if (isPenDown) Pen_safe(__penDrawLine(pos.x, offset, pos.x, pos.y));
+    force_inline__ bool isDraggingEnabled() {
+        return draggingEnabled;
     }
 
-    force_inline__ const float & getX() { return x; }
+    force_inline__ void enableDragging() {
+        draggingEnabled = true;
+    }
 
-    force_inline__ const float & getY() { return y; }
+    force_inline__ void disableDragging() {
+        draggingEnabled = false;
+    }
 
     /*
     * Rotation

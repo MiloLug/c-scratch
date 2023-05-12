@@ -33,6 +33,14 @@ uint64_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
 }
 
 /*
+* Adds a coroutine the the list of "new coroutines".
+* So eventually it will be managed and resumed by the scripts execution loop.
+*/
+void ScriptManager::manageCoroutine(SpriteBase * sprite, Coroutine * coroutine) {
+    newActiveCoros.push({sprite, coroutine});
+}
+
+/*
 * Merges `bindings` to the bindings storage, so you can dynamically add new scripts
 * without losing old ones.
 */

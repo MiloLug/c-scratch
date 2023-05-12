@@ -4,17 +4,22 @@
 
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
+using std::chrono::nanoseconds;
 
 
-volatile double programTime = 0;
-volatile double timeStartTime = 0;
-auto programStartTime = high_resolution_clock::now();
+volatile int64_t currentTime =
+    duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
+volatile int64_t programTime = 0;
+volatile int64_t timerStartTime = 0;
+int64_t programStartTime = currentTime;
 
 
 void updateProgramTime() {
-    programTime = duration<double>(high_resolution_clock::now() - programStartTime).count();
+    currentTime =
+        duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
+    programTime = currentTime - programStartTime;
 }
 
-double __getTime() { return programTime - timeStartTime; }
+double __getTimerS() { return time_nsToS(programTime - timerStartTime); }
 
-void resetTimer() { timeStartTime = programTime; }
+void resetTimer() { timerStartTime = programTime; }

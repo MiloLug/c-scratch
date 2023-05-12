@@ -154,6 +154,10 @@ void SpriteManager::sendClickXY(float x, float y) {
     auto sprite = getTouchingXY(x, y);
     if (sprite != nullptr) {
         ScriptManager::triggerScripts(ACTION_CLICK | sprite->actionId);
+        
+        if (sprite->isDraggingEnabled()) {
+            ScriptManager::manageCoroutine(sprite, new Coroutine(sprite->startDragging()));
+        }
     }
 }
 
