@@ -8,7 +8,7 @@
 #define waitUntil(expr) repeatUntil(expr) co_yield NULL
 
 #define waitFor(seconds)                                                                           \
-    for (double end = programTime + time_sToNS(seconds); programTime < end;) co_yield NULL
+    for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;) co_yield NULL
 
 #define repeat(expr) for (double __i = 0, __limit = round(expr); __i < __limit; __i++)
 
