@@ -366,6 +366,18 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
     `mouseState.y`
 
+- [`set drag mode [draggable]`]
+
+    `sprite.enableDragging()`
+
+- [`set drag mode [not draggable]`]
+
+    `sprite.disableDragging()`
+
+- (`loudness`)
+
+    `...` NOT IMPLEMENTED
+
 - (`timer`)
 
     `timer`
@@ -373,6 +385,27 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 - [`reset time`]
 
     `resetTimer()`
+
+- (`[PARAMETER] of (OBJECT)`)
+
+    NOT FINISHED
+  - For `(Stage)`:
+    - `[backdrop #]` -> `backdrop.getCostumeIndex()`
+    - `[backdrop name]` -> `backdrop.getCostumeName()`
+    - `[volume]` -> NOT IMPLEMENTED
+    - `[<variable name>]` -> just use the variable
+  - For `(<sprite name>)`
+    - `[x position]` -> `sprite.getX()`
+    - `[y position]` -> `sprite.getY()`
+    - `[direction]` -> `sprite.getDirection()`
+    - `[costume #]` -> `sprite.getCostumeIndex()`
+    - `[costume name]` -> `sprite.getCostumeName()`
+    - `[size]` -> `sprite.getSize()`
+    - `[volume]` -> NOT IMPLEMENTED
+
+- (`current [X]`) NOT IMPLEMENTED
+- (`days since 2000`) NOT IMPLEMENTED
+- (`username`) NOT IMPLEMENTED
 
 ### Operators
 
