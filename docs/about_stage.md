@@ -79,7 +79,7 @@ Coroutine testCoro(Context * ctx) {
         wprintf(L"testCoro runs now\n");
 
         // Just add yield to your loops, so they don't block other coroutines
-        cs_yield;
+        cs_pass;
     }
 
     // Return in the end of functions no matter what, so you don't have to care about whether you have or not any yields. Since a coroutine will be corrupted without co_return/yield/etc.
@@ -102,11 +102,9 @@ ScriptManager bindings({
 ### Calling other coroutines
 
 It's very human.. Sorry.
-So just do `cs_wait(yourCoroutine(maybe some arguments))`.
+So just do `cs_wait yourCoroutine(maybe some arguments)`.
 
 Unfortunately, you can't just call it without this `cs_wait`, since all coroutines are not executed until they are waited.
-
-Actually, `cs_wait` does some logic, it allows to not yield an thus to continue execution of your coroutine.
 
 ### Messaging
 
@@ -117,7 +115,7 @@ Here's an example:
 ```cpp
 Coroutine onStart(Context * ctx) {
     Messages::broadcast(L"some message"_A);
-    cs_wait(Messages::broadcastWait(L"some message"_A));
+    cs_wait Messages::broadcastWait(L"some message"_A);
 
     co_return;
 }
@@ -130,7 +128,7 @@ Coroutine onSomeMessage(Context * ctx) {
 
     forever {
         wprintf(L"onSomeMessage runs now\n");
-        cs_yield;
+        cs_pass;
     }
 
     co_return;

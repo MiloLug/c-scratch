@@ -41,112 +41,83 @@ public:
 
     static inline String * create(String & value) { return value.copy(); }
 
-    static double __parseHexNum(double & sign, const wchar_t * str) {
-        if (str[0] == L'0') {
-            str += 2;
-            const wchar_t * tmpStr = str - 1;
+    static inline double __parseIntNum(const wchar_t * str, uint8_t base, bool * isNumRet) {
+        wchar_t * tmp = nullptr;
+        double t = wcstol(str, &tmp, base);
+        
+        while (isspace(*(tmp))) tmp++;
 
-            while (iswxdigit(*(++tmpStr)))
-                ;
-            tmpStr--;
-            while (isspace(*(++tmpStr)))
-                ;
-            if (*tmpStr == L'\0') return wcstol(str, nullptr, 16) * sign;
+        if (tmp[0] == L'\0') {
+            *isNumRet = true;
+            return t;
         }
 
         return 0;
     }
 
-    static double __parseOctNum(double & sign, const wchar_t * str) {
-        if (str[0] == L'0') {
-            str += 2;
-            const wchar_t * tmpStr = str;
+    static inline double __parseDecNum(const wchar_t * str, bool * isNumRet) {
+        wchar_t * tmp = nullptr;
+        double t = wcstod(str, &tmp);
+        
+        while (isspace(*(tmp))) tmp++;
 
-            while (*tmpStr >= L'0' && *tmpStr <= L'7') tmpStr++;
-            tmpStr--;
-            while (isspace(*(++tmpStr)))
-                ;
-            if (*tmpStr == L'\0') return wcstol(str, nullptr, 8) * sign;
+        if (tmp[0] == L'\0') {
+            *isNumRet = true;
+            return t;
         }
 
         return 0;
     }
 
-    static double __parseBinNum(double & sign, const wchar_t * str) {
-        if (str[0] == L'0') {
-            str += 2;
-            const wchar_t * tmpStr = str;
-
-            while (*tmpStr == L'0' || *tmpStr == L'1') tmpStr++;
-            tmpStr--;
-            while (isspace(*(++tmpStr)))
-                ;
-            if (*tmpStr == L'\0') return wcstol(str, nullptr, 2) * sign;
+    static inline double __parseInfinity(const wchar_t * str, bool * isNumRet) {
+        if (wcscmp(str, L"Infinity") == 0 || (str[0] == L'i' && str[2] == 'f' && str[3] == L'\0')) {
+            *isNumRet = true;
+            return std::numeric_limits<double>::infinity();
         }
 
         return 0;
     }
 
-    static double __parseDecNum(double & sign, const wchar_t * str) {
-        bool hasNumbers = false;
-        bool hasExp = false;
-        wchar_t tmp;
-        const wchar_t * tmpStr = str - 1;
+    static double strToNum(const wchar_t * str, uint64_t len, bool * isNumRet = nullptr, uint8_t * baseRet = nullptr, bool noSpace = false) {
+        bool tmpIsNum;
+        isNumRet = isNumRet ? isNumRet : &tmpIsNum;
+        *isNumRet = false;
 
-        while (iswdigit(*(++tmpStr)))
-            ;
-        hasNumbers = tmpStr - str;
+        uint8_t tmpBase;
+        baseRet = baseRet ? baseRet : &tmpBase;
+        *baseRet = 10;
 
-        if (*tmpStr == L'.') {
-            while (iswdigit(*(++tmpStr)))
-                ;
-            hasNumbers = tmpStr - str - 1;
+        if (noSpace && (iswspace(*str) || iswspace(str[len - 1]))) {
+            // Just forbid making the ret value true
+            isNumRet = &tmpIsNum;
         }
 
-        if (!hasNumbers) return 0;
+        while (iswspace(*str)) str++, len--;
+        if (len > 326 || len < 1) // > -MAX_DBL len
+            return 0;
 
-        if (*tmpStr == L'E' || *tmpStr == L'e') {
-            tmp = *(++tmpStr);
-            if (!iswdigit(tmp) && ((tmp != L'-' && tmp != L'+') || !iswdigit(*(++tmpStr))))
-                return 0;
-            while (iswdigit(*(++tmpStr)))
-                ;
-        }
-
-        tmpStr--;
-        while (isspace(*(++tmpStr)))
-            ;
-
-        if (*tmpStr == L'\0') return wcstod(str, nullptr) * sign;
-
-        return 0;
-    }
-
-    static double strToNum(const wchar_t * str, uint16_t len) {
-        if (len > 326) return 0;  // > -MAX_DBL len
-        while (iswspace(*str)) str++;
-
-        bool hasMinus = str[0] == L'-';
-        if (hasMinus || str[0] == L'+') {
+        const double sign = str[0] == L'-' ? -1 : 1;
+        if (str[0] == L'-' || str[0] == L'+') {
             str++;
+            len--;
         }
-        double sign = hasMinus ? -1 : 1;
 
         if (len == 0) return 0;
 
         switch (str[1]) {
             case L'x':
-                return __parseHexNum(sign, str);
+                *baseRet = 16;
+                return sign * __parseIntNum(str + 2, 16, isNumRet);
             case L'o':
-                return __parseOctNum(sign, str);
+                *baseRet = 8;
+                return sign * __parseIntNum(str + 2, 8, isNumRet);
             case L'b':
-                return __parseBinNum(sign, str);
+                *baseRet = 2;
+                return sign * __parseIntNum(str + 2, 2, isNumRet);
             case L'n':
-                return wcsncmp(str, L"Infinity", 9) == 0 || (str[0] == L'i' && str[2] == 'f')
-                    ? std::numeric_limits<double>::infinity() * sign
-                    : 0;
+                return sign * __parseInfinity(str, isNumRet);
             default:
-                return iswdigit(str[0]) || str[0] == L'.' ? __parseDecNum(sign, str) : 0;
+                return sign * __parseDecNum(str, isNumRet);
         }
 
         return 0;

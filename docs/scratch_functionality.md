@@ -70,19 +70,19 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`glide (T) secs to (random position)`]
 
-    `cs_wait(sprite.glideToRandomPosition(T))` NOT IMPLEMENTED
+    `cs_wait sprite.glideToRandomPosition(T)` NOT IMPLEMENTED
 
 - [`glide (T) secs to (mouse-pointer)`]
 
-    `cs_wait(sprite.glideToPointer(T))` NOT IMPLEMENTED
+    `cs_wait sprite.glideToPointer(T)` NOT IMPLEMENTED
 
 - [`glide (T) secs to (sprite)`]
 
-    `cs_wait(sprite.glideToSprite(&sprite))` NOT IMPLEMENTED
+    `cs_wait sprite.glideToSprite(&sprite)` NOT IMPLEMENTED
 
 - [`glide (T) secs to x: (X) y: (Y)`]
 
-    `cs_wait(sprite.glideXY(T, X, Y))` NOT IMPLEMENTED
+    `cs_wait sprite.glideXY(T, X, Y)` NOT IMPLEMENTED
 
 - [`point in direction (X)`]
 
@@ -273,11 +273,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
       `sprite.broadcast(L"selected action name"_A)`
 
 - [`broadcast (X) and wait`]
-  - general case - `cs_wait(Messages::broadcastWait(X))`
+  - general case - `cs_wait Messages::broadcastWait(X)`
   - optimizations:
     - when you've just selected a name from the dropdown:
 
-      `cs_wait(Messages::broadcastWait(L"selected action name"_A))`
+      `cs_wait Messages::broadcastWait(L"selected action name"_A)`
 
 ### Control
 
@@ -287,11 +287,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`repeat (X) ...some code`]
 
-    `repeat (X) { ...some code; cs_yield; }`
+    `repeat (X) { ...some code; cs_pass; }`
 
 - [`forever ...some code`]
 
-    `forever { ...some code; cs_yield; }`
+    `forever { ...some code; cs_pass; }`
 
 - [`wait until <expression>`]
 
@@ -299,7 +299,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`repeat until <expression> ...some code`]
 
-    `repeatUntil(expression) { ...some code; cs_yield; }`
+    `repeatUntil(expression) { ...some code; cs_pass; }`
 
 - [`stop [all]`]
 
@@ -537,4 +537,4 @@ Coroutine sprite_my_function(T1 &&arg1, T2 &&arg2) {
 }
 ```
 
-Later you can call it with `cs_wait(sprite_my_function(sprite, some value1, some value 2))`
+Later you can call it with `cs_wait sprite_my_function(sprite, some value1, some value 2)`

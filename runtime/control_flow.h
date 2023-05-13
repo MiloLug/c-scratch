@@ -20,18 +20,24 @@
 #define stopThisScript() co_return
 
 
-#define cs_wait(coroExpr)                                                                          \
-    do {                                                                                           \
-        auto __tmp = (coroExpr);                                                                   \
-        if constexpr (std::is_same_v<decltype(__tmp), Coroutine>) {                                \
-            __tmp.resume();                                                                        \
-            if (!__tmp.done()) co_yield __tmp;                                                     \
-        } else {                                                                                   \
-            co_yield __tmp;                                                                        \
-        }                                                                                          \
-    } while (0)
+force_inline__ const Coroutine & __coroPreWait(const Coroutine & coro, bool & done) {
+    coro.resume();
+    done = coro.done();
+    return coro;
+}
 
-#define cs_yield co_yield NULL
+template<typename T>
+force_inline__ T & __coroPreWait(T & value, bool & done) {
+    done = false;
+    return value;
+}
+
+
+#define cs_wait co_yield
+
+#define cs_yield co_yield
+
+#define cs_pass co_yield Coroutine::NOTHING
 
 
 #endif

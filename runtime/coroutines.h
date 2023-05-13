@@ -17,13 +17,23 @@ struct BasePromise;
 
 
 struct Coroutine: std::coroutine_handle<BasePromise> {
+    struct DoesSuspend: public std::suspend_always {
+        bool suspend;
+
+        DoesSuspend(bool _suspend = true): suspend{_suspend}, std::suspend_always{} {}
+
+        constexpr bool await_ready() const noexcept { return !suspend; }
+    };
+
+    struct Nothing {};
+    static constexpr const Nothing * NOTHING = nullptr;
+
     using promise_type = ::BasePromise;
 
     ~Coroutine() { destroy(); }
 
     void resume() const;
 };
-
 
 struct BasePromise {
 public:
@@ -34,10 +44,14 @@ public:
     std::suspend_always final_suspend() noexcept { return {}; }
     void return_void() {}
     void unhandled_exception() {}
-    std::suspend_always yield_value(void *) { return {}; }
-    std::suspend_always yield_value(const Coroutine & _subCoro) {
+    std::suspend_always yield_value(const Coroutine::Nothing *) { return {}; }
+    Coroutine::DoesSuspend yield_value(Coroutine && _subCoro) {
+        _subCoro.resume();
+        if (_subCoro.done()) {
+            return {false};
+        }
         subCoro = &_subCoro;
-        return {};
+        return {true};
     }
 };
 

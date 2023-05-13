@@ -247,7 +247,7 @@ public:
 
         while(draggingEnabled && mouseState.isButtonDown) {
             goXY(mouseState.x - xOffset, mouseState.y - yOffset);
-            cs_yield;
+            cs_pass;
         }
         
         co_return;
