@@ -44,7 +44,7 @@ public:
     static inline double __parseIntNum(const wchar_t * str, uint8_t base, bool * isNumRet) {
         wchar_t * tmp = nullptr;
         double t = wcstol(str, &tmp, base);
-        
+
         while (isspace(*(tmp))) tmp++;
 
         if (tmp[0] == L'\0') {
@@ -58,7 +58,7 @@ public:
     static inline double __parseDecNum(const wchar_t * str, bool * isNumRet) {
         wchar_t * tmp = nullptr;
         double t = wcstod(str, &tmp);
-        
+
         while (isspace(*(tmp))) tmp++;
 
         if (tmp[0] == L'\0') {
@@ -78,7 +78,13 @@ public:
         return 0;
     }
 
-    static double strToNum(const wchar_t * str, uint64_t len, bool * isNumRet = nullptr, uint8_t * baseRet = nullptr, bool noSpace = false) {
+    static double strToNum(
+        const wchar_t * str,
+        uint64_t len,
+        bool * isNumRet = nullptr,
+        uint8_t * baseRet = nullptr,
+        bool noSpace = false
+    ) {
         bool tmpIsNum;
         isNumRet = isNumRet ? isNumRet : &tmpIsNum;
         *isNumRet = false;
@@ -93,7 +99,7 @@ public:
         }
 
         while (iswspace(*str)) str++, len--;
-        if (len > 326 || len < 1) // > -MAX_DBL len
+        if (len > 326 || len < 1)  // > -MAX_DBL len
             return 0;
 
         const double sign = str[0] == L'-' ? -1 : 1;
@@ -157,7 +163,7 @@ public:
         shouldMove(_shouldMove),
         isWrapper(_isWrapper) {}
 
-    /*For some edgy cases*/
+    /*For some edgy cases, don't use on yourself!!!*/
     String(String & origin) {
         if (origin.shouldMove)
             origin.moveTo(*this);

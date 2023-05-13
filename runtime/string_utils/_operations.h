@@ -32,7 +32,8 @@ static inline String toTmpString(Value & s1) {
     if (s1.type == Value::Type::STRING)
         return String(s1.string->length, s1.string->data, true, true);
 
-    return String(s1.numberStrSize - 1, s1.getNumberStr(), true, true);
+    s1.getNumberStr();
+    return String(s1.numberStrSize - 1, s1.numberStrTmp, true, true);
 }
 static inline String toTmpString(double s1) {
     Value tmp(s1);

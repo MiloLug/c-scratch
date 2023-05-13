@@ -1,8 +1,12 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
+#include "files.h"
 #include "utils.h"
 #include "value.h"
+
+#include <filesystem>
+
 
 #ifndef ARRAY_AHEAD_ALLOCATION_MULTIPLIER
     #define ARRAY_AHEAD_ALLOCATION_MULTIPLIER 1.5
@@ -14,11 +18,46 @@
 
 
 class ValueArray {
-public:
+protected:
     uint64_t capacity = ARRAY_INITIAL_SIZE + 1;  // how much it can hold
-    uint64_t length = 0;  // how much it actually holds
     Value * restrict__ * restrict__ data = NULL;
-    Value nullValue = {0, L""};
+    Value nullValue = Value::ValueInitData{0, L""};
+    bool shouldMove = false;
+
+public:
+    uint64_t length = 0;  // how much it actually holds
+    
+    static ValueArray fromFile(const std::filesystem::path & path) {
+        ValueArray arr;
+        arr.shouldMove = true;
+
+        File file(path, "r");
+
+        if (!file.opened) {
+            wprintf(L"Error: no data file '%ls'\n", path.wstring().c_str());
+            return arr;
+        }
+
+        wchar_t * tmpLine = nullptr;
+        int64_t lineLen = 0;
+        bool isNumber;
+        uint8_t numberBase;
+
+        while ((lineLen = file.getwline(&tmpLine)) != -1) {
+            if (lineLen == 0) {
+                arr.push(String());
+            } else {
+                Value::storage_number_t num = String::strToNum(tmpLine, lineLen, &isNumber, &numberBase, true);
+                if (isNumber && numberBase == 10) {
+                    arr.push(num);
+                } else {
+                    arr.push(Value::ValueInitData{num, tmpLine});
+                }
+            }
+        }
+
+        return arr;
+    }
 
     ValueArray() {
         data = (Value **)malloc(capacity * sizeof(Value *));
@@ -26,16 +65,33 @@ public:
     }
 
     template<std::size_t N>
-    ValueArray(const Value (&values)[N]) {
+    ValueArray(const Value::ValueInitData (&values)[N]) {
         if (N == 0) return;
-        capacity = MAX(N + 1, ARRAY_INITIAL_SIZE + 1);
+        capacity = MAX(N + 1, capacity);
         data = (Value **)malloc(capacity * sizeof(Value *));
         data[0] = &nullValue;
         length = N;
 
         for (int i = 0; i < N; i++) {
-            data[i + 1] = values[i].copy();
+            data[i + 1] = Value::create(values[i]);
         }
+    }
+
+    ValueArray(ValueArray & arr) {
+        arr.moveTo(*this);
+    }
+
+    void moveTo(ValueArray & dest) {
+        dest.clean();
+
+        dest.data = data;
+        dest.capacity = capacity;
+        dest.length = length;
+        dest.shouldMove = shouldMove;
+
+        if (data) data[0] = &dest.nullValue;
+
+        data = NULL;
     }
 
     template<typename Tv>
@@ -106,15 +162,19 @@ public:
     constexpr Value & get(const uint64_t i) { return (i <= length) ? *data[i] : nullValue; }
 
     void clean() {
-        for (uint64_t i = 1; i <= this->length; i++) {
-            data[i]->clean();
-            free(data[i]);
+        if (data) {
+            for (uint64_t i = 1; i <= this->length; i++) {
+                data[i]->clean();
+                free(data[i]);
+            }
+
+            free((void *)data);
+            data = NULL;
         }
 
-        free((void *)data);
-        data = NULL;
         capacity = ARRAY_INITIAL_SIZE + 1;
         length = 0;
+        shouldMove = false;
     }
 
     operator String() {

@@ -432,8 +432,6 @@ public:
 
 class SpriteBase {
 protected:
-    const std::filesystem::path spritePath;
-    const std::filesystem::path costumesPath;
     uint64_t costumesNumber;
     uint64_t costumeIndex;
     Costume * currentCostume;
@@ -444,7 +442,12 @@ protected:
     force_inline__ void onCostumeSwitch() { currentCostume = &costumes[costumeIndex]; }
 
 public:
+    const std::filesystem::path spritePath;
+    const std::filesystem::path costumesPath;
+    const std::filesystem::path dataPath;
+
     volatile bool __stopOtherScripts = false;
+
 
     SpriteBase(
         const std::filesystem::path & _spritePath,
@@ -454,6 +457,7 @@ public:
         costumeIndex{_costumeIndex - 1},
         spritePath{_spritePath},
         costumesPath{_spritePath / L"costumes"},
+        dataPath{_spritePath / L"data"},
         costumes{_costumes} {
         uint64_t i = 0;
         for (const auto & costume : _costumes) {

@@ -33,6 +33,9 @@ target_sources(app PRIVATE
 
   time.h
   time.cpp
+
+  files.h
+  files.cpp
 )
 
 add_subdirectory("math")

@@ -59,13 +59,31 @@ protected:
     static wchar_t globalNumStrTmp[];
 
 public:
-    enum Type : uint8_t { STRING, NUMBER };
-
 #ifdef USE_VALUE_FLOAT
     typedef float storage_number_t;
 #else
     typedef double storage_number_t;
 #endif
+
+    enum Type : uint8_t { STRING, NUMBER };
+
+    struct ValueInitData {
+        const wchar_t * str = nullptr;
+        storage_number_t number = 0;
+        Type type = Type::NUMBER;
+
+        constexpr ValueInitData(double _number): number{(storage_number_t)_number} {}
+
+        template<typename T>
+        ValueInitData(T * _str)
+            requires(std::is_same_v<T, const wchar_t>)
+            : str{_str}, number{(storage_number_t)String::strToNum(str, wcslen(str))}, type{Type::STRING} {}
+
+        constexpr ValueInitData(double _number, const wchar_t * _str):
+            str{_str},
+            number{(storage_number_t)_number},
+            type{Type::STRING} {}
+    };
 
     Type type = Type::NUMBER;
 
@@ -90,19 +108,127 @@ public:
     }
 
     constexpr Value() {}
-    Value(double nValue, const wchar_t * restrict__ sValue):
-        number(nValue),
-        string(String::create(sValue)) {}
-    constexpr Value(double value): number(value) {}
-    constexpr Value(int value): number(value) {}
-    constexpr Value(uint64_t value): number(value) {}
-    Value(const wchar_t * restrict__ value): string(String::create(value)), type(Type::STRING) {
+
+    Value(const ValueInitData & data):
+        number{data.number},
+        type{data.type},
+        string{data.str ? String::create(data.str) : nullptr} {}
+
+    constexpr Value(double value): number{(storage_number_t)value} {}
+    constexpr Value(int value): number{(storage_number_t)value} {}
+    constexpr Value(uint64_t value): number{(storage_number_t)value} {}
+
+    Value(const wchar_t * restrict__ value): string{String::create(value)}, type{Type::STRING} {
         number = (double)*string;
     }
-    Value(String && value): string(value.copy()), type(Type::STRING) {}
-    Value(const Value & origin): number(origin.number), type(origin.type) {
+
+    Value(String && value): string{value.copy()}, type{Type::STRING} {}
+
+    Value(const Value & origin): number{origin.number}, type{origin.type} {
         if (origin.type == Type::STRING) string = origin.string->copy();
     }
+
+    Value & operator=(const Value & origin) {
+        if (origin.type == Type::NUMBER) {
+            number = origin.number;
+            type = Type::NUMBER;
+            return *this;
+        }
+
+        number = origin.number;
+        if (string)
+            string->set(*origin.string);
+        else
+            string = origin.string->copy();
+        type = Type::STRING;
+
+        return *this;
+    }
+
+    Value & operator=(const ValueInitData & data) {
+        number = data.number;
+        type = data.type;
+        if (data.str) {
+            if (string)
+                string->set(data.str);
+            else
+                string = String::create(data.str);
+        }
+
+        return *this;
+    }
+
+    Value & operator=(const wchar_t * restrict__ value) {
+        if (string)
+            string->set(value);
+        else
+            string = String::create(value);
+
+        number = (double)*string;
+        type = Type::STRING;
+
+        return *this;
+    }
+
+    Value & operator=(String && value) { return operator=(value); }
+
+    Value & operator=(const String & value) {
+        if (string)
+            string->set(value);
+        else
+            string = String::create(value);
+
+        number = (double)value;
+        type = Type::STRING;
+
+        return *this;
+    }
+
+    Value & operator=(double value) {
+        number = value;
+        type = Type::NUMBER;
+        return *this;
+    }
+
+    Value & operator=(int value) {
+        number = value;
+        type = Type::NUMBER;
+        return *this;
+    }
+
+    Value & operator++(int) {
+        number++;
+        type = Type::NUMBER;
+        return *this;
+    }
+
+    Value & operator--(int) {
+        number--;
+        type = Type::NUMBER;
+        return *this;
+    }
+
+    Value & operator+=(double value) {
+        number += value;
+        type = Type::NUMBER;
+        return *this;
+    }
+
+    make_bool_op(<=);
+    make_bool_op(>=);
+    make_bool_op(<);
+    make_bool_op(>);
+    make_bool_op(==);
+
+    make_math_bin_op(-);
+    make_math_bin_op(+);
+    make_math_bin_op(/);
+    make_math_bin_op(*);
+
+    bool operator!() { return !number; }
+    constexpr operator storage_number_t() { return number; }
+
+    operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
 
     Value * restrict__ copy() const {
         Value * restrict__ copy = (Value *)malloc(sizeof(Value));
@@ -189,96 +315,6 @@ public:
     }
 
     const wchar_t * toString() { return type == Type::STRING ? string->data : getNumberStr(); }
-
-    Value & operator=(const Value & origin) {
-        if (origin.type == Type::NUMBER) {
-            number = origin.number;
-            type = Type::NUMBER;
-            return *this;
-        }
-
-        number = origin.number;
-        if (string)
-            string->set(*origin.string);
-        else
-            string = origin.string->copy();
-        type = Type::STRING;
-
-        return *this;
-    }
-
-    Value & operator=(const wchar_t * restrict__ value) {
-        if (string)
-            string->set(value);
-        else
-            string = String::create(value);
-
-        number = (double)*string;
-        type = Type::STRING;
-
-        return *this;
-    }
-
-    Value & operator=(String && value) { return operator=(value); }
-
-    Value & operator=(const String & value) {
-        if (string)
-            string->set(value);
-        else
-            string = String::create(value);
-
-        number = (double)value;
-        type = Type::STRING;
-
-        return *this;
-    }
-
-    Value & operator=(double value) {
-        number = value;
-        type = Type::NUMBER;
-        return *this;
-    }
-
-    Value & operator=(int value) {
-        number = value;
-        type = Type::NUMBER;
-        return *this;
-    }
-
-    Value & operator++(int) {
-        number++;
-        type = Type::NUMBER;
-        return *this;
-    }
-
-    Value & operator--(int) {
-        number--;
-        type = Type::NUMBER;
-        return *this;
-    }
-
-    Value & operator+=(double value) {
-        number += value;
-        type = Type::NUMBER;
-        return *this;
-    }
-
-    make_bool_op(<=);
-    make_bool_op(>=);
-    make_bool_op(<);
-    make_bool_op(>);
-    make_bool_op(==);
-
-    make_math_bin_op(-);
-    make_math_bin_op(+);
-    make_math_bin_op(/);
-    make_math_bin_op(*);
-
-    bool operator!() { return !number; }
-
-    constexpr operator storage_number_t() { return number; }
-
-    operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
 
     constexpr void clean() {
         if (numberStrTmp) {
