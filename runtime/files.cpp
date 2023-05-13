@@ -1,12 +1,13 @@
 #include "files.h"
 
+#include <cstring>
+
 
 int64_t File::getwline(wchar_t ** out) {
     constexpr int64_t bufferSize = 64;
     constexpr int64_t bufferByteSize = sizeof(wchar_t) * bufferSize;
     // Not counting 0 ending
     constexpr int64_t bufferStrSize = bufferSize - 1;
-    constexpr int64_t bufferStrByteSize = sizeof(wchar_t) * bufferStrSize;
     constexpr int64_t buffersNumber = 8;
 
     wchar_t * buffers[buffersNumber];
@@ -36,17 +37,17 @@ int64_t File::getwline(wchar_t ** out) {
             copiesNum = readSize / bufferStrSize;
 
             for (uint64_t i = 0; i < copiesNum; i++) {
-                memcpy(*out + offset, buffers[i], bufferStrByteSize);
+                wmemcpy(*out + offset, buffers[i], bufferStrSize);
                 offset += bufferStrSize;
 
                 free(buffers[i]);
             }
 
             if (lineSize != offset) {
-                memcpy(
+                wmemcpy(
                     *out + offset,
                     buffers[copiesNum],
-                    (readSize - copiesNum * bufferStrSize) * sizeof(wchar_t)
+                    readSize - copiesNum * bufferStrSize
                 );
                 offset += bufferSize;
 

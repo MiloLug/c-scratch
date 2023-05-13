@@ -1,12 +1,9 @@
 #ifndef CSCRATCH_FILES_H
 #define CSCRATCH_FILES_H
 
-#include <cstdint>
 #include <cstdio>
-#include <cstring>
-#include <cwchar>
 #include <filesystem>
-#include <memory>
+#include "utils.h"
 
 
 class File {

@@ -27,7 +27,7 @@
             return wcscmp(string->data, value) op 0;                                               \
         }                                                                                          \
         getNumberStr();                                                                            \
-        return wcscmp(numberStrTmp, value, numberStrSize - 1);                                     \
+        return wcscmp(numberStrTmp, value);                                                        \
     }                                                                                              \
     bool operator op(String && value) {                                                            \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
@@ -77,7 +77,10 @@ public:
         template<typename T>
         ValueInitData(T * _str)
             requires(std::is_same_v<T, const wchar_t>)
-            : str{_str}, number{(storage_number_t)String::strToNum(str, wcslen(str))}, type{Type::STRING} {}
+            :
+            str{_str},
+            number{(storage_number_t)String::strToNum(str, wcslen(str))},
+            type{Type::STRING} {}
 
         constexpr ValueInitData(double _number, const wchar_t * _str):
             str{_str},
