@@ -47,9 +47,9 @@ Sprite sprite({
 SpriteManager manageSprite(&sprite);
 ```
 
-Where `pX` and `pY` are coordinates of the costume pivot relative to it's _real_ center.
+Where `pX` and `pY` are coordinates of the costume's pivot relative to it's _real_ center.
 
-E.g. if `width` = 10 and `height` = 20, then coordinates of pivot placed in top left corner will be `pX` = -5, `pY` = 10.
+E.g. if `width` = 10 and `height` = 20, then coordinates of the pivot placed in top left corner will be `pX` = -5, `pY` = 10.
 
 ## Scripts
 
@@ -82,8 +82,8 @@ Coroutine testCoro(Context * ctx) {
         cs_pass;
     }
 
-    // Return in the end of functions no matter what, so you don't have to care about whether you have or not any yields. Since a coroutine will be corrupted without co_return/yield/etc.
-    co_return;
+    // Stop in the end of functions no matter what, so you don't have to care about whether you have or not any yields. Since a coroutine will be corrupted without cs_stop/yield/etc.
+    cs_stop;
 }
 
 // This ScriptManager's constructor actually calls ScriptManager::bindScripts
@@ -117,7 +117,7 @@ Coroutine onStart(Context * ctx) {
     Messages::broadcast(L"some message"_A);
     cs_wait Messages::broadcastWait(L"some message"_A);
 
-    co_return;
+    cs_stop;
 }
 
 Coroutine onSomeMessage(Context * ctx) {
@@ -131,7 +131,7 @@ Coroutine onSomeMessage(Context * ctx) {
         cs_pass;
     }
 
-    co_return;
+    cs_stop;
 }
 
 ScriptManager bindings({

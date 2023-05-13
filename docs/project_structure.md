@@ -23,9 +23,9 @@
         Backdrop backdrop({ 
             .costumeIndex = 1,
             .costumes = {
-                //  name            file name        center X, Y, sprite width, height
-                {L"Costume 1", L"backdrop1 (1).svg",        0, 0,          10,    20},
-                {L"Costume 2", L"Castle 2.png",             0, 0,          10,    20},
+                //  name            file name        pivot X, Y, costume width, height
+                {L"Costume 1", L"backdrop1 (1).svg",       0, 0,           10,    20},
+                {L"Costume 2", L"Castle 2.png",            0, 0,           10,    20},
             },
         });
 
