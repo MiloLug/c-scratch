@@ -23,14 +23,12 @@ protected:
     uint64_t capacity = ARRAY_INITIAL_SIZE + 1;  // how much it can hold
     Value * restrict__ * restrict__ data = NULL;
     Value nullValue = Value::ValueInitData{0, L""};
-    bool shouldMove = false;
 
 public:
     uint64_t length = 0;  // how much it actually holds
     
     static ValueArray fromFile(const std::filesystem::path & path) {
         ValueArray arr;
-        arr.shouldMove = true;
 
         File file(path, "r");
 
@@ -78,7 +76,7 @@ public:
         }
     }
 
-    ValueArray(ValueArray & arr) {
+    ValueArray(ValueArray && arr) {
         arr.moveTo(*this);
     }
 
@@ -88,15 +86,13 @@ public:
         dest.data = data;
         dest.capacity = capacity;
         dest.length = length;
-        dest.shouldMove = shouldMove;
 
         if (data) data[0] = &dest.nullValue;
 
         data = NULL;
     }
 
-    template<typename Tv>
-    void push(Tv && value) {
+    void push(auto && value) {
         if (data == NULL) {
             data = (Value **)malloc(capacity * sizeof(Value *));
             data[0] = &nullValue;
@@ -124,8 +120,7 @@ public:
         }
     }
 
-    template<typename Tv>
-    void insert(int64_t i, Tv && value) {
+    void insert(int64_t i, auto && value) {
         if (i == length + 1) {
             push(value);
         } else if (i <= length && i > 0) {
@@ -142,21 +137,18 @@ public:
         }
     }
 
-    template<typename Tv>
-    constexpr double indexOf(Tv && value) {
+    constexpr double indexOf(auto && value) {
         for (uint64_t i = 1; i <= length; i++) {
             if (data[i]->operator==(value)) return i;
         }
         return 0;
     }
 
-    template<typename Tv>
-    constexpr bool contains(Tv && value) {
+    constexpr bool contains(auto && value) {
         return indexOf(value) != 0;
     }
 
-    template<typename Tv>
-    constexpr void set(const uint64_t i, Tv && value) {
+    constexpr void set(const uint64_t i, auto && value) {
         if (i <= length && i > 0) data[i]->operator=(value);
     }
 
@@ -175,7 +167,6 @@ public:
 
         capacity = ARRAY_INITIAL_SIZE + 1;
         length = 0;
-        shouldMove = false;
     }
 
     operator String() {

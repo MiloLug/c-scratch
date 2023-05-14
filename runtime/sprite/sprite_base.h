@@ -86,7 +86,7 @@ protected:
     bool draggingEnabled = false;
 
     bool isPenDown = false;
-    uint32_t penSize = 1;
+    float penSize = 1;
     uint32_t penColor = 0xFFAF9F3F;
 
 
@@ -363,7 +363,7 @@ public:
         penColor = color << 8 | ((color >> 24) == 0 ? 0xFF : color >> 24);
     }
 
-    force_inline__ void penSetSize(double size) { penSize = round(MAX_UNSAFE(size, 0)); }
+    force_inline__ void penSetSize(double size) { penSize = MAX_UNSAFE(size, 0.0); }
 
     void penDown() {
         isPenDown = true;

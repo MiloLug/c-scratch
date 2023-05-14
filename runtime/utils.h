@@ -50,4 +50,41 @@ static constexpr uint64_t fastHash(const wchar_t * str) {
 static constexpr uint64_t operator""_H(const wchar_t * str, size_t) { return fastHash(str); }
 
 
+/**** Templates Stuff ****/
+
+template<typename T>
+struct remove_deepest_const_impl {
+    typedef T type;
+};
+template<typename T>
+struct remove_deepest_const_impl<const T> {
+    typedef T type;
+};
+template<typename T>
+struct remove_deepest_const_impl<T *> {
+    typedef typename remove_deepest_const_impl<T>::type * type;
+};
+template<typename T>
+struct remove_deepest_const_impl<T * const> {
+    typedef typename remove_deepest_const_impl<T>::type * const type;
+};
+template<typename T>
+struct remove_deepest_const_impl<T &> {
+    typedef typename remove_deepest_const_impl<T>::type & type;
+};
+template<typename T>
+struct remove_deepest_const_impl<T &&> {
+    typedef typename remove_deepest_const_impl<T>::type && type;
+};
+template<typename T>
+using remove_deepest_const = typename remove_deepest_const_impl<T>::type;
+
+
+template<typename T>
+concept Number = std::is_floating_point_v<T> || std::is_integral_v<T>;
+
+template<typename T, typename U>
+concept MaybeConst = std::is_same_v<U, remove_deepest_const<T>>;
+
+
 #endif

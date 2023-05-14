@@ -32,25 +32,17 @@
     bool operator op(String && value) {                                                            \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
     }                                                                                              \
-    constexpr bool operator op(double value) const { return number op value; }                     \
-    constexpr bool operator op(float value) const { return number op value; }                      \
-    constexpr bool operator op(int value) const { return number op value; }                        \
-    constexpr bool operator op(int64_t value) const { return number op value; }                    \
-    constexpr bool operator op(uint64_t value) const { return number op value; }
+    constexpr bool operator op(Number auto value) const { return number op value; }
 
 
 #define make_math_bin_op(op)                                                                       \
-    constexpr storage_number_t operator op(double value) const { return number op value; }         \
-    constexpr storage_number_t operator op(float value) const { return number op value; }          \
-    constexpr storage_number_t operator op(int value) const { return number op value; }            \
-    constexpr storage_number_t operator op(int64_t value) const { return number op value; }        \
-    constexpr storage_number_t operator op(uint64_t value) const { return number op value; }       \
+    constexpr storage_number_t operator op(Number auto value) const { return number op value; }    \
     constexpr storage_number_t operator op(Value & value) const { return number op value.number; } \
     template<typename T>                                                                           \
     storage_number_t operator op(T * value) const                                                  \
         requires(std::is_same_v<T, const wchar_t>)                                                 \
     {                                                                                              \
-        return number op strToNum(value, wcslen(value));                                   \
+        return number op strToNum(value, wcslen(value));                                           \
     }
 
 
@@ -72,15 +64,12 @@ public:
         storage_number_t number = 0;
         Type type = Type::NUMBER;
 
-        constexpr ValueInitData(double _number): number{(storage_number_t)_number} {}
+        constexpr ValueInitData(Number auto _number): number{(storage_number_t)_number} {}
 
         template<typename T>
         ValueInitData(T * _str)
             requires(std::is_same_v<T, const wchar_t>)
-            :
-            str{_str},
-            number{(storage_number_t)strToNum(str, wcslen(str))},
-            type{Type::STRING} {}
+            : str{_str}, number{(storage_number_t)strToNum(str, wcslen(str))}, type{Type::STRING} {}
 
         constexpr ValueInitData(double _number, const wchar_t * _str):
             str{_str},
@@ -117,9 +106,7 @@ public:
         type{data.type},
         string{data.str ? String::create(data.str) : nullptr} {}
 
-    constexpr Value(double value): number{(storage_number_t)value} {}
-    constexpr Value(int value): number{(storage_number_t)value} {}
-    constexpr Value(uint64_t value): number{(storage_number_t)value} {}
+    constexpr Value(Number auto value): number{(storage_number_t)value} {}
 
     Value(const wchar_t * restrict__ value): string{String::create(value)}, type{Type::STRING} {
         number = (double)*string;
@@ -174,8 +161,6 @@ public:
         return *this;
     }
 
-    Value & operator=(String && value) { return operator=(value); }
-
     Value & operator=(const String & value) {
         if (string)
             string->set(value);
@@ -187,14 +172,19 @@ public:
 
         return *this;
     }
+    Value & operator=(String && value) {
+        if (string)
+            string->set(value);
+        else
+            string = String::create(value);
 
-    Value & operator=(double value) {
-        number = value;
-        type = Type::NUMBER;
+        number = (double)value;
+        type = Type::STRING;
+
         return *this;
     }
 
-    Value & operator=(int value) {
+    Value & operator=(Number auto value) {
         number = value;
         type = Type::NUMBER;
         return *this;
