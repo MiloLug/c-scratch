@@ -1,14 +1,13 @@
 #ifndef SPRITE_BASE_H
 #define SPRITE_BASE_H
 
-#include "config.h"
-#include "math/math.h"
-#include "pen/pen.h"
-#include "sdl.h"
-#include "utils.h"
-#include "value.h"
-#include "coroutines.h"
-#include "control_flow.h"
+#include "runtime/control_flow.h"
+#include "runtime/coroutines.h"
+#include "runtime/math/math.h"
+#include "runtime/pen/pen.h"
+#include "runtime/sdl.h"
+#include "runtime/utils.h"
+#include "runtime/value.h"
 
 #include <filesystem>
 #include <unordered_map>
@@ -245,25 +244,19 @@ public:
         float xOffset = mouseState.x - x;
         float yOffset = mouseState.y - y;
 
-        while(draggingEnabled && mouseState.isButtonDown) {
+        while (draggingEnabled && mouseState.isButtonDown) {
             goXY(mouseState.x - xOffset, mouseState.y - yOffset);
             cs_pass;
         }
-        
+
         co_return;
     }
 
-    force_inline__ bool isDraggingEnabled() {
-        return draggingEnabled;
-    }
+    force_inline__ bool isDraggingEnabled() { return draggingEnabled; }
 
-    force_inline__ void enableDragging() {
-        draggingEnabled = true;
-    }
+    force_inline__ void enableDragging() { draggingEnabled = true; }
 
-    force_inline__ void disableDragging() {
-        draggingEnabled = false;
-    }
+    force_inline__ void disableDragging() { draggingEnabled = false; }
 
     /*
     * Rotation
@@ -497,7 +490,7 @@ public:
         if (found != costumeIndexesEnd) {
             costumeIndex = found->second;
         } else {
-            auto num = String::strToNum(str, str.length);
+            auto num = strToNum(str, str.length);
             if (num > 0 && num <= costumesNumber) costumeIndex = num - 1;
         }
 

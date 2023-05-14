@@ -1,7 +1,7 @@
 #ifndef CSCRATCH_ACTIONS_H
 #define CSCRATCH_ACTIONS_H
 
-#include "utils.h"
+#include "runtime/utils.h"
 
 #include <cstdint>
 

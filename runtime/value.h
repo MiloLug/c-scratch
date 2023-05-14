@@ -2,7 +2,7 @@
 #define VALUE_H
 
 #include "config.h"
-#include "string.h"
+#include "string/string.h"
 #include "utils.h"
 
 #include <cstdint>
@@ -50,7 +50,7 @@
     storage_number_t operator op(T * value) const                                                  \
         requires(std::is_same_v<T, const wchar_t>)                                                 \
     {                                                                                              \
-        return number op String::strToNum(value, wcslen(value));                                   \
+        return number op strToNum(value, wcslen(value));                                   \
     }
 
 
@@ -79,7 +79,7 @@ public:
             requires(std::is_same_v<T, const wchar_t>)
             :
             str{_str},
-            number{(storage_number_t)String::strToNum(str, wcslen(str))},
+            number{(storage_number_t)strToNum(str, wcslen(str))},
             type{Type::STRING} {}
 
         constexpr ValueInitData(double _number, const wchar_t * _str):
@@ -126,6 +126,7 @@ public:
     }
 
     Value(String && value): string{value.copy()}, type{Type::STRING} {}
+    Value(const String & value): string{value.copy()}, type{Type::STRING} {}
 
     Value(const Value & origin): number{origin.number}, type{origin.type} {
         if (origin.type == Type::STRING) string = origin.string->copy();

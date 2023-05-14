@@ -2,11 +2,11 @@
 #define CSCRATCH_MESSAGE_MANAGER_H
 
 #include "actions.h"
-#include "control_flow.h"
-#include "coroutines.h"
+#include "runtime/control_flow.h"
+#include "runtime/coroutines.h"
+#include "runtime/utils.h"
+#include "runtime/value.h"
 #include "script_manager.h"
-#include "utils.h"
-#include "value.h"
 
 #include <unordered_map>
 #include <vector>

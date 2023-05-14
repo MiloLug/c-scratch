@@ -1,7 +1,6 @@
 #ifndef CSCRATCH_BACKDROP_H
 #define CSCRATCH_BACKDROP_H
 
-#include "config.h"
 #include "sprite_base.h"
 
 

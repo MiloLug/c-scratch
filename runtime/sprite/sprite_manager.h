@@ -1,13 +1,14 @@
 #ifndef SPRITE_MANAGER_H
 #define SPRITE_MANAGER_H
 
-#include "backdrop.h"
-#include "include_sdl.h"
-#include "sprite.h"
-
 #include <list>
 #include <memory>
 #include <unordered_set>
+
+
+class Sprite;
+class Backdrop;
+class SDL_Renderer;
 
 
 class SpriteManager {

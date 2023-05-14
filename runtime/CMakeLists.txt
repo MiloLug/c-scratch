@@ -4,23 +4,12 @@ target_sources(app PRIVATE
   sdl.cpp
   sdl_scancodes.h
 
-  sprite_base.h
-  sprite.h
-  backdrop.h
-  sprite_manager.h
-  sprite_manager.cpp
-
-  string.h
-
   value.h
   value.cpp
 
   array.h
 
   coroutines.h
-  
-  script_manager.h
-  script_manager.cpp
 
   ts_queue.h
   ts_container.h
@@ -40,4 +29,6 @@ target_sources(app PRIVATE
 
 add_subdirectory("math")
 add_subdirectory("pen")
-add_subdirectory("string_utils")
+add_subdirectory("string")
+add_subdirectory("script")
+add_subdirectory("sprite")

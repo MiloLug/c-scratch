@@ -1,8 +1,11 @@
 #include "sdl.h"
 
+#include <iostream>
+#include <iomanip>
 #include "pen/pen.h"
-#include "script_manager.h"
-#include "sprite_manager.h"
+#include "script/actions.h"
+#include "script/script_manager.h"
+#include "sprite/sprite_manager.h"
 #include "time.h"
 
 

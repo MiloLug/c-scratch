@@ -3,7 +3,7 @@
 
 #include "include_sdl.h"
 #include "runtime/math/common.h"
-#include "string.h"
+#include "string/string.h"
 
 #include <cstdint>
 #include <cwchar>

@@ -1,8 +1,8 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "actions.h"
 #include "config.h"
+#include "runtime/script/actions.h"
 #include "sprite_base.h"
 
 #include <list>

@@ -16,19 +16,6 @@
 #define forever while (1)
 
 
-force_inline__ const Coroutine & __coroPreWait(const Coroutine & coro, bool & done) {
-    coro.resume();
-    done = coro.done();
-    return coro;
-}
-
-template<typename T>
-force_inline__ T & __coroPreWait(T & value, bool & done) {
-    done = false;
-    return value;
-}
-
-
 #define cs_stop_all                                                                                \
     ScriptManager::shouldRun = false;                                                              \
     co_return

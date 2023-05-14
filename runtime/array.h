@@ -4,6 +4,7 @@
 #include "files.h"
 #include "utils.h"
 #include "value.h"
+#include "string/string_utils.h"
 
 #include <filesystem>
 
@@ -47,7 +48,7 @@ public:
             if (lineLen == 0) {
                 arr.push(String());
             } else {
-                Value::storage_number_t num = String::strToNum(tmpLine, lineLen, &isNumber, &numberBase, true);
+                Value::storage_number_t num = strToNum(tmpLine, lineLen, &isNumber, &numberBase, true);
                 if (isNumber && numberBase == 10) {
                     arr.push(num);
                 } else {

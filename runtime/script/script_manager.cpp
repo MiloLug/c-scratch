@@ -1,6 +1,9 @@
 #include "script_manager.h"
 
-#include "coroutines.h"
+#include "config.h"
+#include "actions.h"
+#include "runtime/coroutines.h"
+#include "runtime/sprite/sprite_base.h"
 
 #include <ctime>
 #include <list>
@@ -57,6 +60,25 @@ void ScriptManager::bindScripts(const BindingsMap & bindings) {
             (*scriptBindingsStorage)[action] = actionSprites;
         }
     }
+}
+
+void ScriptManager::bindScripts(SpriteBase * sprite, const SimpleBindingsMap & bindings) {
+    for (auto & [action, actionScripts] : bindings) {
+        auto globalActionBindings = scriptBindingsStorage->find(action);
+        if (globalActionBindings != scriptBindingsStorage->end()) {
+            auto & globalActionSprites = (*globalActionBindings).second;
+
+            globalActionSprites.push_back({sprite, actionScripts});
+        } else {
+            (*scriptBindingsStorage)[action] = {{sprite, actionScripts}};
+        }
+    }
+}
+
+void ScriptManager::bindScripts(
+    SpriteBase * sprite, uint64_t action, const CoroFunction & function
+) {
+    bindScripts(sprite, {{action, {function}}});
 }
 
 static void stopOtherScripts(
@@ -158,4 +180,12 @@ void ScriptManager::staticInit() {
 ScriptManager::ScriptManager(const BindingsMap & bindings) {
     staticInit();
     bindScripts(bindings);
+}
+ScriptManager::ScriptManager(SpriteBase * sprite, const SimpleBindingsMap & bindings) {
+    staticInit();
+    bindScripts(sprite, bindings);
+}
+ScriptManager::ScriptManager(SpriteBase * sprite, uint64_t action, const CoroFunction & function) {
+    staticInit();
+    bindScripts(sprite, action, function);
 }

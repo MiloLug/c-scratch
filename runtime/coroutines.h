@@ -37,7 +37,7 @@ struct Coroutine: std::coroutine_handle<BasePromise> {
 
 struct BasePromise {
 public:
-    const Coroutine * subCoro = NULL;
+    const Coroutine * subCoro = nullptr;
 
     Coroutine get_return_object() { return {Coroutine::from_promise(*this)}; }
     std::suspend_always initial_suspend() noexcept { return {}; }
@@ -61,7 +61,7 @@ inline void Coroutine::resume() const {
     if (subCoro && !subCoro->done()) {
         subCoro->resume();
     } else {
-        subCoro = NULL;
+        subCoro = nullptr;
         std::coroutine_handle<BasePromise>::resume();
     }
 }

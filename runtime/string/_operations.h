@@ -2,7 +2,7 @@
 #define CSCRATCH_STRING_UTILS_OPERATIONS_H
 
 #include "_bmh_search.h"
-#include "runtime/string.h"
+#include "string.h"
 #include "runtime/value.h"
 
 
@@ -57,15 +57,13 @@ static String join(const String & s1, const String & s2) {
 
     return String(s1.length + s2.length, res, true);
 }
-template<typename T1, typename T2>
-static inline String join(T1 && s1, T2 && s2) {
+static inline String join(auto && s1, auto && s2) {
     return join(toTmpString(s1), toTmpString(s2));
 }
 
 
 static constexpr double lengthOf(const String & s1) { return s1.length; }
-template<typename T>
-static inline double lengthOf(T && s1) {
+static inline double lengthOf(auto && s1) {
     return lengthOf(toTmpString(s1));
 }
 
@@ -73,8 +71,7 @@ static inline double lengthOf(T && s1) {
 static inline String letterOf(const String & s1, uint64_t i) {
     return i > 0 && i <= s1.length ? String(s1.data[i - 1], 1, true) : String();
 }
-template<typename T>
-static inline String letterOf(T && s1, uint64_t i) {
+static inline String letterOf(auto && s1, uint64_t i) {
     return letterOf(toTmpString(s1), i);
 }
 
@@ -89,8 +86,7 @@ static bool strContains(const String & haystack, const String & needle) {
     return BMHSearch::findIn(haystack.data, haystack.length, needle.data, needle.length)
         != haystack.length;
 }
-template<typename T1, typename T2>
-static inline bool strContains(T1 && haystack, T2 && needle) {
+static inline bool strContains(auto && haystack, auto && needle) {
     return strContains(toTmpString(haystack), toTmpString(needle));
 }
 

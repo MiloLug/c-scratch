@@ -2,9 +2,11 @@
 #define CSCRATCH_STRING_H
 
 #include <cstdint>
-#include <cstring>
-#include <limits>
 #include <memory>
+#include <cstring>
+
+#include "_str_to_num.h" 
+
 
 /*
  * This is just an inner container for wchar strings.
@@ -25,7 +27,7 @@ protected:
 public:
     uint64_t length = 0;  // number of chars
     uint64_t size = 0;  // memory taken in bytes
-    wchar_t * data = NULL;
+    wchar_t * data = nullptr;
     bool shouldMove = false;  // hint to not make any copies and just take the pointer
     bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
 
@@ -33,101 +35,14 @@ public:
         String * self = (String *)malloc(sizeof(String));
         self->shouldMove = false;
         self->isWrapper = false;
-        self->data = NULL;
+        self->data = nullptr;
         self->set(value);
 
         return self;
     }
 
     static inline String * create(String & value) { return value.copy(); }
-
-    static inline double __parseIntNum(const wchar_t * str, uint8_t base, bool * isNumRet) {
-        wchar_t * tmp = nullptr;
-        double t = wcstol(str, &tmp, base);
-
-        while (isspace(*(tmp))) tmp++;
-
-        if (tmp[0] == L'\0') {
-            *isNumRet = true;
-            return t;
-        }
-
-        return 0;
-    }
-
-    static inline double __parseDecNum(const wchar_t * str, bool * isNumRet) {
-        wchar_t * tmp = nullptr;
-        double t = wcstod(str, &tmp);
-
-        while (isspace(*(tmp))) tmp++;
-
-        if (tmp[0] == L'\0') {
-            *isNumRet = true;
-            return t;
-        }
-
-        return 0;
-    }
-
-    static inline double __parseInfinity(const wchar_t * str, bool * isNumRet) {
-        if (wcscmp(str, L"Infinity") == 0 || (str[0] == L'i' && str[2] == 'f' && str[3] == L'\0')) {
-            *isNumRet = true;
-            return std::numeric_limits<double>::infinity();
-        }
-
-        return 0;
-    }
-
-    static double strToNum(
-        const wchar_t * str,
-        uint64_t len,
-        bool * isNumRet = nullptr,
-        uint8_t * baseRet = nullptr,
-        bool noSpace = false
-    ) {
-        bool tmpIsNum;
-        isNumRet = isNumRet ? isNumRet : &tmpIsNum;
-        *isNumRet = false;
-
-        uint8_t tmpBase;
-        baseRet = baseRet ? baseRet : &tmpBase;
-        *baseRet = 10;
-
-        if (noSpace && (iswspace(*str) || iswspace(str[len - 1]))) {
-            // Just forbid making the ret value true
-            isNumRet = &tmpIsNum;
-        }
-
-        while (iswspace(*str)) str++, len--;
-        if (len > 326 || len < 1)  // > -MAX_DBL len
-            return 0;
-
-        const double sign = str[0] == L'-' ? -1 : 1;
-        if (str[0] == L'-' || str[0] == L'+') {
-            str++;
-            len--;
-        }
-
-        if (len == 0) return 0;
-
-        switch (str[1]) {
-            case L'x':
-                *baseRet = 16;
-                return sign * __parseIntNum(str + 2, 16, isNumRet);
-            case L'o':
-                *baseRet = 8;
-                return sign * __parseIntNum(str + 2, 8, isNumRet);
-            case L'b':
-                *baseRet = 2;
-                return sign * __parseIntNum(str + 2, 2, isNumRet);
-            case L'n':
-                return sign * __parseInfinity(str, isNumRet);
-            default:
-                return sign * __parseDecNum(str, isNumRet);
-        }
-
-        return 0;
-    }
+    static inline String * create(const String & value) { return value.copy(); }
 
     /*Create an empty string*/
     constexpr String():
@@ -163,12 +78,11 @@ public:
         shouldMove(_shouldMove),
         isWrapper(_isWrapper) {}
 
-    /*For some edgy cases, don't use on yourself!!!*/
     String(String & origin) {
-        if (origin.shouldMove)
-            origin.moveTo(*this);
-        else
-            set(origin);
+        set(origin);
+    }
+    String(const String & origin) {
+        set(origin);
     }
 
     void moveTo(String & destination) {
@@ -180,17 +94,36 @@ public:
         destination.shouldMove = shouldMove;
         destination.isWrapper = isWrapper;
 
-        data = NULL;
+        data = nullptr;
     }
 
     String * copy() {
         String * copy = (String *)malloc(sizeof(String));
         copy->shouldMove = false;
         copy->isWrapper = false;
-        copy->data = NULL;
+        copy->data = nullptr;
         copy->set(*this);
 
         return copy;
+    }
+
+    String * copy() const {
+        String * copy = (String *)malloc(sizeof(String));
+        copy->shouldMove = false;
+        copy->isWrapper = false;
+        copy->data = nullptr;
+        copy->set(*this);
+
+        return copy;
+    }
+
+    void set(const String & origin) {
+        length = origin.length;
+        size = origin.size;
+        if (origin.data) {
+            data = (wchar_t *)realloc((void *)data, origin.size);
+            memcpy(data, origin.data, origin.size);
+        }
     }
 
     void set(String & origin) {
@@ -201,9 +134,10 @@ public:
 
         length = origin.length;
         size = origin.size;
-        data = (wchar_t *)realloc((void *)data, origin.size);
-
-        if (data) memcpy(data, origin.data, origin.size);
+        if (origin.data) {
+            data = (wchar_t *)realloc((void *)data, origin.size);
+            memcpy(data, origin.data, origin.size);
+        }
     }
 
     void set(const wchar_t * value) {

@@ -1,7 +1,10 @@
 #include "sprite_manager.h"
 
-#include "script_manager.h"
-#include "utils.h"
+#include "backdrop.h"
+#include "runtime/include_sdl.h"
+#include "runtime/script/script_manager.h"
+#include "runtime/utils.h"
+#include "sprite.h"
 
 
 SpriteManager::SpriteList SpriteManager::spriteStorage;
@@ -154,7 +157,7 @@ void SpriteManager::sendClickXY(float x, float y) {
     auto sprite = getTouchingXY(x, y);
     if (sprite != nullptr) {
         ScriptManager::triggerScripts(ACTION_CLICK | sprite->actionId);
-        
+
         if (sprite->isDraggingEnabled()) {
             ScriptManager::manageCoroutine(sprite, new Coroutine(sprite->startDragging()));
         }
