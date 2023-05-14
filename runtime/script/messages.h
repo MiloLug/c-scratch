@@ -33,7 +33,7 @@ public:
     static void broadcast(const wchar_t * msg) {
         ScriptManager::triggerScripts(ACTION_MESSAGE | strToActionParam(msg));
     }
-    static void broadcast(Value && value) {
+    static void broadcast(Value & value) {
         ScriptManager::triggerScripts(ACTION_MESSAGE | strToActionParam(value.toString()));
     }
 
@@ -52,7 +52,7 @@ public:
     static Coroutine broadcastWait(const wchar_t * msg) {
         return broadcastWait(strToActionParam(msg));
     }
-    static Coroutine broadcastWait(Value && value) {
+    static Coroutine broadcastWait(Value & value) {
         return broadcastWait(strToActionParam(value.toString()));
     }
 };
