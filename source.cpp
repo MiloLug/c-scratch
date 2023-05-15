@@ -1,8 +1,8 @@
 #include "config.h"
 #include "runtime/debug.h"
-#include "runtime/script_manager.h"
+#include "runtime/script/script_manager.h"
 #include "runtime/sdl.h"
-#include "runtime/sprite_manager.h"
+#include "runtime/sprite/sprite_manager.h"
 #include "stage/scripts.h"
 #include "stage/sprites.h"
 
