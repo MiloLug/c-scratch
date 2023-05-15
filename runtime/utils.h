@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <ctime>
+#include <type_traits>
+
 
 #define SWAP(a, b)                                                                                 \
     ({                                                                                             \
@@ -34,11 +36,17 @@
 
 
 static constexpr uint64_t fastHash(const wchar_t * str) {
-    constexpr uint64_t maxOffset = 1LL << 61;
+    constexpr uint64_t maxOffset = 31;
     uint64_t res = 0;
     wchar_t c = 0;
-    while ((c = *(str++)) != L'\0') {
-        res = res >= maxOffset ? (res >> 7) ^ c : (res << 3) ^ c;
+    uint8_t i = 0;
+    uint8_t j = 1;
+    while((c = *str) != L'\0') {
+        do {
+            if (i > maxOffset) i = j++;
+            res = res ^ (c << i);
+            i += 4;
+        } while ((c = *(++str)) != L'\0' && j < maxOffset);
     }
 
     return res;
