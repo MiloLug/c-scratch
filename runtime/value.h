@@ -29,7 +29,7 @@
         getNumberStr();                                                                            \
         return wcscmp(numberStrTmp, value);                                                        \
     }                                                                                              \
-    bool operator op(String && value) {                                                            \
+    bool operator op(const String & value) {                                                            \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
     }                                                                                              \
     constexpr bool operator op(Number auto value) const { return number op value; }
