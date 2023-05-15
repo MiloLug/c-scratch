@@ -72,24 +72,18 @@ public:
         length = N;
 
         for (int i = 0; i < N; i++) {
-            data[i + 1] = Value::create(values[i]);
+            data[i + 1] = new Value(values[i]);
         }
     }
 
-    ValueArray(ValueArray && arr) {
-        arr.moveTo(*this);
-    }
+    ValueArray(ValueArray && origin) {
+        data = origin.data;
+        capacity = origin.capacity;
+        length = origin.length;
 
-    void moveTo(ValueArray & dest) {
-        dest.clean();
+        if (data) data[0] = &nullValue;
 
-        dest.data = data;
-        dest.capacity = capacity;
-        dest.length = length;
-
-        if (data) data[0] = &dest.nullValue;
-
-        data = NULL;
+        origin.data = nullptr;
     }
 
     void push(auto && value) {
@@ -101,7 +95,7 @@ public:
             data = (Value **)realloc((void *)data, capacity * sizeof(Value *));
         }
 
-        data[length + 1] = Value::create(value);
+        data[length + 1] = new Value(value);
         length++;
     }
 
@@ -110,9 +104,9 @@ public:
     }
 
     void remove(int64_t i) {
-        if (i <= length && i > 0) {
-            data[i]->clean();
-            free(data[i]);
+        if (i == length) return pop();
+        if (i < length && i > 0) {
+            delete data[i];
             for (uint64_t j = i; j < length; j++) {
                 data[j] = data[j + 1];
             }
@@ -132,7 +126,7 @@ public:
                 data[j + 1] = data[j];
             }
 
-            data[i] = Value::create(value);
+            data[i] = new Value(value);
             length++;
         }
     }
@@ -157,8 +151,7 @@ public:
     void clean() {
         if (data) {
             for (uint64_t i = 1; i <= this->length; i++) {
-                data[i]->clean();
-                free(data[i]);
+                delete data[i];
             }
 
             free((void *)data);
@@ -193,7 +186,7 @@ public:
         }
         str[--offset] = L'\0';
 
-        return String(offset, str, true);
+        return String(offset, str);
     }
 
     ~ValueArray() { clean(); }

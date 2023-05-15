@@ -9,7 +9,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC)
+if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(AVX_FLAGS)
   if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
       set(AVX_FLAGS "${AVX_FLAGS} /arch:AVX2")
@@ -21,9 +21,22 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC)
   set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast /await ${AVX_FLAGS}")
 
 else()
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -ffast-math -fcoroutines -march=native -save-temps")
-  set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -ffast-math -fcoroutines -march=native")
-  
+  set(COMMON_FLAGS "-ffast-math -march=native")
+
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines-ts -flto")
+
+    set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS}")
+
+  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines -fconcepts -flto=2")
+
+    set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS}")
+
+  endif()
+
 endif()
 
 

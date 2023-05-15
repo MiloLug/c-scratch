@@ -94,5 +94,8 @@ concept Number = std::is_floating_point_v<T> || std::is_integral_v<T>;
 template<typename T, typename U>
 concept MaybeConst = std::is_same_v<U, remove_deepest_const<T>>;
 
+template<typename T, typename ... U>
+concept OneOf = (std::is_same_v<U, T> || ...);
+
 
 #endif

@@ -19,17 +19,14 @@
             : wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.string->data)     \
                 op 0;                                                                              \
     }                                                                                              \
-    template<typename T>                                                                           \
-    bool operator op(T * value)                                                                    \
-        requires(std::is_same_v<T, const wchar_t>)                                                 \
-    {                                                                                              \
+    bool operator op(OneOf<const wchar_t> auto * restrict__ value) {                               \
         if (type == Type::STRING) {                                                                \
             return wcscmp(string->data, value) op 0;                                               \
         }                                                                                          \
         getNumberStr();                                                                            \
         return wcscmp(numberStrTmp, value);                                                        \
     }                                                                                              \
-    bool operator op(const String & value) {                                                            \
+    bool operator op(const String & value) {                                                       \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
     }                                                                                              \
     constexpr bool operator op(Number auto value) const { return number op value; }
@@ -38,10 +35,7 @@
 #define make_math_bin_op(op)                                                                       \
     constexpr storage_number_t operator op(Number auto value) const { return number op value; }    \
     constexpr storage_number_t operator op(Value & value) const { return number op value.number; } \
-    template<typename T>                                                                           \
-    storage_number_t operator op(T * value) const                                                  \
-        requires(std::is_same_v<T, const wchar_t>)                                                 \
-    {                                                                                              \
+    storage_number_t operator op(OneOf<const wchar_t> auto * restrict__ value) const {             \
         return number op strToNum(value, wcslen(value));                                           \
     }
 
@@ -66,10 +60,10 @@ public:
 
         constexpr ValueInitData(Number auto _number): number{(storage_number_t)_number} {}
 
-        template<typename T>
-        ValueInitData(T * _str)
-            requires(std::is_same_v<T, const wchar_t>)
-            : str{_str}, number{(storage_number_t)strToNum(str, wcslen(str))}, type{Type::STRING} {}
+        ValueInitData(OneOf<const wchar_t> auto * restrict__ _str):
+            str{_str},
+            number{(storage_number_t)strToNum(str, wcslen(str))},
+            type{Type::STRING} {}
 
         constexpr ValueInitData(double _number, const wchar_t * _str):
             str{_str},
@@ -86,51 +80,42 @@ public:
     wchar_t * numberStrTmp = NULL;
     uint16_t numberStrSize = 0;
 
-    template<typename Tv>
-    static Value * restrict__ create(Tv && value) {
-        Value * restrict__ self = (Value *)malloc(sizeof(Value));
-
-        self->previousNumber = 0;
-        self->string = NULL;
-        self->numberStrTmp = NULL;
-        self->numberStrSize = 0;
-
-        *self = value;
-        return self;
-    }
-
     constexpr Value() {}
 
     Value(const ValueInitData & data):
         number{data.number},
         type{data.type},
-        string{data.str ? String::create(data.str) : nullptr} {}
+        string{data.str ? new String(data.str) : nullptr} {}
 
     constexpr Value(Number auto value): number{(storage_number_t)value} {}
 
-    Value(const wchar_t * restrict__ value): string{String::create(value)}, type{Type::STRING} {
+    Value(OneOf<const wchar_t> auto * restrict__ value):
+        string{new String(value)},
+        type{Type::STRING} {
+        number = (double)*string;
+    }
+    Value(String && value): string{new String((String &&)value)}, type{Type::STRING} {
+        number = (double)*string;
+    }
+    Value(const String & value): string{new String(value)}, type{Type::STRING} {
         number = (double)*string;
     }
 
-    Value(String && value): string{value.copy()}, type{Type::STRING} {}
-    Value(const String & value): string{value.copy()}, type{Type::STRING} {}
-
     Value(const Value & origin): number{origin.number}, type{origin.type} {
-        if (origin.type == Type::STRING) string = origin.string->copy();
+        if (origin.type == Type::STRING) string = new String(*origin.string);
     }
 
     Value & operator=(const Value & origin) {
+        number = origin.number;
         if (origin.type == Type::NUMBER) {
-            number = origin.number;
             type = Type::NUMBER;
             return *this;
         }
 
-        number = origin.number;
         if (string)
-            string->set(*origin.string);
+            *string = *origin.string;
         else
-            string = origin.string->copy();
+            string = new String(*origin.string);
         type = Type::STRING;
 
         return *this;
@@ -141,19 +126,19 @@ public:
         type = data.type;
         if (data.str) {
             if (string)
-                string->set(data.str);
+                *string = data.str;
             else
-                string = String::create(data.str);
+                string = new String(data.str);
         }
 
         return *this;
     }
 
-    Value & operator=(const wchar_t * restrict__ value) {
+    Value & operator=(OneOf<const wchar_t> auto * restrict__ value) {
         if (string)
-            string->set(value);
+            *string = value;
         else
-            string = String::create(value);
+            string = new String(value);
 
         number = (double)*string;
         type = Type::STRING;
@@ -163,9 +148,9 @@ public:
 
     Value & operator=(const String & value) {
         if (string)
-            string->set(value);
+            *string = value;
         else
-            string = String::create(value);
+            string = new String(value);
 
         number = (double)value;
         type = Type::STRING;
@@ -174,9 +159,9 @@ public:
     }
     Value & operator=(String && value) {
         if (string)
-            string->set(value);
+            *string = (String &&)value;
         else
-            string = String::create(value);
+            string = new String((String &&)value);
 
         number = (double)value;
         type = Type::STRING;
@@ -223,23 +208,6 @@ public:
     constexpr operator storage_number_t() { return number; }
 
     operator const wchar_t *() { return type == Type::STRING ? string->data : getNumberStr(); }
-
-    Value * restrict__ copy() const {
-        Value * restrict__ copy = (Value *)malloc(sizeof(Value));
-
-        copy->previousNumber = 0;
-        copy->string = NULL;
-        copy->numberStrTmp = NULL;
-        copy->numberStrSize = 0;
-        copy->type = type;
-        copy->number = number;
-
-        // speed up numeric operations a little by avoiding jumps in case of NUMBER type
-        if (type == Type::NUMBER) return copy;
-
-        copy->string = string->copy();
-        return copy;
-    }
 
     wchar_t * restrict__ & getNumberStr() {
         constexpr uint16_t fracBaseLen = 15;
@@ -308,7 +276,9 @@ public:
         return numberStrTmp;
     }
 
-    const wchar_t * toString() { return type == Type::STRING ? string->data : getNumberStr(); }
+    const wchar_t * restrict__ toString() {
+        return type == Type::STRING ? string->data : getNumberStr();
+    }
 
     constexpr void clean() {
         if (numberStrTmp) {

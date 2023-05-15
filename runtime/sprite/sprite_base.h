@@ -134,24 +134,24 @@ public:
         wOrig{w},
         hOrig{h},
         pPointOrig{
-            .x{pivotX},
-            .y{pivotY},
+            .x = pivotX,
+            .y = pivotY,
         },
         pPoint{
-            .x{pivotX * sizeScaled},
-            .y{pivotY * sizeScaled},
+            .x = pivotX * sizeScaled,
+            .y = pivotY * sizeScaled,
         },
         pPointLT{
-            .x{(w * sizeScaled) / 2.0f + pPoint.x},
-            .y{(h * sizeScaled) / 2.0f - pPoint.y},
+            .x = (w * sizeScaled) / 2.0f + pPoint.x,
+            .y = (h * sizeScaled) / 2.0f - pPoint.y,
         },
         windowOffsetLTX{WINDOW_CENTER_X - pPointLT.x},
         windowOffsetLTY{WINDOW_CENTER_Y - pPointLT.y},
         pos{
-            .x{windowOffsetLTX + __boundXUnsafe(_x)},
-            .y{windowOffsetLTY - __boundYUnsafe(_y)},
-            .w{w * sizeScaled},
-            .h{h * sizeScaled},
+            .x = windowOffsetLTX + __boundXUnsafe(_x),
+            .y = windowOffsetLTY - __boundYUnsafe(_y),
+            .w = w * sizeScaled,
+            .h = h * sizeScaled,
         } {
         updateRotationOffset();
     }
@@ -497,7 +497,7 @@ public:
         onCostumeSwitch();
     }
     void switchCostumeTo(const wchar_t * str) {
-        switchCostumeTo(String(wcslen(str), (wchar_t *)str, true, true));
+        switchCostumeTo(String(wcslen(str), (wchar_t *)str, true));
     }
 
     void switchCostumeByIndex(uint64_t index) {

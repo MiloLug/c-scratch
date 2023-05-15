@@ -28,7 +28,7 @@ namespace Pen {
         bool yLonger = false;
         int64_t shortLen = y2 - y1;
         int64_t longLen = x2 - x1;
-        if (abs(shortLen) > abs(longLen)) {
+        if (std::abs(shortLen) > std::abs(longLen)) {
             int64_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
@@ -179,7 +179,7 @@ namespace Pen {
         bool yLonger = false;
         int64_t shortLen = y2 - y1;
         int64_t longLen = x2 - x1;
-        if (abs(shortLen) > abs(longLen)) {
+        if (std::abs(shortLen) > std::abs(longLen)) {
             int64_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;
@@ -230,7 +230,7 @@ namespace Pen {
         bool yLonger = false;
         int64_t shortLen = y2 - y1;
         int64_t longLen = x2 - x1;
-        if (abs(shortLen) > abs(longLen)) {
+        if (std::abs(shortLen) > std::abs(longLen)) {
             int64_t swap = shortLen;
             shortLen = longLen;
             longLen = swap;

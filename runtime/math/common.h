@@ -14,6 +14,10 @@
         (hi) = __u.i >> 32;                                                                        \
     }
 
+#ifndef EPS
+    constexpr double EPS = 2.22044604925031308084726333618164062e-16L;
+#endif
+
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
