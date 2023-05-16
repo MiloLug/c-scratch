@@ -22,6 +22,8 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STR
 
 else()
   string(CONCAT COMMON_FLAGS
+    "-lm "
+    "-lstdc++ "
     "-ffast-math "
     "-march=native "
     "-fmodulo-sched "
@@ -36,7 +38,11 @@ else()
       "${COMMON_FLAGS} "
       "-fcoroutines-ts "
       "-flto "
+      "-fwhole-program-vtables "
+      "-fforce-emit-vtables "
+      "-faddrsig "
       "-Wno-ignored-optimization-argument "
+      "-Wno-unused-command-line-argument "
     )
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
