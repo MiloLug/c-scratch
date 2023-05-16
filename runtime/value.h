@@ -1,5 +1,5 @@
-#ifndef VALUE_H
-#define VALUE_H
+#ifndef CSCRATCH_VALUE_H
+#define CSCRATCH_VALUE_H
 
 #include "config.h"
 #include "string/string.h"
@@ -217,7 +217,7 @@ public:
         if (number == previousNumber && numberStrTmp) return numberStrTmp;
         previousNumber = number;
 
-        bool useExpNotation = abs(number) >= minExponential;
+        bool useExpNotation = std::abs(number) >= minExponential;
         uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.15e", number)
                                        : swprintf(globalNumStrTmp, 325, L"%.15f", number);
 

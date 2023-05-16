@@ -21,16 +21,36 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STR
   set(CMAKE_CXX_FLAGS_RELEASE "/fp:fast /await ${AVX_FLAGS}")
 
 else()
-  set(COMMON_FLAGS "-ffast-math -march=native")
+  string(CONCAT COMMON_FLAGS
+    "-ffast-math "
+    "-march=native "
+    "-fmodulo-sched "
+    "-fgcse-sm "
+    "-fgcse-las "
+    "-fno-inline-small-functions "
+    "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
+  )
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines-ts -flto")
+    string(CONCAT COMMON_FLAGS
+      "${COMMON_FLAGS} "
+      "-fcoroutines-ts "
+      "-flto "
+      "-Wno-ignored-optimization-argument "
+    )
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
     set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS}")
 
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines -fconcepts -flto=2")
+    string(CONCAT COMMON_FLAGS
+      "${COMMON_FLAGS} "
+      "-fcoroutines "
+      "-fconcepts "
+      "-flto=2 "
+      "-fgcse-lm "
+      "-fira-region=all "
+    )
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
     set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS}")

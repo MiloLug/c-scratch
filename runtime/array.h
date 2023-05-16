@@ -1,5 +1,5 @@
-#ifndef ARRAY_H
-#define ARRAY_H
+#ifndef CSCRATCH_ARRAY_H
+#define CSCRATCH_ARRAY_H
 
 #include "files.h"
 #include "utils.h"
@@ -130,7 +130,7 @@ public:
 
     constexpr double indexOf(auto && value) {
         for (uint64_t i = 1; i <= length; i++) {
-            if (data[i]->operator==(value)) return i;
+            if (*data[i] == value) return i;
         }
         return 0;
     }

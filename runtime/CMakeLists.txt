@@ -7,8 +7,6 @@ target_sources(app PRIVATE
   value.h
   value.cpp
 
-  array.h
-
   coroutines.h
 
   ts_queue.h
@@ -25,6 +23,8 @@ target_sources(app PRIVATE
 
   files.h
   files.cpp
+
+  array.h
 )
 
 add_subdirectory("math")

@@ -24,94 +24,101 @@
 class String {
 protected:
     static constexpr const wchar_t * emptyString = L"";
-
-public:
-    uint64_t length = 0;  // number of chars
-    uint64_t size = 0;  // memory taken in bytes
-    wchar_t * data = nullptr;
     bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
+    uint64_t mSize = 0;  // memory taken in bytes
+    wchar_t * mData = nullptr;
+    uint64_t mLength = 0;  // number of chars
+public:
+    const uint64_t & size = mSize;
+    const wchar_t * & data = const_cast<const wchar_t * &>(mData);
+    const uint64_t & length = mLength;
 
     /*Create an empty string*/
-    constexpr String(): length{0}, data{(wchar_t *)emptyString}, size{1 << 2}, isWrapper{true} {}
+    constexpr String(): mLength{0}, mData{(wchar_t *)emptyString}, mSize{1 << 2}, isWrapper{true} {}
 
     /*Create a string repeating the symbol from `sym`*/
     String(wchar_t sym, uint64_t _length):
-        length{_length},
-        data{(wchar_t *)malloc((_length + 1) << 2)},
-        size{(_length + 1) << 2} {
+        mLength{_length},
+        mData{(wchar_t *)malloc((_length + 1) << 2)},
+        mSize{(_length + 1) << 2} {
         if (_length == 1)
-            data[0] = sym;
+            mData[0] = sym;
         else
-            while (_length > 0) data[--_length] = sym;
+            while (_length > 0) mData[--_length] = sym;
 
-        data[length] = L'\0';
+        mData[mLength] = L'\0';
     }
 
     /*Wrap and existing string*/
-    constexpr String(uint64_t _length, wchar_t * _data, bool _isWrapper = false):
-        length(_length),
-        data(_data),
-        size((_length + 1) << 2),
+    constexpr String(uint64_t _length, const wchar_t * _data, bool _isWrapper = false):
+        mLength(_length),
+        mData((wchar_t *)_data),
+        mSize((_length + 1) << 2),
         isWrapper(_isWrapper) {}
 
-    String(OneOfT<const wchar_t> auto * restrict__ _data) { operator=(_data); }
-    String(String && origin) {
-        length = origin.length;
-        size = origin.size;
-        data = origin.data;
-        isWrapper = origin.isWrapper;
-        origin.data = nullptr;
+    String(const wchar_t * restrict__ _data) {
+        mLength = wcslen(_data);
+        mSize = (mLength + 1) << 2;
+        mData = (wchar_t *)malloc(mSize);
+        memcpy(mData, _data, mSize);
+    }
+    String(String && origin):
+        mLength{origin.mLength},
+        mSize{origin.mSize},
+        mData{origin.mData},
+        isWrapper{origin.isWrapper} {
+        origin.mData = nullptr;
     }
     String(const String & origin) {
-        length = origin.length;
-        size = origin.size;
-        if (origin.data) {
-            data = (wchar_t *)malloc(origin.size);
-            memcpy(data, origin.data, origin.size);
+        mLength = origin.mLength;
+        mSize = origin.mSize;
+        if (origin.mData) {
+            mData = (wchar_t *)malloc(origin.mSize);
+            memcpy(mData, origin.mData, origin.mSize);
         }
     }
 
     String & operator=(String && origin) {
-        if (!isWrapper && data) free(data);
+        if (!isWrapper && mData) free(mData);
 
-        length = origin.length;
-        size = origin.size;
-        data = origin.data;
+        mLength = origin.mLength;
+        mSize = origin.mSize;
+        mData = origin.mData;
         isWrapper = origin.isWrapper;
-        origin.data = nullptr;
+        origin.mData = nullptr;
 
         return *this;
     }
     String & operator=(const String & origin) {
-        length = origin.length;
-        size = origin.size;
-        if (origin.data) {
-            if (isWrapper) data = nullptr;
+        mLength = origin.mLength;
+        mSize = origin.mSize;
+        if (origin.mData) {
+            if (isWrapper) mData = nullptr;
 
-            data = (wchar_t *)realloc((void *)data, origin.size);
-            memcpy(data, origin.data, origin.size);
+            mData = (wchar_t *)realloc((void *)mData, origin.mSize);
+            memcpy(mData, origin.mData, origin.mSize);
         }
         isWrapper = false;
 
         return *this;
     }
-    String & operator=(OneOfT<const wchar_t> auto * value) {
-        length = wcslen(value);
-        size = (length + 1) << 2;
-        data = (wchar_t *)realloc((void *)data, size);
+    String & operator=(const wchar_t * value) {
+        mLength = wcslen(value);
+        mSize = (mLength + 1) << 2;
+        mData = (wchar_t *)realloc((void *)mData, mSize);
 
-        if (data) memcpy(data, value, size);
+        if (mData) memcpy(mData, value, mSize);
 
         return *this;
     }
 
     constexpr void clean() {
-        if (data && !isWrapper) free(data);
+        if (mData && !isWrapper) free(mData);
     }
 
-    constexpr operator const wchar_t *() const { return data; }
+    constexpr operator const wchar_t *() const { return mData; }
 
-    operator double() const { return strToNum(data, length); }
+    operator double() const { return strToNum(mData, mLength); }
 
     constexpr ~String() { clean(); }
 };

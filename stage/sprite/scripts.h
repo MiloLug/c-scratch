@@ -103,61 +103,61 @@ namespace NS_sprite {
         }
 
         static Coroutine spriteProcedure_loop_unrolling_10() {
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
-            cs_wait(spriteProcedure_loop_unrolling_1());
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
+            cs_wait spriteProcedure_loop_unrolling_1();
 
             co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_100() {
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
-            cs_wait(spriteProcedure_loop_unrolling_10());
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
+            cs_wait spriteProcedure_loop_unrolling_10();
             
             co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_1000() {
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
-            cs_wait(spriteProcedure_loop_unrolling_100());
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
+            cs_wait spriteProcedure_loop_unrolling_100();
 
             co_return;
         }
 
         static Coroutine spriteProcedure_loop_unrolling_10000() {
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
-            cs_wait(spriteProcedure_loop_unrolling_1000());
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
+            cs_wait spriteProcedure_loop_unrolling_1000();
 
             co_return;
         }
@@ -174,7 +174,7 @@ namespace NS_sprite {
                     l_waveHeight_green.set(v_i, v_sin);
                     l_waveHeight_blue.set(v_i, v_sin);
 
-                    cs_yield;
+                    cs_pass;
                 }
             }
 
@@ -190,7 +190,7 @@ namespace NS_sprite {
                 l_accumulatedLight_green.set(v_i, l_accumulatedLight_green.get(v_i) + abs(l_waveHeight_green.get(v_i)) * v_ACCUMULATED_EXPOSURE);
                 l_accumulatedLight_blue.set(v_i, l_accumulatedLight_blue.get(v_i) + abs(l_waveHeight_blue.get(v_i)) * v_ACCUMULATED_EXPOSURE);
 
-                cs_yield;
+                cs_pass;
             }
 
             v_i = 0;
@@ -198,9 +198,9 @@ namespace NS_sprite {
             v_down = v_size_100;
 
             repeat (v_size_2) {
-                cs_wait(spriteProcedure_loop_unrolling_10000());
+                cs_wait spriteProcedure_loop_unrolling_10000();
 
-                cs_yield;
+                cs_pass;
             }
 
             v_frame += 1.0;
@@ -223,29 +223,29 @@ namespace NS_sprite {
                 repeat (v_size_100) {
                     v_i += 1.0;
 
-                    cs_wait(spriteProcedure_math_min(l_accumulatedLight_red.get(v_i), 1.0));
+                    cs_wait spriteProcedure_math_min(l_accumulatedLight_red.get(v_i), 1.0);
                     v_colorValue = v_math_min * v_math_min * 255.0;
 
                     if (l_pixelMass.get(v_i) < 1.0) {
-                        cs_wait(spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(1.0), 255.0));
+                        cs_wait spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(1.0), 255.0);
                         v_colorValue = v_math_min;
                     }
                     l_imgData_red.set(v_i, v_colorValue);
 
-                    cs_wait(spriteProcedure_math_min(l_accumulatedLight_green.get(v_i), 1.0));
+                    cs_wait spriteProcedure_math_min(l_accumulatedLight_green.get(v_i), 1.0);
                     v_colorValue = v_math_min * v_math_min * 255.0;
 
                     if (l_pixelMass.get(v_i) < 1.0) {
-                        cs_wait(spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(2.0), 255.0));
+                        cs_wait spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(2.0), 255.0);
                         v_colorValue = v_math_min;
                     }
                     l_imgData_green.set(v_i, v_colorValue);
 
-                    cs_wait(spriteProcedure_math_min(l_accumulatedLight_blue.get(v_i), 1.0));
+                    cs_wait spriteProcedure_math_min(l_accumulatedLight_blue.get(v_i), 1.0);
                     v_colorValue = v_math_min * v_math_min * 255.0;
 
                     if (l_pixelMass.get(v_i) < 1.0) {
-                        cs_wait(spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(3.0), 255.0));
+                        cs_wait spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(3.0), 255.0);
                         v_colorValue = v_math_min;
                     }
                     l_imgData_blue.set(v_i, v_colorValue);
@@ -253,13 +253,13 @@ namespace NS_sprite {
                     sprite.penSetColor(round(l_imgData_red.get(v_i)) * 65536.0 + round(l_imgData_green.get(v_i)) * 256.0 + round(l_imgData_blue.get(v_i)));
                     sprite.changeY(-1);
 
-                    cs_yield;
+                    cs_pass;
                 }
 
                 sprite.penUp();
                 sprite.changeX(1);   
 
-                cs_yield;
+                cs_pass;
             }
 
             co_return;
@@ -325,29 +325,29 @@ namespace NS_sprite {
 
                     v_j += 1.0;
 
-                    cs_yield;
+                    cs_pass;
                 }
 
                 v_i += 1.0;
 
-                cs_yield;
+                cs_pass;
             }
 
             forever {
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_calculate());
-                cs_wait(spriteProcedure_render());
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_calculate();
+                cs_wait spriteProcedure_render();
                 v_tick += 1;
 
-                cs_yield;
+                cs_pass;
             }
 
             co_return;
@@ -362,7 +362,7 @@ namespace NS_sprite {
                 // don't have graphical output rn, so it's just like this
                 wprintf(L"timer = %ls\n", v_timer.toString());
 
-                cs_yield;
+                cs_pass;
             }
             
             co_return;

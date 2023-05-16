@@ -1,5 +1,5 @@
-#ifndef C_SCRATCH_CONFIG_H
-#define C_SCRATCH_CONFIG_H
+#ifndef CSCRATCH_CONFIG_H
+#define CSCRATCH_CONFIG_H
 
 /**** COMMON ****/
 #define APP_WINDOW_NAME "Light simulation project"
