@@ -15,7 +15,7 @@
     }
 
 #ifndef EPS
-    constexpr double EPS = 2.22044604925031308084726333618164062e-16L;
+constexpr double EPS = 2.22044604925031308084726333618164062e-16L;
 #endif
 
 #ifndef M_PI

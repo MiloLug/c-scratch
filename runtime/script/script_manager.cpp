@@ -1,7 +1,7 @@
 #include "script_manager.h"
 
-#include "config.h"
 #include "actions.h"
+#include "config.h"
 #include "runtime/coroutines.h"
 #include "runtime/sprite/sprite_base.h"
 

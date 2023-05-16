@@ -62,7 +62,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`go to (sprite)`]
 
-    `sprite.goToSprite(&sprite)`
+    `sprite.goToSprite(sprite)` - where `sprite` is a pointer to a Sprite object, `L"Sprite Name"` or hashed sprite name - `L"Sprite Name"_H` (including variables etc.)
 
 - [`go to x: (X) y: (Y)`]
 
@@ -94,7 +94,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`point towards (sprite)`]
 
-    `sprite.pointTowardsSprite(&sprite)`
+    `sprite.pointTowardsSprite(sprite)` - where `sprite` is a pointer to a Sprite object, `L"Sprite Name"` or hashed sprite name - `L"Sprite Name"_H` (including variables etc.)
 
 - [`change x by (N)`]
 

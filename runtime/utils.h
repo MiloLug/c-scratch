@@ -2,7 +2,7 @@
 #define CSCRATCH_UTILS_H
 
 #include <cstdint>
-#include <ctime>
+#include <functional>
 #include <type_traits>
 
 
@@ -41,7 +41,7 @@ static constexpr uint64_t fastHash(const wchar_t * str) {
     wchar_t c = 0;
     uint8_t i = 0;
     uint8_t j = 1;
-    while((c = *str) != L'\0') {
+    while ((c = *str) != L'\0') {
         do {
             if (i > maxOffset) i = j++;
             res = res ^ (c << i);
@@ -59,6 +59,8 @@ static constexpr uint64_t operator""_H(const wchar_t * str, size_t) { return fas
 
 
 /**** Templates Stuff ****/
+
+// remove_deepest_const
 
 template<typename T>
 struct remove_deepest_const_impl {
@@ -88,14 +90,61 @@ template<typename T>
 using remove_deepest_const = typename remove_deepest_const_impl<T>::type;
 
 
+// general types
+
 template<typename T>
-concept Number = std::is_floating_point_v<T> || std::is_integral_v<T>;
+concept NumberT = std::is_floating_point_v<T> || std::is_integral_v<T>;
 
 template<typename T, typename U>
-concept MaybeConst = std::is_same_v<U, remove_deepest_const<T>>;
+concept MaybeConstT = std::is_same_v<U, remove_deepest_const<T>>;
 
-template<typename T, typename ... U>
-concept OneOf = (std::is_same_v<U, T> || ...);
+template<typename T, typename... U>
+concept OneOfT = (std::is_same_v<U, T> || ...);
 
+template<typename...>
+using t_exists = void;
+
+template<typename Callable>
+using return_type_of_t =
+    typename std::invoke_result_t<decltype(std::function{std::declval<Callable>()})>;
+
+
+// map utils
+
+template<typename T>
+using mapped_type_t = typename std::remove_cvref_t<T>::mapped_type;
+
+template<typename T>
+using key_type_t = typename std::remove_cvref_t<T>::key_type;
+
+
+template<class T>
+concept MappingT = requires(T t, typename T::key_type key) {
+    typename T::mapped_type;
+    {
+        t.find(key)
+    } -> std::same_as<typename T::iterator>;
+};
+
+template<class T>
+concept SetT =
+    !requires(T) { typename T::mapped_type; } && requires(T t, typename T::key_type key) {
+        {
+            t.find(key)
+        } -> std::same_as<typename T::iterator>;
+    };
+
+
+template<MappingT T>
+static constexpr auto findOr(T & container, auto && value, auto && _default) {
+    auto found = container.find(value);
+    return found != container.end() ? found->second : (mapped_type_t<T> &&)_default;
+}
+
+template<SetT T>
+static constexpr auto findOr(T & container, auto && value, auto && _default) {
+    auto found = container.find(value);
+    return found != container.end() ? *found : (key_type_t<T> &&)_default;
+}
 
 #endif

@@ -8,6 +8,7 @@
 #include "runtime/sdl.h"
 #include "runtime/utils.h"
 #include "runtime/value.h"
+#include "sprite_manager.h"
 
 #include <filesystem>
 #include <unordered_map>
@@ -240,6 +241,11 @@ public:
 
     void goToSprite(Movable * sprite) { goXY(sprite->x, sprite->y); }
 
+    void goToSprite(OneOfT<const wchar_t *, uint64_t> auto spriteName) {
+        Movable * sprite = SpriteManager::getByName(spriteName);
+        if (sprite && sprite != this) goToSprite(sprite);
+    }
+
     Coroutine startDragging() {
         float xOffset = mouseState.x - x;
         float yOffset = mouseState.y - y;
@@ -299,6 +305,11 @@ public:
         direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
 
         updateRotationOffset();
+    }
+
+    void pointTowardsSprite(OneOfT<const wchar_t *, uint64_t> auto spriteName) {
+        Movable * sprite = SpriteManager::getByName(spriteName);
+        if (sprite && sprite != this) pointTowardsSprite(sprite);
     }
 
     force_inline__ float getDirection() const { return fmod(direction + 90.0, 360.0); }
@@ -430,7 +441,6 @@ protected:
     Costume * currentCostume;
     std::vector<Costume> costumes;
     std::unordered_map<uint64_t, uint64_t> costumeIndexes;
-    std::unordered_map<uint64_t, uint64_t>::iterator costumeIndexesEnd;
 
     force_inline__ void onCostumeSwitch() { currentCostume = &costumes[costumeIndex]; }
 
@@ -456,7 +466,6 @@ public:
         for (const auto & costume : _costumes) {
             costumeIndexes[fastHash(costume.name)] = i++;
         }
-        costumeIndexesEnd = costumeIndexes.end();
         costumesNumber = _costumes.size();
         currentCostume = &costumes[costumeIndex];
     }
@@ -476,18 +485,17 @@ public:
     * Then it tries to use the number as a sprite index.
     */
     void switchCostumeTo(Value && value) {
-        auto found = costumeIndexes.find(fastHash(value.toString()));
-        if (found != costumeIndexesEnd) {
-            costumeIndex = found->second;
-        } else if (value.number > 0 && value.number <= costumesNumber) {
-            costumeIndex = value.number - 1;
-        }
+        costumeIndex = findOr(
+            costumeIndexes,
+            fastHash(value.toString()),
+            value.number > 0 && value.number <= costumesNumber ? value.number - 1 : costumeIndex
+        );
 
         onCostumeSwitch();
     }
     void switchCostumeTo(String && str) {
         auto found = costumeIndexes.find(fastHash(str.data));
-        if (found != costumeIndexesEnd) {
+        if (found != costumeIndexes.end()) {
             costumeIndex = found->second;
         } else {
             auto num = strToNum(str, str.length);
@@ -510,8 +518,7 @@ public:
     * Also you can use just L"your string"_H
     */
     void switchCostumeByNameHash(uint64_t nameHash) {
-        auto found = costumeIndexes.find(nameHash);
-        if (found != costumeIndexesEnd) costumeIndex = found->second;
+        costumeIndex = findOr(costumeIndexes, nameHash, costumeIndex);
         onCostumeSwitch();
     }
 

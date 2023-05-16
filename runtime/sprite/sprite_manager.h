@@ -1,8 +1,11 @@
 #ifndef SPRITE_MANAGER_H
 #define SPRITE_MANAGER_H
 
+#include "runtime/utils.h"
+
 #include <list>
 #include <memory>
+#include <unordered_map>
 #include <unordered_set>
 
 
@@ -19,6 +22,7 @@ protected:
     static SpriteList spriteStorage;
     static constinit std::unique_ptr<SpriteList> waitingForInit;
     static std::unordered_set<Sprite *> managedSprites;
+    static std::unordered_map<uint64_t, Sprite *> spritesByName;
     static Backdrop * backdrop;
 
 public:
@@ -38,6 +42,14 @@ public:
 
     static Sprite * getTouchingXY(float x, float y);
     static void sendClickXY(float x, float y);
+
+    static Sprite * getByName(OneOfT<const wchar_t> auto * name) {
+        return findOr(spritesByName, fastHash(name), nullptr);
+    }
+    static Sprite * getByName(uint64_t nameHash) {
+        findOr(managedSprites, (Sprite *)nullptr, nullptr);
+        return findOr(spritesByName, nameHash, nullptr);
+    }
 
     static void staticInit();
 

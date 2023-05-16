@@ -10,6 +10,7 @@
 SpriteManager::SpriteList SpriteManager::spriteStorage;
 constinit std::unique_ptr<SpriteManager::SpriteList> SpriteManager::waitingForInit = nullptr;
 std::unordered_set<Sprite *> SpriteManager::managedSprites;
+std::unordered_map<uint64_t, Sprite *> SpriteManager::spritesByName;
 constinit Backdrop * SpriteManager::backdrop = nullptr;
 
 
@@ -54,6 +55,7 @@ void SpriteManager::initSprites(SDL_Renderer * renderer) {
 
         sprite->init(renderer);
         managedSprites.insert(sprite);
+        spritesByName[sprite->id] = sprite;
 
         const auto maxLayer = spriteStorage.size();
         const auto layer =

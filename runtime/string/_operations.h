@@ -8,25 +8,25 @@
 
 
 #define __str_make_bool_op(op)                                                                     \
-    inline bool operator op(OneOf<const wchar_t> auto * restrict__ s1, String && s2) {             \
+    inline bool operator op(OneOfT<const wchar_t> auto * restrict__ s1, String && s2) {            \
         return wcscmp(s1, s2.data) op 0;                                                           \
     }                                                                                              \
     inline bool operator op(String && s1, String && s2) { return wcscmp(s1.data, s2.data) op 0; }  \
-    inline bool operator op(String && s1, OneOf<const wchar_t> auto * restrict__ s2) {             \
+    inline bool operator op(String && s1, OneOfT<const wchar_t> auto * restrict__ s2) {            \
         return wcscmp(s1.data, s2) op 0;                                                           \
     }                                                                                              \
-    inline bool operator op(String && s1, Number auto s2) {                                        \
+    inline bool operator op(String && s1, NumberT auto s2) {                                       \
         return wcscmp(s1.data, toTmpString(s2).data) op 0;                                         \
     }                                                                                              \
     inline bool operator op(String && s1, int s2) {                                                \
         return wcscmp(s1.data, toTmpString(s2).data) op 0;                                         \
     }                                                                                              \
-    inline bool operator op(Number auto s1, String && s2) {                                        \
+    inline bool operator op(NumberT auto s1, String && s2) {                                       \
         return wcscmp(toTmpString(s1).data, s2.data) op 0;                                         \
     }
 
 
-static constexpr String toTmpString(OneOf<const wchar_t> auto * restrict__ s1) {
+static constexpr String toTmpString(OneOfT<const wchar_t> auto * restrict__ s1) {
     return String(std::char_traits<wchar_t>::length(s1), (wchar_t *)s1, true);
 }
 static constexpr const String & toTmpString(const String & s1) { return s1; }
@@ -36,7 +36,7 @@ static inline String toTmpString(Value & s1) {
     s1.getNumberStr();
     return String(s1.numberStrSize - 1, s1.numberStrTmp, true);
 }
-static inline String toTmpString(Number auto s1) {
+static inline String toTmpString(NumberT auto s1) {
     Value tmp(s1);
     wchar_t * tmpStr = tmp.getNumberStr();
     tmp.numberStrTmp = NULL;
