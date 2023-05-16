@@ -87,10 +87,7 @@ public:
     }
 
     void push(auto && value) {
-        if (data == NULL) {
-            data = (Value **)malloc(capacity * sizeof(Value *));
-            data[0] = &nullValue;
-        } else if (length == capacity - 1) {
+        if (length == capacity - 1) {
             capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
             data = (Value **)realloc((void *)data, capacity * sizeof(Value *));
         }
@@ -143,7 +140,7 @@ public:
     }
 
     constexpr void set(const uint64_t i, auto && value) {
-        if (i <= length && i > 0) data[i]->operator=(value);
+        if (i <= length && i > 0) *data[i] = value;
     }
 
     constexpr Value & get(const uint64_t i) { return (i <= length) ? *data[i] : nullValue; }
@@ -155,11 +152,13 @@ public:
             }
 
             free((void *)data);
-            data = NULL;
         }
 
         capacity = ARRAY_INITIAL_SIZE + 1;
         length = 0;
+
+        data = (Value **)malloc(capacity * sizeof(Value *));
+        data[0] = &nullValue;
     }
 
     operator String() {

@@ -19,7 +19,7 @@
             : wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.string->data)     \
                 op 0;                                                                              \
     }                                                                                              \
-    bool operator op(OneOfT<const wchar_t> auto * restrict__ value) {                               \
+    bool operator op(OneOfT<const wchar_t> auto * restrict__ value) {                              \
         if (type == Type::STRING) {                                                                \
             return wcscmp(string->data, value) op 0;                                               \
         }                                                                                          \
@@ -33,9 +33,9 @@
 
 
 #define make_math_bin_op(op)                                                                       \
-    constexpr storage_number_t operator op(NumberT auto value) const { return number op value; }    \
+    constexpr storage_number_t operator op(NumberT auto value) const { return number op value; }   \
     constexpr storage_number_t operator op(Value & value) const { return number op value.number; } \
-    storage_number_t operator op(OneOfT<const wchar_t> auto * restrict__ value) const {             \
+    storage_number_t operator op(OneOfT<const wchar_t> auto * restrict__ value) const {            \
         return number op strToNum(value, wcslen(value));                                           \
     }
 
@@ -124,7 +124,7 @@ public:
     Value & operator=(const ValueInitData & data) {
         number = data.number;
         type = data.type;
-        
+
         if (data.str) {
             if (string)
                 *string = data.str;
