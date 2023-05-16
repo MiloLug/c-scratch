@@ -1,12 +1,13 @@
 #include "sdl.h"
 
-#include <iostream>
-#include <iomanip>
 #include "pen/pen.h"
 #include "script/actions.h"
 #include "script/script_manager.h"
 #include "sprite/sprite_manager.h"
 #include "time.h"
+
+#include <iomanip>
+#include <iostream>
 
 
 const Uint8 * keyPressed = SDL_GetKeyboardState(nullptr);
@@ -79,30 +80,48 @@ void ScratchSDLWindow::loop() {
             }
         }
 
-        if (!screenUpdateLock.is_blocked()) {
-            SDL_RenderClear(renderer);
+        // IT'S IMPORTANT
+        // 1st lock - pixels
+        // 2nd lock - screen
 
-            SpriteManager::renderBackdrop(renderer);
+        bool pixelsTaken = false;
+        if (pixelsTaken = Pen::hasChanges) {
+            Pen::pixels.take();
+        }
 
-            if (Pen::hasChanges) {
-                Pen::pixels.take();
-                SDL_UpdateTexture(
-                    (SDL_Texture *)Pen::texture,
-                    NULL,
-                    (void *)Pen::pixelBuffer,
-                    Pen::canvasWidth * 4
-                );
-                Pen::hasChanges = false;
-                Pen::pixels.release();
-            }
-            SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, NULL, NULL);
+        if (!screenUpdateLock.is_blocked()) {  // try to avoid redundant locks with double-check pattern
+            screenUpdateLock.startProcessing();
+            if (!screenUpdateLock.is_blocked()) {
+                if (Pen::hasChanges) {
+                    SDL_UpdateTexture(
+                        (SDL_Texture *)Pen::texture,
+                        NULL,
+                        (void *)Pen::pixelBuffer,
+                        Pen::canvasWidth * 4
+                    );
+                    Pen::hasChanges = false;
+                    Pen::pixels.release();
+                    pixelsTaken = false;
+                }
 
-            SpriteManager::renderSprites(renderer);
-            SDL_RenderPresent(renderer);
+                SDL_RenderClear(renderer);
+                SpriteManager::renderBackdrop(renderer);
+                SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, NULL, NULL);
+                SpriteManager::renderSprites(renderer);
 
+                screenUpdateLock.stopProcessing(); // better to release here since rendering takes too much time
+
+                SDL_RenderPresent(renderer);
 #ifdef DEBUG
-            updateFrameTiming();
+                updateFrameTiming();
 #endif
+            } else {
+                screenUpdateLock.stopProcessing();
+            }
+        }
+
+        if (pixelsTaken) {
+            Pen::pixels.release();
         }
     }
 }

@@ -5,6 +5,7 @@
 #include "config.h"
 #include "rand.h"
 #include "sign.h"
+#include "number_type.h"
 
 #include <cmath>
 

@@ -149,7 +149,7 @@ void ScriptManager::startScriptsLoop() {
             if (!coro->done()) {
                 coro->resume();
 
-                if (!sprite->__stopOtherScripts) {
+                if (!sprite || !sprite->__stopOtherScripts) {
                     corosIter++;
                 } else {
                     stopOtherScripts(sprite, coro, corosIter, activeCoros, corosEnd);

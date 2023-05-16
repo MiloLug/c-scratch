@@ -34,13 +34,13 @@ static inline String toTmpString(Value & s1) {
     if (s1.type == Value::Type::STRING) return String(s1.string->length, s1.string->data, true);
 
     s1.getNumberStr();
-    return String(s1.numberStrSize - 1, s1.numberStrTmp, true);
+    return String(s1.numberStrLen, s1.numberStrTmp, true);
 }
 static inline String toTmpString(NumberT auto s1) {
     Value tmp(s1);
     wchar_t * tmpStr = tmp.getNumberStr();
     tmp.numberStrTmp = NULL;
-    return String(tmp.numberStrSize - 1, tmpStr);
+    return String(tmp.numberStrLen, tmpStr);
 }
 
 

@@ -2,6 +2,7 @@
 #define SPRITE_MANAGER_H
 
 #include "runtime/utils.h"
+#include "runtime/coroutines.h"
 
 #include <list>
 #include <memory>
@@ -24,6 +25,8 @@ protected:
     static std::unordered_set<Sprite *> managedSprites;
     static std::unordered_map<uint64_t, Sprite *> spritesByName;
     static Backdrop * backdrop;
+
+    static Coroutine sendClickXYCoro(float x, float y);
 
 public:
     static void add(Sprite * sprite);

@@ -155,7 +155,7 @@ Sprite * SpriteManager::getTouchingXY(float x, float y) {
     return nullptr;
 }
 
-void SpriteManager::sendClickXY(float x, float y) {
+Coroutine SpriteManager::sendClickXYCoro(float x, float y) {
     auto sprite = getTouchingXY(x, y);
     if (sprite != nullptr) {
         ScriptManager::triggerScripts(ACTION_CLICK | sprite->actionId);
@@ -164,6 +164,12 @@ void SpriteManager::sendClickXY(float x, float y) {
             ScriptManager::manageCoroutine(sprite, new Coroutine(sprite->startDragging()));
         }
     }
+
+    co_return;
+}
+
+void SpriteManager::sendClickXY(float x, float y) {
+    ScriptManager::manageCoroutine(nullptr, new Coroutine(sendClickXYCoro(x, y)));
 }
 
 // NON-STATIC

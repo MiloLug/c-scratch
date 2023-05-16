@@ -83,7 +83,7 @@ protected:
 
     SDL_FRect pos;
 
-    bool shouldUpdateTransformCache = true;
+    double transformCacheVersion = DBL_MIN + 1;
     bool draggingEnabled = false;
 
     bool isPenDown = false;
@@ -119,8 +119,6 @@ protected:
         pos.y = windowOffsetLTY - y;
 
         updateRotationOffset();
-
-        shouldUpdateTransformCache = true;
     }
 
 public:
@@ -201,6 +199,7 @@ public:
         pPointOrig.x = x;
         pPointOrig.y = y;
         updateOffsetsAndPoints();
+        transformCacheVersion++;
     }
 
     force_inline__ const SDL_FPoint & getPivotLT() { return pPointLT; }
@@ -269,42 +268,42 @@ public:
     */
 
     void turnRight(float angle) {
-        shouldUpdateTransformCache = true;
 
         direction += angle;
         direction = fmod(direction, 360.0);
 
         updateRotationOffset();
+        transformCacheVersion++;
     }
 
     void turnLeft(float angle) {
-        shouldUpdateTransformCache = true;
 
         direction -= angle;
         direction = fmod(direction, 360.0);
 
         updateRotationOffset();
+        transformCacheVersion++;
     }
 
     void point(float angle) {
-        shouldUpdateTransformCache = true;
         direction = fmod(angle - 90.0, 360.0);
 
         updateRotationOffset();
+        transformCacheVersion++;
     }
 
     void pointTowardsPointer() {
-        shouldUpdateTransformCache = true;
         direction = (atan2(mouseState.x - x, mouseState.y - y) - M_PI_2) / M_RAD;
 
         updateRotationOffset();
+        transformCacheVersion++;
     }
 
     void pointTowardsSprite(Movable * sprite) {
-        shouldUpdateTransformCache = true;
         direction = (atan2(sprite->x - x, sprite->y - y) - M_PI_2) / M_RAD;
 
         updateRotationOffset();
+        transformCacheVersion++;
     }
 
     void pointTowardsSprite(OneOfT<const wchar_t *, uint64_t> auto spriteName) {
@@ -346,12 +345,14 @@ public:
         wOrig = w;
         hOrig = h;
         updateOffsetsAndPoints();
+        transformCacheVersion++;
     }
 
     void setSize(float _size) {
         if (_size != size) {
             size = _size;
             updateOffsetsAndPoints();
+            transformCacheVersion++;
         }
     }
 
@@ -361,6 +362,7 @@ public:
         if (t != 0) {
             size += t;
             updateOffsetsAndPoints();
+            transformCacheVersion++;
         }
     }
 
@@ -394,8 +396,10 @@ public:
     float pX;
     float pY;
 
-    SDL_Surface * surface = NULL;
-    SDL_Texture * texture = NULL;
+    SDL_Surface * surface = nullptr;
+    SDL_Texture * texture = nullptr;
+    SDL_Surface * surfaceCache = nullptr;
+    double transformCacheVersion = DBL_MIN;
 
     Costume(
         const wchar_t * _name,
@@ -430,6 +434,7 @@ public:
             SDL_FreeSurface(surface);
             SDL_DestroyTexture(texture);
         }
+        if (surfaceCache) SDL_FreeSurface(surfaceCache);
     }
 };
 
@@ -461,7 +466,8 @@ public:
         spritePath{_spritePath},
         costumesPath{_spritePath / L"costumes"},
         dataPath{_spritePath / L"data"},
-        costumes{_costumes} {
+        costumes{_costumes}
+    {
         uint64_t i = 0;
         for (const auto & costume : _costumes) {
             costumeIndexes[fastHash(costume.name)] = i++;
@@ -522,7 +528,10 @@ public:
         onCostumeSwitch();
     }
 
-    void nextCostume() { costumeIndex = (costumeIndex + 1) % costumesNumber; }
+    void nextCostume() {
+        costumeIndex = (costumeIndex + 1) % costumesNumber;
+        onCostumeSwitch();
+    }
 
     SDL_Texture * getCostumeTexture() const { return currentCostume->texture; }
 

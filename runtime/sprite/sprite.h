@@ -28,12 +28,19 @@ protected:
         if (currentCostume != &costumes[costumeIndex]) {
             currentCostume = &costumes[costumeIndex];
 
-            pPointOrig.x = currentCostume->pX;
-            pPointOrig.y = currentCostume->pY;
-            wOrig = currentCostume->w;
-            hOrig = currentCostume->h;
+            if (
+                pPointOrig.x != currentCostume->pX
+                || pPointOrig.y != currentCostume->pY
+                || wOrig != currentCostume->w
+                || hOrig != currentCostume->h
+            ) {
+                pPointOrig.x = currentCostume->pX;
+                pPointOrig.y = currentCostume->pY;
+                wOrig = currentCostume->w;
+                hOrig = currentCostume->h;
 
-            updateOffsetsAndPoints();
+                updateOffsetsAndPoints();
+            }
         }
     }
 
@@ -42,7 +49,7 @@ public:
     const wchar_t * safeName;
     const uint64_t id;
     const uint64_t actionId;
-    SDL_Surface * surfaceCache = NULL;  // Surface cache for the Pen's stamp
+    // SDL_Surface * surfaceCache = nullptr;  // Surface cache for the Pen's stamp
     bool visible;
     uint64_t layerOrder;
 
@@ -79,13 +86,18 @@ public:
     }
 
     SDL_Surface * getCostumeTransformedSurface() {
-        if (!shouldUpdateTransformCache) return surfaceCache;
+        if (
+            transformCacheVersion == currentCostume->transformCacheVersion
+            && currentCostume->surfaceCache != nullptr
+        )
+            return currentCostume->surfaceCache;
+        currentCostume->transformCacheVersion = transformCacheVersion;
 
-        if (surfaceCache != NULL) SDL_FreeSurface(surfaceCache);
-        auto src = getCostumeSurface();
-        surfaceCache = rotozoomSurface(src, -direction, pos.h / src->h, 1);
+        if (currentCostume->surfaceCache != nullptr) SDL_FreeSurface(currentCostume->surfaceCache);
+        auto src = currentCostume->surface;
+        currentCostume->surfaceCache = rotozoomSurface(src, -direction, pos.h / src->h, 1);
 
-        return surfaceCache;
+        return currentCostume->surfaceCache;
     }
 
     void penStamp() {
@@ -100,10 +112,6 @@ public:
 
     force_inline__ void hide() { visible = false; }
     force_inline__ void show() { visible = true; }
-
-    ~Sprite() {
-        if (surfaceCache) SDL_FreeSurface(surfaceCache);
-    }
 };
 
 

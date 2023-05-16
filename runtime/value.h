@@ -2,6 +2,7 @@
 #define CSCRATCH_VALUE_H
 
 #include "config.h"
+#include "math/number_type.h"
 #include "string/string.h"
 #include "utils.h"
 
@@ -43,14 +44,10 @@
 class Value {
 protected:
     static wchar_t globalNumStrTmp[];
+    static constexpr wchar_t infinityStr[] = L"Infinity";
+    static constexpr wchar_t negInfinityStr[] = L"-Infinity";
 
 public:
-#ifdef USE_VALUE_FLOAT
-    typedef float storage_number_t;
-#else
-    typedef double storage_number_t;
-#endif
-
     enum Type : uint8_t { STRING, NUMBER };
 
     struct ValueInitData {
@@ -77,8 +74,10 @@ public:
     storage_number_t previousNumber = 0;  // for "number to string" caching
 
     String * string = NULL;
+    
     wchar_t * numberStrTmp = NULL;
     uint16_t numberStrSize = 0;
+    uint16_t numberStrLen = 0;
 
     constexpr Value() {}
 
@@ -217,6 +216,17 @@ public:
         if (number == previousNumber && numberStrTmp) return numberStrTmp;
         previousNumber = number;
 
+        if (number == NT_INF || number == NT_NEG_INF) {
+            if (numberStrSize < sizeof(negInfinityStr)) {
+                numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, sizeof(negInfinityStr));
+                numberStrSize = sizeof(negInfinityStr);
+                numberStrLen = (numberStrSize >> 2) - 1;
+            }
+            wcscpy(numberStrTmp, number == NT_INF ? infinityStr : negInfinityStr);
+            if (numberStrTmp[0] != L'-') numberStrLen--;
+            return numberStrTmp;
+        }
+
         bool useExpNotation = std::abs(number) >= minExponential;
         uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.15e", number)
                                        : swprintf(globalNumStrTmp, 325, L"%.15f", number);
@@ -233,12 +243,12 @@ public:
 
             size++;
 
-            if (size > numberStrSize) {
-                numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
-                numberStrSize = size;
+            if ((size << 2) > numberStrSize) {
+                numberStrSize = size << 2;
+                numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, numberStrSize);
             }
             memcpy(numberStrTmp, globalNumStrTmp, size << 2);
-
+            numberStrLen = size - 1;
             return numberStrTmp;
         }
 
@@ -258,9 +268,9 @@ public:
         expPartStart = globalNumStrTmp[i + 1] != L'0' ? i : 0;
 
         size = (intEnd + size - expPartStart + (fracEnd == 0 ? 0 : fracEnd - intEnd)) + 1;
-        if (size > numberStrSize) {
-            numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, size << 2);
-            numberStrSize = size;
+        if ((size << 2) > numberStrSize) {
+            numberStrSize = size << 2;
+            numberStrTmp = (wchar_t *)realloc((void *)numberStrTmp, numberStrSize);
         }
         numberStrTmp[size] = L'\0';
 
@@ -273,6 +283,7 @@ public:
         }
 
         memcpy(numberStrTmp + i, globalNumStrTmp + expPartStart, (size - expPartStart) << 2);
+        numberStrLen = size - 1;
 
         return numberStrTmp;
     }
@@ -286,6 +297,7 @@ public:
             free(numberStrTmp);
             numberStrTmp = NULL;
             numberStrSize = 0;
+            numberStrLen = 0;
         }
 
         if (string) {
