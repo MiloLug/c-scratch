@@ -107,8 +107,9 @@ public:
 
     Value & operator=(const Value & origin) {
         number = origin.number;
-        if (origin.type == Type::NUMBER) {
-            type = Type::NUMBER;
+        type = origin.type;
+
+        if (type == Type::NUMBER) {
             return *this;
         }
 
@@ -116,7 +117,6 @@ public:
             *string = *origin.string;
         else
             string = new String(*origin.string);
-        type = Type::STRING;
 
         return *this;
     }
@@ -124,6 +124,7 @@ public:
     Value & operator=(const ValueInitData & data) {
         number = data.number;
         type = data.type;
+        
         if (data.str) {
             if (string)
                 *string = data.str;
