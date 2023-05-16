@@ -56,7 +56,7 @@ public:
         mSize((_length + 1) << 2),
         isWrapper(_isWrapper) {}
 
-    String(const wchar_t * restrict__ _data) {
+    String(OneOfT<const wchar_t> auto * restrict__ _data) {
         mLength = wcslen(_data);
         mSize = (mLength + 1) << 2;
         mData = (wchar_t *)malloc(mSize);
@@ -102,7 +102,7 @@ public:
 
         return *this;
     }
-    String & operator=(const wchar_t * value) {
+    String & operator=(OneOfT<const wchar_t> auto * restrict__ value) {
         mLength = wcslen(value);
         mSize = (mLength + 1) << 2;
         mData = (wchar_t *)realloc((void *)mData, mSize);
