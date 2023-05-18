@@ -1,49 +1,48 @@
 namespace NS_sprite {
-    Value v_size_100_2 = 90000;
-    Value v_ACCUMULATED_EXPOSURE = 0.0005;
-    Value v_colorValue = 10.526212;
-    Value v_dataIndex = 261072;
-    Value v_down = 90300;
-    Value v_force = 0;
-    Value v_frame = 880;
-    Value v_i = 90000;
-    Value v_j = 300;
-    Value v_light_position = 18060;
-    Value v_light_size = 50;
-    Value v_math_min = 0.203173;
-    Value v_sin = 5.100006;
-    Value v_size = 3;
-    Value v_size_100 = 300;
-    Value v_size_2 = 9;
-    Value v_speed = 1;
-    Value v_tick = 88;
-    Value v_timer = 30.396;
-    Value v_up = 89700;
+    Var v_size_100_2 = 90000;
+    Var v_ACCUMULATED_EXPOSURE = 0.0005;
+    Var v_colorValue = 10.526212;
+    Var v_dataIndex = 261072;
+    Var v_down = 90300;
+    Var v_force = 0;
+    Var v_frame = 880;
+    Var v_i = 90000;
+    Var v_j = 300;
+    Var v_light_position = 18060;
+    Var v_light_size = 50;
+    Var v_math_min = 0.203173;
+    Var v_sin = 5.100006;
+    Var v_size = 3;
+    Var v_size_100 = 300;
+    Var v_size_2 = 9;
+    Var v_speed = 1;
+    Var v_tick = 88;
+    Var v_timer = 30.396;
+    Var v_up = 89700;
 
-    ValueArray l_accumulatedLight;
-    ValueArray l_accumulatedLight_blue;
-    ValueArray l_accumulatedLight_green;
-    ValueArray l_accumulatedLight_red;
-    ValueArray l_COLOR_SHIFT;
-    ValueArray l_GLASS_COLORS;
-    ValueArray l_imgData_blue;
-    ValueArray l_imgData_green;
-    ValueArray l_imgData_red;
-    ValueArray l_pixelMass;
-    ValueArray l_waveHeight;
-    ValueArray l_waveHeight_blue;
-    ValueArray l_waveHeight_green;
-    ValueArray l_waveHeight_red;
-    ValueArray l_waveVelocity;
-    ValueArray l_waveVelocity_blue;
-    ValueArray l_waveVelocity_green;
-    ValueArray l_waveVelocity_red;
+    Array l_accumulatedLight;
+    Array l_accumulatedLight_blue;
+    Array l_accumulatedLight_green;
+    Array l_accumulatedLight_red;
+    Array l_COLOR_SHIFT;
+    Array l_GLASS_COLORS;
+    Array l_imgData_blue;
+    Array l_imgData_green;
+    Array l_imgData_red;
+    Array l_pixelMass;
+    Array l_waveHeight;
+    Array l_waveHeight_blue;
+    Array l_waveHeight_green;
+    Array l_waveHeight_red;
+    Array l_waveVelocity;
+    Array l_waveVelocity_blue;
+    Array l_waveVelocity_green;
+    Array l_waveVelocity_red;
 
 
     class Scripts {
     public:
-        template<typename T1, typename T2>
-        static Coroutine spriteProcedure_math_min(T1 &&arg_1, T2 &&arg_2) {
+        static Coroutine spriteProcedure_math_min(Arg arg_1, Arg arg_2) {
             if (arg_1 > arg_2) {
                 v_math_min = arg_2;
             } else {

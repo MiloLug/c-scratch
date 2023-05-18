@@ -81,7 +81,7 @@ public:
     mutable uint16_t numberStrSize = 0;
     mutable uint16_t numberStrLen = 0;
 
-    constexpr Const(): string{new String()} {}
+    constexpr Const() {}
 
     constexpr force_inline__ Const(NumberT auto num, String * str, Type _type = Type::NUMBER):
         number{(storage_number_t)num},
@@ -91,9 +91,9 @@ public:
     Const(const ConstInitData & data):
         number{data.number},
         type{data.type},
-        string{data.str ? new String(data.str) : new String()} {}
+        string{data.str ? new String(data.str) : nullptr} {}
 
-    constexpr Const(NumberT auto value): number{(storage_number_t)value}, string{new String()} {}
+    constexpr Const(NumberT auto value): number{(storage_number_t)value} {}
 
     Const(OneOfT<const wchar_t> auto * restrict__ value):
         string{new String(value)},
@@ -112,7 +112,7 @@ public:
     Const(const Const & origin):
         number{origin.number},
         type{origin.type},
-        string{origin.type == Type::STRING ? new String(*origin.string) : new String()} {}
+        string{origin.type == Type::STRING ? new String(*origin.string) : nullptr} {}
 
     make_bool_op(<=);
     make_bool_op(>=);
@@ -223,15 +223,18 @@ public:
         }
 
         if (string) {
+            // wprintf(L"wrp addr: %x, c addr: %x\n", string, this);
             delete string;
         }
     }
 };
 
+class ArgT;
 
 class Var: public Const {
 public:
     using Const::Const;
+    // using Const::operator=;
 
     Var & operator=(const Const & origin) {
         number = origin.number;
@@ -241,8 +244,21 @@ public:
             return *this;
         }
 
-        *string = *origin.string;
+
+        if (string) {
+            *string = *origin.string;
+        } else {
+            string = new String(*origin.string);
+        }
         return *this;
+    }
+
+    Var & operator=(const Var & origin) {
+        return operator=((const Const&)origin);
+    }
+
+    Var & operator=(const ArgT & origin) {
+        return operator=((const Const&)origin);
     }
 
     Var & operator=(const ConstInitData & data) {
@@ -250,26 +266,45 @@ public:
         type = data.type;
 
         if (data.str) {
-            *string = data.str;
+            if (string) {
+                *string = data.str;
+            } else {
+                string = new String(data.str);
+            }
         }
         return *this;
     }
 
     Var & operator=(OneOfT<const wchar_t> auto * restrict__ value) {
-        *string = value;
+        if (string) {
+            *string = value;
+        } else {
+            string = new String(value);
+        }
+
         number = (double)*string;
         type = Type::STRING;
         return *this;
     }
 
     Var & operator=(const String & value) {
-        *string = value;
+        if (string) {
+            *string = value;
+        } else {
+            string = new String(value);
+        }
+
         number = (double)value;
         type = Type::STRING;
         return *this;
     }
     Var & operator=(String && value) {
-        *string = (String &&)value;
+        if (string) {
+            *string = value;
+        } else {
+            string = new String(value);
+        }
+
         number = (double)value;
         type = Type::STRING;
         return *this;
@@ -311,7 +346,7 @@ public:
         Const(data.number, data.str ? new String(data.str) : nullptr, data.type),
         stringCleaning{!!data.str} {}
 
-    constexpr ArgT(NumberT auto value): Const(value, nullptr) {}
+    constexpr ArgT(NumberT auto value): Const(value) {}
 
     constexpr ArgT(NumberT auto num, String * str, Type _type = Type::NUMBER):
         Const(num, str, _type) {}

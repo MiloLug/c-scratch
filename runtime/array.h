@@ -188,7 +188,16 @@ public:
         return String(offset, str);
     }
 
-    ~Array() { clean(); }
+    ~Array() {
+        if (data) {
+            for (uint64_t i = 1; i <= this->length; i++) {
+                delete data[i];
+            }
+
+            free((void *)data);
+        }
+        data = nullptr;
+    }
 };
 
 
