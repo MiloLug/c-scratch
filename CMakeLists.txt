@@ -24,18 +24,21 @@ else()
   string(CONCAT COMMON_FLAGS
     "-lm "
     "-lstdc++ "
+    "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
+  )
+  string(CONCAT COMMON_FLAGS_RELEASE
+    "${COMMON_FLAGS}"
     "-ffast-math "
     "-march=native "
     "-fmodulo-sched "
     "-fgcse-sm "
     "-fgcse-las "
     "-fno-inline-small-functions "
-    "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
   )
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(CONCAT COMMON_FLAGS
-      "${COMMON_FLAGS} "
+    string(CONCAT COMMON_FLAGS_RELEASE
+      "${COMMON_FLAGS_RELEASE} "
       "-fcoroutines-ts "
       "-flto "
       "-fwhole-program-vtables "
@@ -46,11 +49,11 @@ else()
     )
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
-    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS}")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS_RELEASE}")
 
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(CONCAT COMMON_FLAGS
-      "${COMMON_FLAGS} "
+    string(CONCAT COMMON_FLAGS_RELEASE
+      "${COMMON_FLAGS_RELEASE} "
       "-fcoroutines "
       "-fconcepts "
       "-flto=2 "
@@ -59,7 +62,7 @@ else()
     )
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
-    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS}")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS_RELEASE}")
 
   endif()
 
