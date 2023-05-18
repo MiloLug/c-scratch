@@ -101,6 +101,9 @@ concept MaybeConstT = std::is_same_v<U, remove_deepest_const<T>>;
 template<typename T, typename... U>
 concept OneOfT = (std::is_same_v<U, T> || ...);
 
+template<typename T, typename... U>
+concept OneOfConvertibleT = (std::is_convertible_v<T, U> || ...);
+
 template<typename...>
 using t_exists = void;
 

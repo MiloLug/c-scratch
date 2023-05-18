@@ -24,11 +24,11 @@
 class String {
 protected:
     static constexpr const wchar_t * emptyString = L"";
-    bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
     uint64_t mSize = 0;  // memory taken in bytes
     wchar_t * mData = nullptr;
     uint64_t mLength = 0;  // number of chars
 public:
+    bool isWrapper = false;  // delete is forbidden in any case, force copying on `copy` etc
     const uint64_t & size = mSize;
     const wchar_t * & data = const_cast<const wchar_t * &>(mData);
     const uint64_t & length = mLength;
@@ -56,6 +56,12 @@ public:
         mSize((_length + 1) << 2),
         isWrapper(_isWrapper) {}
 
+    constexpr String(const wchar_t * _data, bool _isWrapper):
+        mLength(std::char_traits<wchar_t>::length(_data)),
+        mData((wchar_t *)_data),
+        mSize((mLength + 1) << 2),
+        isWrapper(_isWrapper) {}
+
     String(OneOfT<const wchar_t> auto * restrict__ _data) {
         mLength = wcslen(_data);
         mSize = (mLength + 1) << 2;
@@ -72,13 +78,13 @@ public:
     String(const String & origin) {
         mLength = origin.mLength;
         mSize = origin.mSize;
-        if (origin.mData) {
-            mData = (wchar_t *)malloc(origin.mSize);
-            memcpy(mData, origin.mData, origin.mSize);
-        }
+        mData = (wchar_t *)malloc(origin.mSize);
+        memcpy(mData, origin.mData, origin.mSize);
+        isWrapper = false;
     }
 
     String & operator=(String && origin) {
+        if (&origin == this) return *this;
         if (!isWrapper && mData) free(mData);
 
         mLength = origin.mLength;
@@ -90,14 +96,13 @@ public:
         return *this;
     }
     String & operator=(const String & origin) {
+        if (&origin == this) return *this;
         mLength = origin.mLength;
         mSize = origin.mSize;
-        if (origin.mData) {
-            if (isWrapper) mData = nullptr;
 
-            mData = (wchar_t *)realloc((void *)mData, origin.mSize);
-            memcpy(mData, origin.mData, origin.mSize);
-        }
+        if (isWrapper) mData = nullptr;
+        mData = (wchar_t *)realloc((void *)mData, origin.mSize);
+        memcpy(mData, origin.mData, origin.mSize);
         isWrapper = false;
 
         return *this;
@@ -105,22 +110,24 @@ public:
     String & operator=(OneOfT<const wchar_t> auto * restrict__ value) {
         mLength = wcslen(value);
         mSize = (mLength + 1) << 2;
-        mData = (wchar_t *)realloc((void *)mData, mSize);
 
-        if (mData) memcpy(mData, value, mSize);
+        if (isWrapper) mData = nullptr;
+        mData = (wchar_t *)realloc((void *)mData, mSize);
+        memcpy(mData, value, mSize);
+        isWrapper = false;
 
         return *this;
-    }
-
-    constexpr void clean() {
-        if (mData && !isWrapper) free(mData);
     }
 
     constexpr operator const wchar_t *() const { return mData; }
 
     operator double() const { return strToNum(mData, mLength); }
 
-    constexpr ~String() { clean(); }
+    constexpr ~String() {
+        if (mData && !isWrapper) {
+            free(mData);
+        }
+    }
 };
 
 

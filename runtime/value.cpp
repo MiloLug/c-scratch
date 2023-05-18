@@ -1,4 +1,4 @@
 #include "value.h"
 
 
-wchar_t Value::globalNumStrTmp[326];
+wchar_t Const::globalNumStrTmp[326];

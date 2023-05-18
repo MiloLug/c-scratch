@@ -30,14 +30,14 @@ static constexpr String toTmpString(OneOfT<const wchar_t> auto * restrict__ s1) 
     return String(std::char_traits<wchar_t>::length(s1), (wchar_t *)s1, true);
 }
 static constexpr const String & toTmpString(const String & s1) { return s1; }
-static inline String toTmpString(Value & s1) {
-    if (s1.type == Value::Type::STRING) return String(s1.string->length, s1.string->data, true);
+static inline String toTmpString(const Const & s1) {
+    if (s1.type == Const::Type::STRING) return String(s1.string->length, s1.string->data, true);
 
     s1.getNumberStr();
     return String(s1.numberStrLen, s1.numberStrTmp, true);
 }
 static inline String toTmpString(NumberT auto s1) {
-    Value tmp(s1);
+    Const tmp(s1, nullptr);
     wchar_t * tmpStr = tmp.getNumberStr();
     tmp.numberStrTmp = NULL;
     return String(tmp.numberStrLen, tmpStr);

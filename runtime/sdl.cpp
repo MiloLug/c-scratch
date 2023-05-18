@@ -85,11 +85,12 @@ void ScratchSDLWindow::loop() {
         // 2nd lock - screen
 
         bool pixelsTaken = false;
-        if (pixelsTaken = Pen::hasChanges) {
+        if ((pixelsTaken = Pen::hasChanges)) {
             Pen::pixels.take();
         }
 
-        if (!screenUpdateLock.is_blocked()) {  // try to avoid redundant locks with double-check pattern
+        if (!screenUpdateLock.is_blocked())
+        {  // try to avoid redundant locks with double-check pattern
             screenUpdateLock.startProcessing();
             if (!screenUpdateLock.is_blocked()) {
                 if (Pen::hasChanges) {
@@ -109,7 +110,8 @@ void ScratchSDLWindow::loop() {
                 SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, NULL, NULL);
                 SpriteManager::renderSprites(renderer);
 
-                screenUpdateLock.stopProcessing(); // better to release here since rendering takes too much time
+                screenUpdateLock.stopProcessing(
+                );  // better to release here since rendering takes too much time
 
                 SDL_RenderPresent(renderer);
 #ifdef DEBUG

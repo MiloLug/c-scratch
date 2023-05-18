@@ -268,7 +268,6 @@ public:
     */
 
     void turnRight(float angle) {
-
         direction += angle;
         direction = fmod(direction, 360.0);
 
@@ -277,7 +276,6 @@ public:
     }
 
     void turnLeft(float angle) {
-
         direction -= angle;
         direction = fmod(direction, 360.0);
 
@@ -466,8 +464,7 @@ public:
         spritePath{_spritePath},
         costumesPath{_spritePath / L"costumes"},
         dataPath{_spritePath / L"data"},
-        costumes{_costumes}
-    {
+        costumes{_costumes} {
         uint64_t i = 0;
         for (const auto & costume : _costumes) {
             costumeIndexes[fastHash(costume.name)] = i++;
@@ -490,7 +487,7 @@ public:
     * First it tries to switch using names (even if you pass a number).
     * Then it tries to use the number as a sprite index.
     */
-    void switchCostumeTo(Value && value) {
+    void switchCostumeTo(const Const & value) {
         costumeIndex = findOr(
             costumeIndexes,
             fastHash(value.toString()),
