@@ -362,6 +362,23 @@ public:
     ArgT(const String & value): Const((double)value, (String *)&value, Type::STRING) {}
 
     ArgT(const Const & origin):
+        Const(
+            origin.number,
+            origin.type == Type::STRING ? new String(*origin.string): nullptr,
+            origin.type
+        ),
+        stringCleaning{origin.type == Type::STRING},
+        mOrigin{(Const *)&origin} {
+        if (origin.numberStrTmp) {
+            numberStrTmp = origin.numberStrTmp;
+            numberStrSize = origin.numberStrSize;
+            numberStrLen = origin.numberStrLen;
+            previousNumber = origin.previousNumber;
+            origin.numberStrTmp = nullptr;
+        }
+    }
+
+    ArgT(const ArgT & origin):
         Const(origin.number, origin.string, origin.type),
         mOrigin{(Const *)&origin} {
         if (origin.numberStrTmp) {
