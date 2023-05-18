@@ -522,13 +522,10 @@ Coroutine sprite_my_function() {
 }
 ```
 
-You can add any arguments you need, but it's preferable to add sprite in any case.
-
-Also it's better to add a template if you are going to use another arguments, since it's more efficient when mixing `Value`, `String`, numbers etc.:
+You can add any arguments you need.
 
 ```c++
-template<typename T1, typename T2>
-Coroutine sprite_my_function(T1 &&arg1, T2 &&arg2) {
+Coroutine sprite_my_function(Arg arg1, Arg arg2) {
     sprite.move(20);
 
     //....
