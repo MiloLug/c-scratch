@@ -234,7 +234,9 @@ class ArgT;
 class Var: public Const {
 public:
     using Const::Const;
-    // using Const::operator=;
+    
+    Var(const ArgT & origin): Const((const Const &)origin) {}
+    Var(const Var & origin): Const((const Const &)origin) {}
 
     Var & operator=(const Const & origin) {
         number = origin.number;
@@ -254,11 +256,11 @@ public:
     }
 
     Var & operator=(const Var & origin) {
-        return operator=((const Const&)origin);
+        return operator=((const Const &)origin);
     }
 
     Var & operator=(const ArgT & origin) {
-        return operator=((const Const&)origin);
+        return operator=((const Const &)origin);
     }
 
     Var & operator=(const ConstInitData & data) {
