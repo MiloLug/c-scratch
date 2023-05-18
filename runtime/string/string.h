@@ -59,8 +59,9 @@ public:
     constexpr String(const wchar_t * _data, bool _isWrapper):
         mLength(std::char_traits<wchar_t>::length(_data)),
         mData((wchar_t *)_data),
-        mSize((mLength + 1) << 2),
-        isWrapper(_isWrapper) {}
+        isWrapper(_isWrapper) {
+            mSize = (mLength + 1) << 2;
+        }
 
     String(OneOfT<const wchar_t> auto * restrict__ _data) {
         mLength = wcslen(_data);
