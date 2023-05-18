@@ -2,6 +2,7 @@
 #define CSCRATCH_MATH_COMMON_H
 
 #include <cstdint>
+#include <cfloat>
 
 
 #define GET_HIGH_WORD(hi, d)                                                                       \
