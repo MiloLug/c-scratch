@@ -2,7 +2,21 @@
 #define CSCRATCH_DEBUG_H
 
 #include "sdl.h"
+#include "value.h"
 
+
+void cs_print(Arg value, bool quoted = false) {
+    if (quoted)
+        wprintf(L"'%ls'\n", value.toString());
+    else
+        wprintf(L"%ls\n", value.toString());
+}
+void cs_print(const wchar_t * name, Arg value, bool quoted = false) {
+    if (quoted)
+        wprintf(L"%ls = '%ls'\n", name, value.toString());
+    else
+        wprintf(L"%ls = %ls\n", name, value.toString());
+}
 
 void printDebugInfo(ScratchSDLWindow & window) {
 #ifdef ENABLE_TURBO

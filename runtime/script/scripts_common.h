@@ -11,6 +11,7 @@
 #include "runtime/string/string_utils.h"
 #include "runtime/time.h"
 #include "runtime/utils.h"
+#include "runtime/debug.h"
 #include "script_manager.h"
 
 #endif
