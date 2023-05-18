@@ -11,7 +11,7 @@ public:
     bool opened;
 
     File(const std::filesystem::path & path, const char * mode) {
-        fp = fopen(path.c_str(), mode);
+        fp = fopen(path.string().c_str(), mode);
         opened = fp != nullptr;
         if (opened) fwide(fp, 1);
     }
