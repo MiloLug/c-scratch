@@ -9,6 +9,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+
 if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(AVX_FLAGS)
   if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
@@ -85,6 +86,10 @@ add_executable(app
 target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 add_subdirectory("stage")
+
+if (MINGW)
+  target_link_libraries(app PRIVATE mingw32)
+endif()
 
 target_link_libraries(app PRIVATE
   stdc++
