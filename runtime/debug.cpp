@@ -34,7 +34,7 @@ void printDebugInfo(ScratchSDLWindow & window) {
     if (SDL_GetRendererInfo(window.renderer, &info))
         wprintf(L"No current renderer info available\n");
     else
-        wprintf(L"Current renderer: %s\n\n", info.name);
+        wprintf(L"Current renderer: %hs\n\n", info.name);
 
     uint8_t renderCount = SDL_GetNumRenderDrivers();
     wprintf(L"Render drivers available: %d\n", renderCount);
@@ -43,9 +43,9 @@ void printDebugInfo(ScratchSDLWindow & window) {
         wprintf(L"Driver %d:\n", i + 1);
 
         if (!SDL_GetRenderDriverInfo(i, &info)) {
-            wprintf(L"    Name: %s\n", info.name);
+            wprintf(L"    Name: %hs\n", info.name);
             wprintf(
-                L"    Accelerated: %s\n", info.flags & SDL_RENDERER_ACCELERATED ? L"YES" : L"NO"
+                L"    Accelerated: ls\n", info.flags & SDL_RENDERER_ACCELERATED ? L"YES" : L"NO"
             );
         } else {
             wprintf(L"    No driver info available\n");
