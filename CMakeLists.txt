@@ -4,7 +4,7 @@ project(c_scratch_project LANGUAGES C CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
-option(windowsUseConsole "windowsUseConsole" ON)
+option(windowsUseConsole "windowsUseConsole" OFF)
 
 # Compilers setings and flags
 
@@ -129,6 +129,7 @@ target_link_libraries(app
 
 if (MINGW)
   if (windowsUseConsole)
+    message("Using Windows debug console")
     target_compile_definitions(app PRIVATE WINDOWS_USE_CONSOLE=1)
   endif()
 endif()
