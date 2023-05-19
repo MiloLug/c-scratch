@@ -47,6 +47,10 @@ app
 app.exe
 app.elf
 
+*.vcxproj
+*.vcxproj.*
+*.sln
+
 # vscode
 .vscode
 /build
