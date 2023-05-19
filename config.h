@@ -17,14 +17,14 @@
 * So in the turbo mode, main function will say 'im working with the canvas',
 *   then run 10000 operations and say 'the canvas is ready to be shown'.
 */
-#define TURBO_LOCK_WINDOW_CYCLES (10000)
+#define TURBO_LOCK_WINDOW_CYCLES (1)
 
 /*
-* Enables a mode in which some threads-syncronization mechanisms can be disabled.
-* It TREMENDOUSLY speeds up such tools as pen,
-*   but in *some* cases the app may crash (but it's highly unlikely as tests show).
+* Enables a mode in which some threads-syncronization mechanisms will be disabled.
+* It *CAN* speed up your code, tho in some cases it can do just the opposite...
+* And *in theory* the app may crash in some cases.
 */
-#define ENABLE_UNSAFE_NO_LOCKS
+// #define ENABLE_UNSAFE_NO_LOCKS
 
 /*
 * Disables limits on the sprites coordinates
@@ -36,7 +36,7 @@
 
 /**** ARRAYS ****/
 /*
-* In C we have to allocate some space before inserting the items
+* In C++ we have to allocate some space before inserting the items
 * So this is by what number to multiply an array's size each time it reaches its bounds
 */
 #define ARRAY_AHEAD_ALLOCATION_MULTIPLIER 1.5
@@ -51,7 +51,7 @@
 #define ENABLE_FAST_MATH
 
 /*
-* Make the Value (storage type for strings an number) to use float instead of double.
+* Make the Const (storage type for strings an number) to use float instead of double.
 * But be aware the doubles can store much larger numbers, not losing
 *   speed that much. Its about a second on hundreds of millions of updates.
 *

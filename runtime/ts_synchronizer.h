@@ -1,18 +1,19 @@
 #ifndef THREAD_SAFE_SYNCHRONIZER_H
 #define THREAD_SAFE_SYNCHRONIZER_H
 
+#include "mutex.h"
+
 #include <atomic>
 #include <cstdint>
 #include <queue>
-#include "mutex.h"
 
 
 class ThreadSafeSynchronizer {
-private:
-    std::atomic<uint32_t> counter = 0;
+protected:
     Mutex inProcessing;
-    
+
 public:
+    std::atomic<uint32_t> counter = 0;
     // Call take and release on a thread that makes some changes
     void take() {
         inProcessing.take();

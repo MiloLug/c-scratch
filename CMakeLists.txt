@@ -24,6 +24,7 @@ else()
   string(CONCAT COMMON_FLAGS
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
   )
+
   string(CONCAT COMMON_FLAGS_RELEASE
     "${COMMON_FLAGS}"
     "-ffast-math "
@@ -33,6 +34,10 @@ else()
     "-fgcse-las "
     "-fno-inline-small-functions "
   )
+
+  if (MINGW)
+    string(CONCAT COMMON_FLAGS_RELEASE "")
+  endif()
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     string(CONCAT COMMON_FLAGS_RELEASE
@@ -81,7 +86,16 @@ target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 add_subdirectory("stage")
 
-target_link_libraries(app stdc++ stdc++fs Threads::Threads m SDL2main SDL2 SDL2_image SDL2_gfx)
+target_link_libraries(app PRIVATE
+  stdc++
+  stdc++fs
+  Threads::Threads
+  m
+  SDL2main
+  SDL2
+  SDL2_image
+  SDL2_gfx
+)
 
 # Assets
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})

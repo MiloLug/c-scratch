@@ -25,6 +25,9 @@ target_sources(app PRIVATE
   files.cpp
 
   array.h
+
+  debug.h
+  debug.cpp
 )
 
 add_subdirectory("math")

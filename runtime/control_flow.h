@@ -11,6 +11,10 @@
     for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;)                \
     co_yield Coroutine::NOTHING
 
+#define repeatFor(seconds)                                                                         \
+    for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;)                \
+    co_yield Coroutine::NOTHING
+
 #define repeat(expr) for (double __i = 0, __limit = round(expr); __i < __limit; __i++)
 
 #define forever while (1)

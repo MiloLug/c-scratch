@@ -6,6 +6,7 @@
 #include "sprite/sprite_manager.h"
 #include "time.h"
 
+#include <unistd.h>
 #include <iomanip>
 #include <iostream>
 
@@ -93,7 +94,7 @@ void ScratchSDLWindow::loop() {
         {  // try to avoid redundant locks with double-check pattern
             screenUpdateLock.startProcessing();
             if (!screenUpdateLock.is_blocked()) {
-                if (Pen::hasChanges) {
+                if (pixelsTaken) {
                     SDL_UpdateTexture(
                         (SDL_Texture *)Pen::texture,
                         NULL,
@@ -121,7 +122,6 @@ void ScratchSDLWindow::loop() {
                 screenUpdateLock.stopProcessing();
             }
         }
-
         if (pixelsTaken) {
             Pen::pixels.release();
         }
