@@ -11,6 +11,8 @@ endif()
 
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  message("Using MSVC compiler")
+
   set(AVX_FLAGS)
   if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
       set(AVX_FLAGS "${AVX_FLAGS} /arch:AVX2")
@@ -26,8 +28,8 @@ else()
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
   )
 
-  string(CONCAT COMMON_FLAGS_RELEASE
-    "${COMMON_FLAGS}"
+  string(CONCAT RELEASE_FLAGS
+    "-Ofast "
     "-ffast-math "
     "-march=native "
     "-fmodulo-sched "
@@ -37,39 +39,51 @@ else()
   )
 
   if (MINGW)
-    string(CONCAT COMMON_FLAGS_RELEASE "")
+    string(CONCAT RELEASE_FLAGS
+      "${RELEASE_FLAGS}"
+      ""
+    )
   endif()
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(CONCAT COMMON_FLAGS_RELEASE
-      "${COMMON_FLAGS_RELEASE} "
-      "-fcoroutines-ts "
-      "-flto "
-      "-fwhole-program-vtables "
-      "-fforce-emit-vtables "
-      "-faddrsig "
+    message("Using Cmake compiler")
+    
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
+      string(CONCAT COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines-ts ")
+    endif()
+
+    string(CONCAT COMMON_FLAGS
+      "${COMMON_FLAGS}"
       "-Wno-ignored-optimization-argument "
       "-Wno-unused-command-line-argument "
     )
 
-    set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
-    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS_RELEASE}")
-
+    string(CONCAT RELEASE_FLAGS
+      "${RELEASE_FLAGS}"
+      "-flto "
+      "-fwhole-program-vtables "
+      "-fforce-emit-vtables "
+      "-faddrsig "
+    )
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(CONCAT COMMON_FLAGS_RELEASE
-      "${COMMON_FLAGS_RELEASE} "
+    message("Using GCC compiler")
+
+    string(CONCAT COMMON_FLAGS
+      "${COMMON_FLAGS} "
       "-fcoroutines "
       "-fconcepts "
+    )
+
+    string(CONCAT RELEASE_FLAGS
+      "${RELEASE_FLAGS} "
       "-flto=2 "
       "-fgcse-lm "
       "-fira-region=all "
     )
-
-    set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
-    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast ${COMMON_FLAGS_RELEASE}")
-
   endif()
 
+  set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
+  set(CMAKE_CXX_FLAGS_RELEASE "${COMMON_FLAGS} ${RELEASE_FLAGS}")
 endif()
 
 
@@ -87,13 +101,15 @@ target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 add_subdirectory("stage")
 
-if (MINGW)
-  target_link_libraries(app PRIVATE mingw32)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  target_link_libraries(app c++)
 endif()
 
-target_link_libraries(app PRIVATE
-  stdc++
-  stdc++fs
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_link_libraries(app stdc++ stdc++fs)
+endif()
+
+target_link_libraries(app
   Threads::Threads
   m
   SDL2main
