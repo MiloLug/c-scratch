@@ -52,6 +52,7 @@ static constexpr uint64_t fastHash(const wchar_t * str) {
     return res;
 }
 
+
 /*
 * Returns the string, hashed with `fastHash` from runtime/utils.h
 */
