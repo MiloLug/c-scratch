@@ -1,4 +1,23 @@
 #include "debug.h"
+#include "stdio.h"
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__) || defined(__MINGW32__)
+    #include <Windows.h>
+    #define USE_WINDOWS
+#else
+    #undef WINDOWS_USE_CONSOLE
+#endif
+
+
+void windowsTryShowConsole() {
+#ifdef WINDOWS_USE_CONSOLE
+   AllocConsole();
+   freopen("conin$", "r", stdin);
+   freopen("conout$", "w", stdout);
+   freopen("conout$", "w", stderr);
+   wprintf(L"Debugging Window:\n");
+#endif
+}
 
 
 void cs_print(Arg value, bool quoted) {

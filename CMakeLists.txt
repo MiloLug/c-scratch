@@ -4,7 +4,10 @@ project(c_scratch_project LANGUAGES C CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
-# Compilation setings
+option(windowsUseConsole "windowsUseConsole" ON)
+
+# Compilers setings and flags
+
 set (CMAKE_CXX_STANDARD 20)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -30,6 +33,11 @@ else()
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
   )
 
+  string(CONCAT DEBUG_FLAGS
+    "-g "
+    "-save-temps "
+  )
+
   string(CONCAT RELEASE_FLAGS
     "-Ofast "
     "-ffast-math "
@@ -39,13 +47,6 @@ else()
     "-fgcse-las "
     "-fno-inline-small-functions "
   )
-
-  if (MINGW)
-    string(CONCAT RELEASE_FLAGS
-      "${RELEASE_FLAGS}"
-      ""
-    )
-  endif()
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message("Using Cmake compiler")
@@ -84,12 +85,13 @@ else()
     )
   endif()
 
-  set(CMAKE_CXX_FLAGS_DEBUG "-g ${COMMON_FLAGS} -save-temps")
+  set(CMAKE_CXX_FLAGS_DEBUG "${COMMON_FLAGS} ${DEBUG_FLAGS}")
   set(CMAKE_CXX_FLAGS_RELEASE "${COMMON_FLAGS} ${RELEASE_FLAGS}")
 endif()
 
 
 # Executable settings
+
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
@@ -123,5 +125,14 @@ target_link_libraries(app
   SDL2::GFX
 )
 
+# Some variables for the code
+
+if (MINGW)
+  if (windowsUseConsole)
+    target_compile_definitions(app PRIVATE WINDOWS_USE_CONSOLE=1)
+  endif()
+endif()
+
 # Assets
+
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
