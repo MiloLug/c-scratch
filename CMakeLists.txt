@@ -93,9 +93,9 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
-find_library(SDL2 REQUIRED)
-find_library(SDL2_image REQUIRED)
-find_library(SDL2_gfx REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
+find_package(SDL2_gfx REQUIRED)
 
 add_executable(app
   config.h
@@ -117,10 +117,10 @@ endif()
 target_link_libraries(app
   Threads::Threads
   m
-  SDL2main
-  SDL2
-  SDL2_image
-  SDL2_gfx
+  SDL2::Main
+  SDL2::Core
+  SDL2::Image
+  SDL2::GFX
 )
 
 # Assets
