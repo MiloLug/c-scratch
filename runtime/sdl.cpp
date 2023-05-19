@@ -110,8 +110,8 @@ void ScratchSDLWindow::loop() {
                 SDL_RenderCopy(renderer, (SDL_Texture *)Pen::texture, NULL, NULL);
                 SpriteManager::renderSprites(renderer);
 
-                screenUpdateLock.stopProcessing(
-                );  // better to release here since rendering takes too much time
+                // better to release here since rendering takes too much time
+                screenUpdateLock.stopProcessing();
 
                 SDL_RenderPresent(renderer);
 #ifdef DEBUG
@@ -127,8 +127,6 @@ void ScratchSDLWindow::loop() {
         }
     }
 }
-
-std::thread ScratchSDLWindow::runLoop() { return std::thread(&ScratchSDLWindow::loop, this); }
 
 ScratchSDLWindow::~ScratchSDLWindow() {
     SDL_DestroyRenderer(renderer);

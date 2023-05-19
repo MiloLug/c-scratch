@@ -22,8 +22,6 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STR
 
 else()
   string(CONCAT COMMON_FLAGS
-    "-lm "
-    "-lstdc++ "
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
   )
   string(CONCAT COMMON_FLAGS_RELEASE
@@ -70,7 +68,9 @@ endif()
 
 
 # Executable settings
-find_library(SDL2 SDL2_image SDL2_gfx)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+find_library(SDL2 SDL2_image SDL2_gfx REQUIRED)
 
 add_executable(app
   config.h
@@ -81,7 +81,7 @@ target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 add_subdirectory("stage")
 
-target_link_libraries(app SDL2 SDL2main SDL2_image SDL2_gfx)
+target_link_libraries(app stdc++ stdc++fs Threads::Threads m SDL2main SDL2 SDL2_image SDL2_gfx)
 
 # Assets
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})

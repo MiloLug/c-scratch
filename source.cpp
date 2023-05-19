@@ -5,6 +5,7 @@
 #include "runtime/sprite/sprite_manager.h"
 #include "stage/scripts.h"
 #include "stage/sprites.h"
+#include "runtime/thread.h"
 
 
 int main(int argc, char * argv[]) {
@@ -26,9 +27,9 @@ int main(int argc, char * argv[]) {
     SpriteManager::initSprites(window.renderer);
     SpriteManager::initBackdrop(window.renderer);
 
-    auto sdlLoopThread = window.runLoop();
-    ScriptManager::startScriptsLoop();
-    sdlLoopThread.join();
+    auto scriptsThread = Thread(&ScriptManager::startScriptsLoop);
+    window.loop();
+    scriptsThread.join();
 
     return 0;
 }

@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <string>
-#include <thread>
 
 
 constexpr float WINDOW_CENTER_X = WINDOW_WIDTH / 2.0f;
@@ -38,9 +37,6 @@ public:
 
 
 class ScratchSDLWindow {
-private:
-    void loop();
-
 public:
     SDL_Window * window;
     SDL_Renderer * renderer;
@@ -48,7 +44,7 @@ public:
     ScratchSDLWindow(const char * name);
 
     void updateFrameTiming(std::wostream & os = std::wcout, float period = 2.0f);
-    std::thread runLoop();
+    void loop();
 
     ~ScratchSDLWindow();
 };
