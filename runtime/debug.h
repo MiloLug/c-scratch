@@ -4,7 +4,7 @@
 #include "sdl.h"
 #include "value.h"
 
-void windowsTryShowConsole();
+void showDebugConsole();
 
 void cs_print(Arg value, bool quoted = false);
 void cs_print(const wchar_t * name, Arg value, bool quoted = false);

@@ -4,8 +4,6 @@ project(c_scratch_project LANGUAGES C CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
-option(windowsUseConsole "windowsUseConsole" OFF)
-
 # Compilers setings and flags
 
 set (CMAKE_CXX_STANDARD 20)
@@ -108,10 +106,6 @@ target_include_directories(app PRIVATE "${PROJECT_SOURCE_DIR}")
 add_subdirectory("runtime")
 add_subdirectory("stage")
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_link_libraries(app c++)
-endif()
-
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_link_libraries(app stdc++ stdc++fs)
 endif()
@@ -127,12 +121,6 @@ target_link_libraries(app
 
 # Some variables for the code
 
-if (MINGW)
-  if (windowsUseConsole)
-    message("Using Windows debug console")
-    target_compile_definitions(app PRIVATE WINDOWS_USE_CONSOLE=1)
-  endif()
-endif()
 
 # Assets
 

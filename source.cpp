@@ -9,7 +9,9 @@
 
 
 int main(int argc, char * argv[]) {
-    windowsTryShowConsole();
+#ifdef DEBUG
+    showDebugConsole();
+#endif
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         wprintf(L"SDL initialization error\n");
