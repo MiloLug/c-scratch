@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(c_scratch_project LANGUAGES C CXX)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
+
 # Compilation setings
 set (CMAKE_CXX_STANDARD 20)
 
@@ -90,7 +92,10 @@ endif()
 # Executable settings
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
-find_library(SDL2 SDL2_image SDL2_gfx REQUIRED)
+
+find_library(SDL2 REQUIRED)
+find_library(SDL2_image REQUIRED)
+find_library(SDL2_gfx REQUIRED)
 
 add_executable(app
   config.h
