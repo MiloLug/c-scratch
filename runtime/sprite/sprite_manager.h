@@ -12,7 +12,7 @@
 
 class Sprite;
 class Backdrop;
-class SDL_Renderer;
+struct SDL_Renderer;
 
 
 class SpriteManager {

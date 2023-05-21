@@ -24,7 +24,7 @@
 * It *CAN* speed up your code, tho in some cases it can do just the opposite...
 * And *in theory* the app may crash in some cases.
 */
-// #define ENABLE_UNSAFE_NO_LOCKS
+#define ENABLE_UNSAFE_NO_LOCKS
 
 /*
 * Disables limits on the sprites coordinates

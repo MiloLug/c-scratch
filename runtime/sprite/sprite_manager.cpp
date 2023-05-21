@@ -8,7 +8,7 @@
 
 
 SpriteManager::SpriteList SpriteManager::spriteStorage;
-constinit std::unique_ptr<SpriteManager::SpriteList> SpriteManager::waitingForInit = nullptr;
+constinit std::unique_ptr<SpriteManager::SpriteList> SpriteManager::waitingForInit;
 std::unordered_set<Sprite *> SpriteManager::managedSprites;
 std::unordered_map<uint64_t, Sprite *> SpriteManager::spritesByName;
 constinit Backdrop * SpriteManager::backdrop = nullptr;

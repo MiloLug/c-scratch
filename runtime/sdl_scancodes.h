@@ -1390,7 +1390,7 @@ public:
     }
 };
 
-static constexpr uint16_t operator""_K(const wchar_t * str, uint64_t size) {
+static constexpr uint16_t operator""_K(const wchar_t * str, size_t size) {
     return ScanCodesMap::getScanCode(str, size);
 }
 

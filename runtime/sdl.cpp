@@ -6,7 +6,6 @@
 #include "sprite/sprite_manager.h"
 #include "time.h"
 
-#include <unistd.h>
 #include <iomanip>
 #include <iostream>
 
