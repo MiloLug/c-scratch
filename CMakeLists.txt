@@ -12,9 +12,11 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-
+set(USING_MSVC OFF)
 if (CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message("Using MSVC compiler")
+
+  set(USING_MSVC ON)
 
   set(AVX_FLAGS)
   if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
@@ -110,9 +112,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_link_libraries(app stdc++ stdc++fs)
 endif()
 
+if (NOT USING_MSVC)
+  target_link_libraries(app m)
+endif()
+
 target_link_libraries(app
   Threads::Threads
-  m
   SDL2::Main
   SDL2::Core
   SDL2::Image

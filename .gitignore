@@ -51,9 +51,13 @@ app.elf
 *.vcxproj.*
 *.sln
 
-# vscode
+# vscode|vs
 .vscode
 /build
+.vs
+/x64
+/app.dir
+/out
 
 # valgrind
 /vgcore.*
