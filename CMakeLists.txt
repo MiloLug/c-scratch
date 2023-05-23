@@ -23,11 +23,14 @@ else()
 endif()
 
 if (COMPILER_ENV STREQUAL "VS")
-  string(CONCAT COMMON_FLAGS
+  string(CONCAT COMMON_C_FLAGS
     "/fp:fast "
-    "/await "
     "/MP "  # Use multiprocessing for compilation
     "/volatile:iso "
+  )
+
+  string(CONCAT COMMON_CXX_FLAGS
+    "${COMMON_FLAGS}"
   )
 
   string(CONCAT DEBUG_FLAGS
@@ -41,6 +44,10 @@ if (COMPILER_ENV STREQUAL "VS")
     "/O2 "
     "/Ob1 "
 
+    "/EHsc "
+    "/D_HAS_EXCEPTIONS=0 "
+    "/GR- "
+
     "/Gr "  # __fastcall
     "/GF "  # Eliminate Duplicate Strings
     "/GL "  # Whole program optimization
@@ -48,6 +55,8 @@ if (COMPILER_ENV STREQUAL "VS")
     "/GA "  # Optimize for Windows Application
     "/Gy "  # Enable Function-Level Linking
     "/favor:INTEL64 "
+
+    "/MT "
   )
 
   if (HAVE_AVX2_EXTENSIONS)
@@ -69,7 +78,7 @@ if (COMPILER_ENV STREQUAL "VS")
   endif()
 
 else()
-  string(CONCAT COMMON_FLAGS
+  string(CONCAT COMMON_C_FLAGS
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
     "-ffast-math "
     "-march=native "
@@ -97,7 +106,7 @@ else()
       string(CONCAT COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines-ts ")
     endif()
 
-    string(CONCAT COMMON_FLAGS
+    string(CONCAT COMMON_C_FLAGS
       "${COMMON_FLAGS}"
       "-Wno-ignored-optimization-argument "
       "-Wno-unused-command-line-argument "
@@ -115,7 +124,7 @@ else()
 
     set(COMPILER "GCC")
 
-    string(CONCAT COMMON_FLAGS
+    string(CONCAT COMMON_C_FLAGS
       "${COMMON_FLAGS} "
       "-fcoroutines "
       "-fconcepts "
@@ -129,12 +138,13 @@ else()
     )
   endif()
 
+  set(COMMON_CXX_FLAGS "${COMMON_C_FLAGS}")
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${COMMON_FLAGS} ${DEBUG_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "${COMMON_FLAGS} ${RELEASE_FLAGS}")
-set(CMAKE_C_FLAGS_DEBUG "${COMMON_FLAGS} ${DEBUG_FLAGS}")
-set(CMAKE_C_FLAGS_RELEASE "${COMMON_FLAGS} ${RELEASE_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "${COMMON_CXX_FLAGS} ${DEBUG_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "${COMMON_CXX_FLAGS} ${RELEASE_FLAGS}")
+set(CMAKE_C_FLAGS_DEBUG "${COMMON_C_FLAGS} ${DEBUG_FLAGS}")
+set(CMAKE_C_FLAGS_RELEASE "${COMMON_C_FLAGS} ${RELEASE_FLAGS}")
 
 # Executable settings
 
@@ -174,6 +184,10 @@ target_link_libraries(app
 # Some variables for the code
 
 target_compile_definitions(app PRIVATE COMPILER_${COMPILER} COMPILER_ENV_${COMPILER_ENV})
+
+if (COMPILER_ENV STREQUAL "VS")
+  target_compile_definitions(app PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
 
 # Assets
 

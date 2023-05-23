@@ -29,14 +29,6 @@
 #endif
 
 
-//template <typename T>
-//class UniquePtr: std::unique_ptr<T> {
-//    constexpr UniquePtr(T * ptr) {
-//
-//    }
-//};
-
-
 static constexpr uint64_t fastHash(const wchar_t * str) {
     constexpr uint64_t maxOffset = 32;
     uint64_t res = 0;

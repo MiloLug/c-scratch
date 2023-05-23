@@ -8,7 +8,7 @@
 
 
 SpriteManager::SpriteList SpriteManager::spriteStorage;
-constinit std::unique_ptr<SpriteManager::SpriteList> SpriteManager::waitingForInit;
+SpriteManager::SpriteList * SpriteManager::waitingForInit = nullptr;
 std::unordered_set<Sprite *> SpriteManager::managedSprites;
 std::unordered_map<uint64_t, Sprite *> SpriteManager::spritesByName;
 constinit Backdrop * SpriteManager::backdrop = nullptr;
@@ -141,7 +141,7 @@ void SpriteManager::moveToFront(Sprite * sprite) { moveByLayers(sprite, spriteSt
 void SpriteManager::staticInit() {
     if (waitingForInit != nullptr) return;
 
-    waitingForInit.reset(new SpriteList);
+    waitingForInit = new SpriteList;
 }
 
 Sprite * SpriteManager::getTouchingXY(float x, float y) {
@@ -174,9 +174,17 @@ void SpriteManager::sendClickXY(float x, float y) {
 
 // NON-STATIC
 
+SpriteManager::SpriteManager() {
+    isInitializer = true;
+    staticInit();
+}
 SpriteManager::SpriteManager(Sprite * sprite) {
     staticInit();
     add(sprite);
 }
-
 SpriteManager::SpriteManager(Backdrop * _backdrop) { backdrop = _backdrop; }
+SpriteManager::~SpriteManager() {
+    if (isInitializer && waitingForInit != nullptr)
+        delete waitingForInit;
+    waitingForInit = nullptr;
+}

@@ -24,8 +24,8 @@ int main(int argc, char * argv[]) {
     printDebugInfo(window);
 #endif
 
-    SpriteManager::staticInit();
-    ScriptManager::staticInit();
+    SpriteManager spriteManager();
+    ScriptManager scriptManager();
 
     Pen::Initializer penResource(window.renderer);
     SpriteManager::initSprites(window.renderer);
