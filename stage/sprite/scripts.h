@@ -1,3 +1,6 @@
+#include "runtime/script/scripts_common.h"
+
+
 namespace NS_sprite {
     Var v_size_100_2 = 90000;
     Var v_ACCUMULATED_EXPOSURE = 0.0005;
@@ -42,17 +45,15 @@ namespace NS_sprite {
 
     class Scripts {
     public:
-        static Coroutine spriteProcedure_math_min(Arg arg_1, Arg arg_2) {
+        static void spriteProcedure_math_min(Arg arg_1, Arg arg_2) {
             if (arg_1 > arg_2) {
                 v_math_min = arg_2;
             } else {
                 v_math_min = arg_1;
-            }
-
-            co_return;
+		}
         }
 
-        static Coroutine spriteProcedure_loop_unrolling_1() {
+        static void spriteProcedure_loop_unrolling_1() {
             v_i += 1.0;
             v_up += 1.0;
             v_down += 1.0;
@@ -97,68 +98,58 @@ namespace NS_sprite {
                 )
                 * (v_speed - l_COLOR_SHIFT.get(3.0))
             );
-
-            co_return;
         }
 
-        static Coroutine spriteProcedure_loop_unrolling_10() {
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-            cs_wait spriteProcedure_loop_unrolling_1();
-
-            co_return;
+        static void spriteProcedure_loop_unrolling_10() {
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
+            spriteProcedure_loop_unrolling_1();
         }
 
-        static Coroutine spriteProcedure_loop_unrolling_100() {
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            cs_wait spriteProcedure_loop_unrolling_10();
-            
-            co_return;
+        static void spriteProcedure_loop_unrolling_100() {
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
+            spriteProcedure_loop_unrolling_10();
         }
 
-        static Coroutine spriteProcedure_loop_unrolling_1000() {
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-            cs_wait spriteProcedure_loop_unrolling_100();
-
-            co_return;
+        static void spriteProcedure_loop_unrolling_1000() {
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
+            spriteProcedure_loop_unrolling_100();
         }
 
-        static Coroutine spriteProcedure_loop_unrolling_10000() {
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-            cs_wait spriteProcedure_loop_unrolling_1000();
-
-            co_return;
+        static void spriteProcedure_loop_unrolling_10000() {
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
+            spriteProcedure_loop_unrolling_1000();
         }
 
         static Coroutine spriteProcedure_calculate() {
@@ -197,7 +188,7 @@ namespace NS_sprite {
             v_down = v_size_100;
 
             repeat (v_size_2) {
-                cs_wait spriteProcedure_loop_unrolling_10000();
+                spriteProcedure_loop_unrolling_10000();
 
                 cs_pass;
             }
@@ -222,29 +213,29 @@ namespace NS_sprite {
                 repeat (v_size_100) {
                     v_i += 1.0;
 
-                    cs_wait spriteProcedure_math_min(l_accumulatedLight_red.get(v_i), 1.0);
+                    spriteProcedure_math_min(l_accumulatedLight_red.get(v_i), 1.0);
                     v_colorValue = v_math_min * v_math_min * 255.0;
 
                     if (l_pixelMass.get(v_i) < 1.0) {
-                        cs_wait spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(1.0), 255.0);
+                        spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(1.0), 255.0);
                         v_colorValue = v_math_min;
                     }
                     l_imgData_red.set(v_i, v_colorValue);
 
-                    cs_wait spriteProcedure_math_min(l_accumulatedLight_green.get(v_i), 1.0);
+                    spriteProcedure_math_min(l_accumulatedLight_green.get(v_i), 1.0);
                     v_colorValue = v_math_min * v_math_min * 255.0;
 
                     if (l_pixelMass.get(v_i) < 1.0) {
-                        cs_wait spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(2.0), 255.0);
+                        spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(2.0), 255.0);
                         v_colorValue = v_math_min;
                     }
                     l_imgData_green.set(v_i, v_colorValue);
 
-                    cs_wait spriteProcedure_math_min(l_accumulatedLight_blue.get(v_i), 1.0);
+                    spriteProcedure_math_min(l_accumulatedLight_blue.get(v_i), 1.0);
                     v_colorValue = v_math_min * v_math_min * 255.0;
 
                     if (l_pixelMass.get(v_i) < 1.0) {
-                        cs_wait spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(3.0), 255.0);
+                        spriteProcedure_math_min(v_colorValue + l_GLASS_COLORS.get(3.0), 255.0);
                         v_colorValue = v_math_min;
                     }
                     l_imgData_blue.set(v_i, v_colorValue);

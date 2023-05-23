@@ -62,10 +62,11 @@ inline void Coroutine::resume() const {
     auto & subCoro = promise().subCoro;
     if (subCoro && !subCoro->done()) {
         subCoro->resume();
-    } else {
-        subCoro = nullptr;
-        coroutine_handle<BasePromise>::resume();
+        return;
     }
+    
+    subCoro = nullptr;
+    coroutine_handle<BasePromise>::resume();
 }
 
 
