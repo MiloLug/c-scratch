@@ -68,3 +68,5 @@ zip_npm_tmp
 
 # dev
 __scripts
+
+!/libs/**/*
