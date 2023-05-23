@@ -33,10 +33,6 @@ if (COMPILER_ENV STREQUAL "VS")
     "/volatile:iso "
   )
 
-  string(CONCAT COMMON_CXX_FLAGS
-    "${COMMON_FLAGS}"
-  )
-
   string(CONCAT DEBUG_FLAGS
     "/DEBUG "
   )
@@ -64,9 +60,9 @@ if (COMPILER_ENV STREQUAL "VS")
   )
 
   if (HAVE_AVX2_EXTENSIONS)
-      set(COMMON_FLAGS "${COMMON_FLAGS} /arch:AVX2 ")
+    set(COMMON_C_FLAGS "${COMMON_C_FLAGS} /arch:AVX2 ")
   elseif (HAVE_AVX_EXTENSIONS)
-      set(COMMON_FLAGS "${COMMON_FLAGS} /arch:AVX ")
+    set(COMMON_C_FLAGS "${COMMON_C_FLAGS} /arch:AVX ")
   endif()
 
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
@@ -80,6 +76,10 @@ if (COMPILER_ENV STREQUAL "VS")
   
     set(COMPILER "MSVC")
   endif()
+
+  string(CONCAT COMMON_CXX_FLAGS
+    "${COMMON_C_FLAGS}"
+  )
 
 else()
   string(CONCAT COMMON_C_FLAGS
@@ -107,17 +107,17 @@ else()
     set(COMPILER "CLANG")
     
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
-      string(CONCAT COMMON_FLAGS "${COMMON_FLAGS} -fcoroutines-ts ")
+      set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} -fcoroutines-ts ")
     endif()
 
     string(CONCAT COMMON_C_FLAGS
-      "${COMMON_FLAGS}"
+      "${COMMON_C_FLAGS} "
       "-Wno-ignored-optimization-argument "
       "-Wno-unused-command-line-argument "
     )
 
     string(CONCAT RELEASE_FLAGS
-      "${RELEASE_FLAGS}"
+      "${RELEASE_FLAGS} "
       "-flto "
       "-fwhole-program-vtables "
       "-fforce-emit-vtables "
@@ -129,7 +129,7 @@ else()
     set(COMPILER "GCC")
 
     string(CONCAT COMMON_C_FLAGS
-      "${COMMON_FLAGS} "
+      "${COMMON_C_FLAGS} "
       "-fcoroutines "
       "-fconcepts "
     )
@@ -142,7 +142,7 @@ else()
     )
   endif()
 
-  set(COMMON_CXX_FLAGS "${COMMON_C_FLAGS}")
+  set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} ${COMMON_C_FLAGS}")
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${COMMON_CXX_FLAGS} ${DEBUG_FLAGS}")
