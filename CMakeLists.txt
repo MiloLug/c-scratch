@@ -18,9 +18,13 @@ set(COMPILER_ENV "")
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_CXX_SIMULATE_ID MATCHES "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(COMPILER_ENV "VS")
+elseif (MINGW)
+  set(COMPILER_ENV "MINGW")
 else()
   set(COMPILER_ENV "UNKNOWN")
 endif()
+
+message("Using ${COMPILER_ENV} compiler environment")
 
 if (COMPILER_ENV STREQUAL "VS")
   string(CONCAT COMMON_C_FLAGS
@@ -68,7 +72,7 @@ if (COMPILER_ENV STREQUAL "VS")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message("Using Cmake-cl compiler")
+    message("Using Cmake-CL compiler")
 
     set(COMPILER "CLANG")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -152,8 +156,11 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 if (COMPILER_ENV STREQUAL "VS")
-  set(CMAKE_PREFIX_PATH libs/msvc)
+  set(CMAKE_PREFIX_PATH libs/windows/msvc)
+elseif (COMPILER_ENV STREQUAL "MINGW")
+  set(CMAKE_PREFIX_PATH libs/windows/mingw)
 endif()
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
