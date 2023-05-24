@@ -86,6 +86,7 @@ else()
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
     "-ffast-math "
     "-march=native "
+    "-fno-exceptions "
   )
 
   string(CONCAT DEBUG_FLAGS
