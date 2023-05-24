@@ -50,7 +50,7 @@ protected:
     static constexpr wchar_t negInfinityStr[] = L"-Infinity";
 
 public:
-    enum Type : uint8_t { STRING, NUMBER };
+    enum class Type : uint8_t { STRING, NUMBER };
 
     struct ConstInitData {
         const wchar_t * str = nullptr;
@@ -245,7 +245,6 @@ public:
         if (type == Type::NUMBER) {
             return *this;
         }
-
 
         if (string) {
             *string = *origin.string;

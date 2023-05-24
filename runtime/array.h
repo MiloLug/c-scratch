@@ -142,7 +142,7 @@ public:
         if (i <= length && i > 0) *data[i] = value;
     }
 
-    constexpr const Var & get(const uint64_t i) { return (i <= length) ? *data[i] : nullValue; }
+    constexpr const Var & get(const uint64_t i) const { return (i <= length) ? *data[i] : nullValue; }
 
     void clean() {
         if (data) {

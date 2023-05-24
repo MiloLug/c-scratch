@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <cfloat>
+#include "runtime/utils.h"
 
 
 #define GET_HIGH_WORD(hi, d)                                                                       \
@@ -23,13 +24,18 @@ constexpr double EPS = 2.22044604925031308084726333618164062e-16L;
     #define M_PI 3.14159265358979323846
 #endif
 
-#ifndef M_PI_4
-const constexpr double M_PI_4 = 3.1415926535897932384626433832795 / 4.0;
+#ifndef M_PI_2
+const constexpr double M_PI_2 = 3.1415926535897932384626433832795 / 2.0;
 #endif
 
 #ifndef M_PI_3
 const constexpr double M_PI_3 = 3.1415926535897932384626433832795 / 3.0;
 #endif
+
+#ifndef M_PI_4
+const constexpr double M_PI_4 = 3.1415926535897932384626433832795 / 4.0;
+#endif
+
 
 const constexpr double M_RAD = 3.1415926535897932384626433832795 / 180.0;
 
@@ -41,21 +47,19 @@ const constexpr uint32_t INT32_MAX = (1 << (INT32_BITS - 1)) - 1;
 #endif
 
 #ifndef MAX
-    #define MAX(a, b)                                                                              \
-        ({                                                                                         \
-            auto __a = (a);                                                                        \
-            auto __b = (b);                                                                        \
-            __a > __b ? __a : __b;                                                                 \
-        })
+force_inline__ auto MAX(NumberT auto a, NumberT auto b) {
+    auto __a = (a);
+    auto __b = (b);
+    return __a > __b ? __a : __b;
+}
 #endif
 
 #ifndef MIN
-    #define MIN(a, b)                                                                              \
-        ({                                                                                         \
-            auto __a = (a);                                                                        \
-            auto __b = (b);                                                                        \
-            __a < __b ? __a : __b;                                                                 \
-        })
+force_inline__ auto MIN(NumberT auto a, NumberT auto b) {
+    auto __a = (a);
+    auto __b = (b);
+    return __a < __b ? __a : __b;
+}
 #endif
 
 #define MAX_UNSAFE(a, b) ((a) > (b) ? (a) : (b))

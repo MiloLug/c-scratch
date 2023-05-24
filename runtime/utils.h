@@ -4,20 +4,14 @@
 #include <cstdint>
 #include <functional>
 #include <type_traits>
+#include <memory>
 
 
-#define SWAP(a, b)                                                                                 \
-    ({                                                                                             \
-        auto __tmp = (b);                                                                          \
-        b = a;                                                                                     \
-        a = __tmp;                                                                                 \
-    })
-
-#if defined(__clang__)
+#if defined(COMPILER_CLANG)
     #define restrict__ __restrict
-#elif defined(__GNUC__) || defined(__GNUG__)
+#elif defined(COMPILER_GCC)
     #define restrict__ __restrict__
-#elif defined(_MSC_VER)
+#elif defined(COMPILER_MSVC)
     #define restrict__ __restrict
 #else
     #define restrict__ /* no-op */
@@ -25,9 +19,9 @@
 
 
 #ifndef force_inline__
-    #if defined(_MSC_VER)
+    #if defined(COMPILER_MSVC)
         #define force_inline__ __forceinline
-    #elif ((defined(__GNUC__) && (__GNUC__ >= 4)) || defined(__clang__))
+    #elif defined(COMPILER_GCC) || defined(COMPILER_CLANG)
         #define force_inline__ __attribute__((always_inline)) inline
     #else
         #define force_inline__ inline
@@ -36,15 +30,17 @@
 
 
 static constexpr uint64_t fastHash(const wchar_t * str) {
-    constexpr uint64_t maxOffset = 31;
+    constexpr uint64_t maxOffset = 32;
     uint64_t res = 0;
     wchar_t c = 0;
-    uint8_t i = 0;
-    uint8_t j = 1;
+    uint8_t i;
+    uint8_t j;
     while ((c = *str) != L'\0') {
+        j = 1;
+        i = 0;
         do {
             if (i > maxOffset) i = j++;
-            res = res ^ (c << i);
+            res = res ^ ((uint64_t)c << i);
             i += 4;
         } while ((c = *(++str)) != L'\0' && j < maxOffset);
     }

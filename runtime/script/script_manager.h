@@ -3,6 +3,7 @@
 
 #include "runtime/coroutines.h"
 #include "runtime/ts_queue.h"
+#include "runtime/utils.h"
 
 #include <cstdint>
 #include <map>
@@ -23,7 +24,9 @@ public:
 
 protected:
     static ThreadSafeQueue<CoroContainer> newActiveCoros;
-    static constinit std::unique_ptr<BindingsMap> scriptBindingsStorage;
+    static constinit BindingsMap * scriptBindingsStorage;
+
+    bool isInitializer = false;
 
 public:
     static volatile bool shouldRun;
@@ -37,9 +40,11 @@ public:
 
     static void staticInit();
 
+    ScriptManager();
     ScriptManager(const BindingsMap & bindings);
     ScriptManager(SpriteBase * sprite, const SimpleBindingsMap & bindings);
     ScriptManager(SpriteBase * sprite, uint64_t action, const CoroFunction & function);
+    ~ScriptManager();
 };
 
 #endif

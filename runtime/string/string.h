@@ -85,7 +85,7 @@ public:
         isWrapper = false;
     }
 
-    String & operator=(String && origin) {
+    String & operator=(String && origin) noexcept {
         if (&origin == this) return *this;
         if (!isWrapper && mData) free(mData);
 

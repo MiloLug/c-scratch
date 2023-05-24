@@ -2,13 +2,17 @@
 #define CSCRATCH_THREAD_H
 
 #include <functional>
-#include <pthread.h>
+#if __has_include(<pthread.h>)
+    #include <pthread.h>
+#else
+    #include <thread>
+    #define USE_STD_THREAD
+#endif
 
 
-/*
-* I know about std::thread ok?
-* It's just not implemented somewhere unfortunately...
-*/
+#ifdef USE_STD_THREAD
+using Thread = std::thread;
+#else
 class Thread {
 protected:
     struct State {
@@ -59,6 +63,6 @@ public:
         return thr;
     }
 };
-
+#endif
 
 #endif

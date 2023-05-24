@@ -12,7 +12,7 @@
 
 class Sprite;
 class Backdrop;
-class SDL_Renderer;
+struct SDL_Renderer;
 
 
 class SpriteManager {
@@ -21,12 +21,14 @@ public:
 
 protected:
     static SpriteList spriteStorage;
-    static constinit std::unique_ptr<SpriteList> waitingForInit;
+    static SpriteList * waitingForInit;
     static std::unordered_set<Sprite *> managedSprites;
     static std::unordered_map<uint64_t, Sprite *> spritesByName;
     static Backdrop * backdrop;
 
     static Coroutine sendClickXYCoro(float x, float y);
+
+    bool isInitializer = false;
 
 public:
     static void add(Sprite * sprite);
@@ -56,8 +58,10 @@ public:
 
     static void staticInit();
 
+    SpriteManager();
     SpriteManager(Sprite * sprite);
     SpriteManager(Backdrop * _backdrop);
+    ~SpriteManager();
 };
 
 

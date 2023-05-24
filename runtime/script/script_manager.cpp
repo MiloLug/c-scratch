@@ -11,8 +11,7 @@
 
 volatile bool ScriptManager::shouldRun = true;
 ThreadSafeQueue<ScriptManager::CoroContainer> ScriptManager::newActiveCoros;
-constinit std::unique_ptr<ScriptManager::BindingsMap> ScriptManager::scriptBindingsStorage =
-    nullptr;
+constinit ScriptManager::BindingsMap * ScriptManager::scriptBindingsStorage = nullptr;
 
 // STATIC
 
@@ -172,11 +171,15 @@ void ScriptManager::startScriptsLoop() {
 void ScriptManager::staticInit() {
     if (scriptBindingsStorage != nullptr) return;
 
-    scriptBindingsStorage.reset(new ScriptManager::BindingsMap);
+    scriptBindingsStorage = new ScriptManager::BindingsMap;
 }
 
 // NON-STATIC
 
+ScriptManager::ScriptManager() {
+    isInitializer = true;
+    staticInit();
+}
 ScriptManager::ScriptManager(const BindingsMap & bindings) {
     staticInit();
     bindScripts(bindings);
@@ -188,4 +191,10 @@ ScriptManager::ScriptManager(SpriteBase * sprite, const SimpleBindingsMap & bind
 ScriptManager::ScriptManager(SpriteBase * sprite, uint64_t action, const CoroFunction & function) {
     staticInit();
     bindScripts(sprite, action, function);
+}
+
+ScriptManager::~ScriptManager() {
+    if (isInitializer && scriptBindingsStorage != nullptr)
+        delete scriptBindingsStorage;
+    scriptBindingsStorage = nullptr;
 }
