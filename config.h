@@ -21,10 +21,20 @@
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms will be disabled.
-* It *CAN* speed up your code, tho in some cases it can do just the opposite...
-* And *in theory* the app may crash in some cases.
+* It **can speed up** your code, tho
+*   **in some cases it can do just the opposite**...
+* And, in theory, the app may crash.
 */
-#define ENABLE_UNSAFE_NO_LOCKS
+// #define ENABLE_UNSAFE_NO_LOCKS
+
+/*
+* Enables coroutine cycles skip mechanism.
+* cs_pass won't hand over the control to the main loop for CYCLE_SKIP_NUMBER times.
+* E.g. for CYCLE_SKIP_NUMBER calls of cs_pass you will stay in one function and all other
+*   things will be blocked.
+*/
+#define ENABLE_CYCLE_SKIP_OPTIMIZATION
+#define CYCLE_SKIP_NUMBER 10
 
 /*
 * Disables limits on the sprites coordinates
@@ -58,7 +68,7 @@
 * Also the original scratch is written in JS, where numbers are doubles by default, so it can be
 *   incompatible with some projects in this case
 */
-#define USE_VALUE_FLOAT
+//#define USE_VALUE_FLOAT
 
 /**** DEBUGGING ****/
 // Enables some useful outputs such as "sprite X is initialized"

@@ -90,7 +90,10 @@ using remove_deepest_const = typename remove_deepest_const_impl<T>::type;
 // general types
 
 template<typename T>
-concept NumberT = std::is_floating_point_v<T> || std::is_integral_v<T>;
+concept NumberT = (std::is_floating_point_v<T> || std::is_integral_v<T>) && !std::is_null_pointer_v<T>;
+
+template<typename T>
+concept IntegerT = std::is_integral_v<T> && !std::is_null_pointer_v<T>;
 
 template<typename T, typename U>
 concept MaybeConstT = std::is_same_v<U, remove_deepest_const<T>>;

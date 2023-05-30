@@ -283,7 +283,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`wait (X) seconds`]
 
-    `waitFor(X)`
+    `wait_for(X)`
 
 - [`repeat (X) ...some code`]
 
@@ -295,11 +295,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`wait until <expression>`]
 
-    `waitUntil(expression)`
+    `wait_until(expression)`
 
 - [`repeat until <expression> ...some code`]
 
-    `repeatUntil(expression) { ...some code; cs_pass; }`
+    `repeat_until(expression) { ...some code; cs_pass; }`
 
 - [`stop [all]`]
 

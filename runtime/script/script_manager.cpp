@@ -4,12 +4,12 @@
 #include "config.h"
 #include "runtime/coroutines.h"
 #include "runtime/sprite/sprite_base.h"
+#include "runtime/debug.h"
 
 #include <ctime>
 #include <list>
 
 
-volatile bool ScriptManager::shouldRun = true;
 ThreadSafeQueue<ScriptManager::CoroContainer> ScriptManager::newActiveCoros;
 constinit ScriptManager::BindingsMap * ScriptManager::scriptBindingsStorage = nullptr;
 
@@ -96,6 +96,8 @@ static void stopOtherScripts(
         if (corosIter->first == sprite) {
             delete corosIter->second;
             corosList.erase(corosIter++);
+        } else {
+            corosIter++;
         }
     }
     corosList.push_back({sprite, coro});
@@ -121,7 +123,7 @@ void ScriptManager::startScriptsLoop() {
 
     triggerScripts(ACTION_START);
 
-    while (shouldRun) {
+    while (ScriptsShouldRun) {
 #ifndef ENABLE_TURBO
         if (int(clock() - previous_time) < clocks_per_frame) continue;
         previous_time += clocks_per_frame;
@@ -142,7 +144,7 @@ void ScriptManager::startScriptsLoop() {
 
         auto corosIter = activeCoros.begin();
 
-        while (corosIter != corosEnd) {
+        while (ScriptsShouldRun && corosIter != corosEnd) {
             auto & [sprite, coro] = *corosIter;
 
             if (!coro->done()) {

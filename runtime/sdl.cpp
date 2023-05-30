@@ -52,7 +52,7 @@ void ScratchSDLWindow::updateFrameTiming(std::wostream & os, float period) {
 }
 
 void ScratchSDLWindow::loop() {
-    while (ScriptManager::shouldRun) {
+    while (ScriptsShouldRun) {
         updateProgramTime();
 
         SDL_Event e;
@@ -62,7 +62,7 @@ void ScratchSDLWindow::loop() {
                     ScriptManager::triggerScripts(ACTION_KEYDOWN | e.key.keysym.scancode);
                     break;
                 case SDL_QUIT:
-                    ScriptManager::shouldRun = false;
+                    ScriptsShouldRun = false;
                     return;
                 case SDL_MOUSEMOTION:
                     mouseState.x = e.motion.x - WINDOW_CENTER_X;

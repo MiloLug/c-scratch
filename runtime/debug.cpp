@@ -18,14 +18,14 @@ void showDebugConsole() {
 }
 
 
-void cs_print(Arg value, bool quoted) {
+void csPrint(Arg value, bool quoted) {
     if (quoted)
         wprintf(L"'%ls'\n", value.toString());
     else
         wprintf(L"%ls\n", value.toString());
 }
 
-void cs_print(const wchar_t * name, Arg value, bool quoted) {
+void csPrint(const wchar_t * name, Arg value, bool quoted) {
     if (quoted)
         wprintf(L"%ls = '%ls'\n", name, value.toString());
     else

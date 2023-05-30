@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPT_INCLUDES_H
 #define COMMON_SCRIPT_INCLUDES_H
 
-#include "messages.h"
+#include "runtime/script/messages.h"
 #include "runtime/array.h"
 #include "runtime/control_flow.h"
 #include "runtime/coroutines.h"
@@ -12,6 +12,9 @@
 #include "runtime/time.h"
 #include "runtime/utils.h"
 #include "runtime/debug.h"
-#include "script_manager.h"
+#include "runtime/script/script_manager.h"
+
+#include "stage/sprites.h"
+#include "stage/scripts.h"
 
 #endif

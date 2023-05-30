@@ -4,6 +4,7 @@
 #include "runtime/coroutines.h"
 #include "runtime/ts_queue.h"
 #include "runtime/utils.h"
+#include "should_run.h"
 
 #include <cstdint>
 #include <map>
@@ -29,8 +30,6 @@ protected:
     bool isInitializer = false;
 
 public:
-    static volatile bool shouldRun;
-
     static uint64_t triggerScripts(uint64_t action, Context * ctx = nullptr);
     static void manageCoroutine(SpriteBase * sprite, Coroutine * coroutine);
     static void bindScripts(const BindingsMap & bindings);

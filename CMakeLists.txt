@@ -77,9 +77,7 @@ if (COMPILER_ENV STREQUAL "VS")
     set(COMPILER "MSVC")
   endif()
 
-  string(CONCAT COMMON_CXX_FLAGS
-    "${COMMON_C_FLAGS}"
-  )
+  set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} ${COMMON_C_FLAGS}")
 
 else()
   string(CONCAT COMMON_C_FLAGS
@@ -91,7 +89,6 @@ else()
 
   string(CONCAT DEBUG_FLAGS
     "-g "
-    "-save-temps "
   )
 
   string(CONCAT RELEASE_FLAGS
@@ -108,17 +105,20 @@ else()
     set(COMPILER "CLANG")
     
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
-      set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} -fcoroutines-ts ")
+      string(CONCAT COMMON_CXX_FLAGS
+        "${COMMON_CXX_FLAGS}"
+        "-fcoroutines-ts "
+      )
     endif()
 
     string(CONCAT COMMON_C_FLAGS
-      "${COMMON_C_FLAGS} "
+      "${COMMON_C_FLAGS}"
       "-Wno-ignored-optimization-argument "
       "-Wno-unused-command-line-argument "
     )
 
     string(CONCAT RELEASE_FLAGS
-      "${RELEASE_FLAGS} "
+      "${RELEASE_FLAGS}"
       "-flto "
       "-fwhole-program-vtables "
       "-fforce-emit-vtables "
@@ -129,14 +129,14 @@ else()
 
     set(COMPILER "GCC")
 
-    string(CONCAT COMMON_C_FLAGS
-      "${COMMON_C_FLAGS} "
+    string(CONCAT COMMON_CXX_FLAGS
+      "${COMMON_CXX_FLAGS}"
       "-fcoroutines "
       "-fconcepts "
     )
 
     string(CONCAT RELEASE_FLAGS
-      "${RELEASE_FLAGS} "
+      "${RELEASE_FLAGS}"
       "-flto=2 "
       "-fgcse-lm "
       "-fira-region=all "
@@ -167,6 +167,8 @@ find_package(SDL2_image REQUIRED)
 
 add_executable(app
   config.h
+  scripts_common.h
+  sprites_common.h
   source.cpp
 )
 

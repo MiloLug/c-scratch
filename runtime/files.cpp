@@ -28,7 +28,7 @@ int64_t File::getwline(wchar_t ** out) {
 
             readSize = wcslen(buffer);
             lineSize += readSize;
-            if (buffer[readSize] == L'\n' || (readSize + 1) < bufferSize) break;
+            if ((readSize + 1) < bufferSize || buffer[readSize - 1] == L'\n') break;
         }
 
         if (lineSize != offset) {

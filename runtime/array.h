@@ -93,12 +93,11 @@ public:
             data = (Var **)realloc((void *)data, capacity * sizeof(Var *));
         }
 
-        data[length + 1] = new Var(value);
-        length++;
+        data[++length] = new Var(value);
     }
 
     void pop() {
-        if (length) delete data[length-- + 1];
+        if (length) delete data[length--];
     }
 
     void remove(int64_t i) {
@@ -113,19 +112,19 @@ public:
     }
 
     void insert(int64_t i, auto && value) {
-        if (i == length + 1) {
-            push(value);
-        } else if (i <= length && i > 0) {
-            if (this->length == this->capacity - 1) {
+        if (i == length + 1) return push(value);
+        if (i < length && i > 0) {
+            if (length == capacity - 1) {
                 capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
                 data = (Var **)realloc((void *)data, capacity * sizeof(Var *));
             }
-            for (uint64_t j = length; j >= i; j--) {
-                data[j + 1] = data[j];
+
+            length++;
+            for (uint64_t j = length; j > i; j--) {
+                data[j] = data[j - 1];
             }
 
             data[i] = new Var(value);
-            length++;
         }
     }
 
@@ -138,15 +137,15 @@ public:
 
     constexpr bool contains(auto && value) { return indexOf(value) != 0; }
 
-    constexpr void set(const uint64_t i, auto && value) {
+    constexpr void set(const int64_t i, auto && value) {
         if (i <= length && i > 0) *data[i] = value;
     }
 
-    constexpr const Var & get(const uint64_t i) const { return (i <= length) ? *data[i] : nullValue; }
+    constexpr const Var & get(const int64_t i) const { return (i <= length && i > 0) ? *data[i] : nullValue; }
 
     void clean() {
         if (data) {
-            for (uint64_t i = 1; i <= this->length; i++) {
+            for (uint64_t i = 1; i <= length; i++) {
                 delete data[i];
             }
 

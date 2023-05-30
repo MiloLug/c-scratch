@@ -4,5 +4,4 @@ target_sources(app PRIVATE
   backdrop.h
   sprite_manager.h
   sprite_manager.cpp
-  sprites_common.h
 )

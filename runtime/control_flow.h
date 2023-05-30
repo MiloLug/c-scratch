@@ -2,16 +2,17 @@
 #define CSCRATCH_CONTROL_FLOW_H
 
 #include "coroutines.h"
+#include "script/should_run.h"
 #include "time.h"
 
-#define repeatUntil(expr) while (!(expr))
-#define waitUntil(expr) repeatUntil(expr) co_yield Coroutine::NOTHING
+#define repeat_until(expr) while (!(expr))
+#define wait_until(expr) repeat_until(expr) co_yield Coroutine::NOTHING
 
-#define waitFor(seconds)                                                                           \
+#define wait_for(seconds)                                                                          \
     for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;)                \
     co_yield Coroutine::NOTHING
 
-#define repeatFor(seconds)                                                                         \
+#define repeat_for(seconds)                                                                        \
     for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;)                \
     co_yield Coroutine::NOTHING
 
@@ -21,7 +22,7 @@
 
 
 #define cs_stop_all                                                                                \
-    ScriptManager::shouldRun = false;                                                              \
+    ScriptsShouldRun = false;                                                                      \
     co_return
 
 #define cs_stop co_return

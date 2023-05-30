@@ -24,13 +24,15 @@
         if (type == Type::STRING) {                                                                \
             return wcscmp(string->data, value) op 0;                                               \
         }                                                                                          \
-        getNumberStr();                                                                            \
-        return wcscmp(numberStrTmp, value);                                                        \
+        return wcscmp(getNumberStr(), value) op 0;                                                 \
     }                                                                                              \
     bool operator op(const String & value) const {                                                 \
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
     }                                                                                              \
-    constexpr bool operator op(NumberT auto value) const { return number op value; }
+    constexpr bool operator op(NumberT auto value) const {                                         \
+        return type == Type::NUMBER ? number op value                                              \
+                                    : wcscmp(string->data, Const(value).getNumberStr()) op 0;      \
+    }
 
 
 #define make_math_bin_op(op)                                                                       \
@@ -133,7 +135,7 @@ public:
     }
 
     wchar_t * restrict__ & getNumberStr() const {
-        constexpr uint16_t fracBaseLen = 15;
+        constexpr uint16_t fracBaseLen = 14;
         constexpr double minExponential = 1e+21;
 
         if (number == previousNumber && numberStrTmp) return numberStrTmp;
@@ -151,8 +153,8 @@ public:
         }
 
         bool useExpNotation = std::abs(number) >= minExponential;
-        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.15e", number)
-                                       : swprintf(globalNumStrTmp, 325, L"%.15f", number);
+        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.14e", number)
+                                       : swprintf(globalNumStrTmp, 325, L"%.14f", number);
 
         // it's important to try this branch first to avoid jumps, sine no-exponential numbers are more common
         if (!useExpNotation) {
@@ -234,7 +236,7 @@ class ArgT;
 class Var: public Const {
 public:
     using Const::Const;
-    
+
     Var(const ArgT & origin): Const((const Const &)origin) {}
     Var(const Var & origin): Const((const Const &)origin) {}
 
@@ -254,13 +256,9 @@ public:
         return *this;
     }
 
-    Var & operator=(const Var & origin) {
-        return operator=((const Const &)origin);
-    }
+    Var & operator=(const Var & origin) { return operator=((const Const &)origin); }
 
-    Var & operator=(const ArgT & origin) {
-        return operator=((const Const &)origin);
-    }
+    Var & operator=(const ArgT & origin) { return operator=((const Const &)origin); }
 
     Var & operator=(const ConstInitData & data) {
         number = data.number;
@@ -363,7 +361,7 @@ public:
     ArgT(const Const & origin):
         Const(
             origin.number,
-            origin.type == Type::STRING ? new String(*origin.string): nullptr,
+            origin.type == Type::STRING ? new String(*origin.string) : nullptr,
             origin.type
         ),
         stringCleaning{origin.type == Type::STRING},

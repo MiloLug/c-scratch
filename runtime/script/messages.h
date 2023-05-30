@@ -27,32 +27,32 @@ public:
         }
     };
 
-    static void broadcast(uint64_t msgHash) {
-        ScriptManager::triggerScripts(ACTION_MESSAGE | msgHash);
+    static void broadcast(IntegerT auto msgHash) {
+        ScriptManager::triggerScripts(ACTION_MESSAGE | (uint64_t)msgHash);
     }
-    static void broadcast(const wchar_t * msg) {
+    static void broadcast(OneOfT<const wchar_t> auto * restrict__ msg) {
         ScriptManager::triggerScripts(ACTION_MESSAGE | strToActionParam(msg));
     }
-    static void broadcast(const Const & value) {
+    static void broadcast(Arg value) {
         ScriptManager::triggerScripts(ACTION_MESSAGE | strToActionParam(value.toString()));
     }
 
 
-    static Coroutine broadcastWait(uint64_t msgHash) {
+    static Coroutine broadcastWait(IntegerT auto msgHash) {
         Context ctx;
-        auto running = ScriptManager::triggerScripts(ACTION_MESSAGE | msgHash, &ctx);
+        auto running = ScriptManager::triggerScripts(ACTION_MESSAGE | (uint64_t)msgHash, &ctx);
 
         if (running != 0) {
             ctx.counter = running;
-            waitUntil(ctx.counter == 0);
+            wait_until(ctx.counter == 0);
         }
 
         co_return;
     }
-    static Coroutine broadcastWait(const wchar_t * msg) {
+    static Coroutine broadcastWait(OneOfT<const wchar_t> auto * restrict__ msg) {
         return broadcastWait(strToActionParam(msg));
     }
-    static Coroutine broadcastWait(const Const & value) {
+    static Coroutine broadcastWait(Arg value) {
         return broadcastWait(strToActionParam(value.toString()));
     }
 };

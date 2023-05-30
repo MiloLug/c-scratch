@@ -6,8 +6,8 @@
 
 void showDebugConsole();
 
-void cs_print(Arg value, bool quoted = false);
-void cs_print(const wchar_t * name, Arg value, bool quoted = false);
+void csPrint(Arg value, bool quoted = false);
+void csPrint(const wchar_t * name, Arg value, bool quoted = false);
 
 void printDebugInfo(ScratchSDLWindow & window);
 
