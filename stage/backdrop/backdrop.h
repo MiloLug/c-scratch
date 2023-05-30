@@ -1,3 +1,6 @@
+#include "sprites_common.h"
+
+
 Backdrop backdrop({ 
     .costumeIndex = 1,
     .costumes = {

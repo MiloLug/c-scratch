@@ -1,3 +1,6 @@
+#include "sprites_common.h"
+
+
 namespace NS_sprite {
     Sprite sprite({
         .name = L"Sprite",

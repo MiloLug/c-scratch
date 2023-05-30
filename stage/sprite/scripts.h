@@ -1,4 +1,4 @@
-#include "runtime/script/scripts_common.h"
+#include "scripts_common.h"
 
 
 namespace NS_sprite {
@@ -345,7 +345,7 @@ namespace NS_sprite {
 
         static Coroutine spriteStartScript2(Context * ctx) {
             forever {
-                waitUntil(v_tick == 100);
+                wait_until(v_tick == 100);
                 v_timer = timer;
                 v_tick = 0;
 
