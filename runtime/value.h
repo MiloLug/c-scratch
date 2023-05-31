@@ -135,7 +135,6 @@ public:
     }
 
     wchar_t * restrict__ & getNumberStr() const {
-        constexpr uint16_t fracBaseLen = 14;
         constexpr double minExponential = 1e+21;
 
         if (number == previousNumber && numberStrTmp) return numberStrTmp;
@@ -153,8 +152,8 @@ public:
         }
 
         bool useExpNotation = std::abs(number) >= minExponential;
-        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, L"%.14e", number)
-                                       : swprintf(globalNumStrTmp, 325, L"%.14f", number);
+        uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, NT_FORMAT_EXP, number)
+                                       : swprintf(globalNumStrTmp, 325, NT_FORMAT, number);
 
         // it's important to try this branch first to avoid jumps, sine no-exponential numbers are more common
         if (!useExpNotation) {
