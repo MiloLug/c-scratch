@@ -17,22 +17,6 @@ void showDebugConsole() {
 #endif
 }
 
-
-void csPrint(Arg value, bool quoted) {
-    if (quoted)
-        wprintf(L"'%ls'\n", value.toString());
-    else
-        wprintf(L"%ls\n", value.toString());
-}
-
-void csPrint(const wchar_t * name, Arg value, bool quoted) {
-    if (quoted)
-        wprintf(L"%ls = '%ls'\n", name, value.toString());
-    else
-        wprintf(L"%ls = %ls\n", name, value.toString());
-}
-
-
 void printDebugInfo(ScratchSDLWindow & window) {
 #ifdef ENABLE_TURBO
     wprintf(L"using ENABLE_TURBO\n");

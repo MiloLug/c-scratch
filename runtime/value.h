@@ -337,7 +337,6 @@ public:
 class ArgT: public Const {
 protected:
     bool stringCleaning = false;
-    Const * mOrigin = nullptr;
 
 public:
     ArgT(const ConstInitData & data):
@@ -363,39 +362,35 @@ public:
             origin.type == Type::STRING ? new String(*origin.string) : nullptr,
             origin.type
         ),
-        stringCleaning{origin.type == Type::STRING},
-        mOrigin{(Const *)&origin} {
+        stringCleaning{origin.type == Type::STRING}
+    {
+        // own the num-to-str cache,
+        // so we don't have to generate a new one neither to depend on the origin's state
         if (origin.numberStrTmp) {
             numberStrTmp = origin.numberStrTmp;
             numberStrSize = origin.numberStrSize;
             numberStrLen = origin.numberStrLen;
             previousNumber = origin.previousNumber;
             origin.numberStrTmp = nullptr;
+            origin.numberStrSize = 0;
         }
     }
 
     ArgT(const ArgT & origin):
-        Const(origin.number, origin.string, origin.type),
-        mOrigin{(Const *)&origin} {
+        Const(origin.number, origin.string, origin.type)
+    {
         if (origin.numberStrTmp) {
             numberStrTmp = origin.numberStrTmp;
             numberStrSize = origin.numberStrSize;
             numberStrLen = origin.numberStrLen;
             previousNumber = origin.previousNumber;
             origin.numberStrTmp = nullptr;
+            origin.numberStrSize = 0;
         }
     }
 
     constexpr ~ArgT() {
         if (!stringCleaning) string = nullptr;
-
-        if (mOrigin && !mOrigin->numberStrTmp && numberStrTmp) {
-            mOrigin->numberStrTmp = numberStrTmp;
-            mOrigin->numberStrSize = numberStrSize;
-            mOrigin->numberStrLen = numberStrLen;
-            mOrigin->previousNumber = previousNumber;
-            numberStrTmp = nullptr;
-        }
     }
 };
 

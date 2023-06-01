@@ -15,4 +15,8 @@
     #include "precise/inc.h"
 #endif
 
+#define radTan(radAngle) tan(radAngle)
+
+#define degTan(angle) tan((angle)*M_RAD)
+
 #endif

@@ -4,10 +4,22 @@
 #include "sdl.h"
 #include "value.h"
 
+#include <numeric>
+#include <string>
+#include <vector>
+
 void showDebugConsole();
 
-void csPrint(Arg value, bool quoted = false);
-void csPrint(const wchar_t * name, Arg value, bool quoted = false);
+
+template<class... Args>
+void csPrint(Args &&... _args) {
+    std::vector<std::wstring> strings = {ArgT(_args).toString()...};
+
+    wprintf(
+        L"%ls\n",
+        std::accumulate(strings.begin(), strings.end(), std::wstring{}).c_str()
+    );
+}
 
 void printDebugInfo(ScratchSDLWindow & window);
 

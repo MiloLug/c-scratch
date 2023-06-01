@@ -19,7 +19,3 @@ void updateProgramTime() {
         duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
     programTime = currentTime - programStartTime;
 }
-
-double __getTimerS() { return time_nsToS(programTime - timerStartTime); }
-
-void resetTimer() { timerStartTime = programTime; }
