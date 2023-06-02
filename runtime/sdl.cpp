@@ -53,7 +53,7 @@ void ScratchSDLWindow::updateFrameTiming(std::wostream & os, float period) {
 
 void ScratchSDLWindow::loop() {
     while (ScriptsShouldRun) {
-        updateProgramTime();
+        csTime.sync();
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {

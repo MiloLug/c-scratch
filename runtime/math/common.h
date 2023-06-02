@@ -5,7 +5,6 @@
 #include <cfloat>
 #include <cmath>
 #include "runtime/utils.h"
-#include "number_type.h"
 
 
 #define GET_HIGH_WORD(hi, d)                                                                       \

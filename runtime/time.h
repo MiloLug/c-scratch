@@ -3,28 +3,54 @@
 
 #include <chrono>
 
-// UNIX timestamp in nanosecs
-extern volatile int64_t currentTime;
 
-// Time from from the program start in nanosecs
-extern volatile int64_t programTime;
+struct Time {
+    static const std::chrono::time_zone * currentZone;
+    // timestamp of the year 2000 in ns
+    static const int64_t y2kStartTime;
+    static const int64_t programStartTime;
 
-// Current timer's time in nanosecs
-extern volatile int64_t timerStartTime;
+    // UNIX timestamp in nanosecs
+    volatile mutable int64_t currentTime;
 
+    // Time from the program start in ns
+    volatile mutable int64_t programTime;
 
-#define time_sToNS(x) (int64_t)((x) * 1e9)
-#define time_nsToS(x) ((double)(x) / 1e9)
+    // Current timer's time in nanosecs
+    volatile mutable int64_t timerStartTime;
 
+    // timestamp from the year 2000 in ns
+    volatile mutable int64_t y2kTime;
+    // days from the year 2000 in ns
+    volatile mutable double y2kDays;
 
-void updateProgramTime();
+    volatile mutable int16_t year;
+    volatile mutable int8_t month;
+    volatile mutable int8_t date;
+    // 1-based week day
+    volatile mutable int8_t weekDay;
+    // 24-based hour of current day
+    volatile mutable int8_t hour;
+    volatile mutable int8_t minute;
+    volatile mutable int8_t second;
 
-// Returns current timer time in nanosecs
-#define __getTimer() (programTime - timerStartTime)
+    static constexpr int64_t sToNS(double x) {return x * 1e9;}
+    static constexpr double nsToS(int64_t x) {return (double)x / 1e9;}
 
-// Returns current timer's time in seconds
-#define timer (time_nsToS(__getTimer()))
+    Time();
 
-#define resetTimer() (timerStartTime = programTime)
+    void sync() const volatile;
+    
+    // Returns current timer's time in seconds
+    constexpr double timer() const volatile {
+        return nsToS(programTime - timerStartTime);
+    }
+    constexpr void resetTimer() const volatile {
+        timerStartTime = programTime;
+    }
+};
+
+extern const volatile Time csTime;
+
 
 #endif

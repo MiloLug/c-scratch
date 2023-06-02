@@ -380,11 +380,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - (`timer`)
 
-    `timer`
+    `csTime.timer()`
 
 - [`reset time`]
 
-    `resetTimer()`
+    `csTime.resetTimer()`
 
 - (`[PARAMETER] of (OBJECT)`)
 
@@ -403,8 +403,20 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
     - `[size]` -> `sprite.getSize()`
     - `[volume]` -> NOT IMPLEMENTED
 
-- (`current [X]`) NOT IMPLEMENTED
-- (`days since 2000`) NOT IMPLEMENTED
+- (`current [X]`)
+
+  - `[year]` -> `csTime.year`
+  - `[month]` -> `csTime.month`
+  - `[date]` -> `csTime.date`
+  - `[day of week]` -> `csTime.weekDay`
+  - `[hour]` -> `csTime.hour`
+  - `[minute]` -> `csTime.minute`
+  - `[second]` -> `csTime.second`
+
+- (`days since 2000`)
+  
+    `csTime.y2kDays`
+
 - (`username`) NOT IMPLEMENTED
 
 ### Operators
@@ -435,11 +447,28 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - <`(X) mod (Y)`>
 
-    `fmod(X, Y)`
+    `mFmod(X, Y)`
 
 - <`round (X)`>
 
     `round(X)`
+
+- (`[Fn] of (X)`)
+
+  - `[abs]` -> `abs(X)`
+  - `[floor]` -> `floor(X)`
+  - `[ceiling]` -> `ceil(X)`
+  - `[sqrt]` -> `sqrt(X)`
+  - `[sin]` -> `degSin(X)`
+  - `[cos]` -> `degCos(X)`
+  - `[tan]` -> `degTan(X)`
+  - `[asin]` -> `degAsin(X)`
+  - `[acos]` -> `degAcos(X)`
+  - `[atan]` -> `degAtan(X)`
+  - `[ln]` -> `log(X)`
+  - `[log]` -> `log10(X)`
+  - `[e^]` -> `exp(X)`
+  - `[10^]` -> `mExp10(X)`
 
 ### Variables
 

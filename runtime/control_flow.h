@@ -9,11 +9,11 @@
 #define wait_until(expr) repeat_until(expr) co_yield Coroutine::NOTHING
 
 #define wait_for(seconds)                                                                          \
-    for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;)                \
+    for (const int64_t end = csTime.programTime + Time::sToNS(seconds); csTime.programTime < end;) \
     co_yield Coroutine::NOTHING
 
 #define repeat_for(seconds)                                                                        \
-    for (const int64_t end = programTime + time_sToNS(seconds); programTime < end;)                \
+    for (const int64_t end = csTime.programTime + Time::sToNS(seconds); csTime.programTime < end;) \
     co_yield Coroutine::NOTHING
 
 #define repeat(expr) for (double __i = 0, __limit = round(expr); __i < __limit; __i++)
