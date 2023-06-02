@@ -346,7 +346,7 @@ namespace NS_sprite {
         static Coroutine spriteStartScript2(Context * ctx) {
             forever {
                 wait_until(v_tick == 100);
-                v_timer = timer;
+                v_timer = csTime.timer();
                 v_tick = 0;
 
                 // don't have graphical output rn, so it's just like this
