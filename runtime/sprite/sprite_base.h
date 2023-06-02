@@ -23,46 +23,57 @@ const std::filesystem::path ASSETS_BASE_DIR = L"assets/";
         x1 + pPointLT.x, y1 + pPointLT.y, x2 + pPointLT.x, y2 + pPointLT.y, penSize, penColor      \
     )
 
+static constexpr auto __MAX_X = 30000.0f;
+static constexpr auto __MAX_Y = 30000.0f;
+
 #ifdef NO_COORDINATES_LIMITATION
     #define __boundX(x) (x)
     #define __boundY(y) (y)
-    #define __boundXUnsafe(x) (x)
-    #define __boundYUnsafe(y) (y)
     #define __boundXMove(x, d) ((x) + (d))
     #define __boundYMove(y, d) ((y) + (d))
-#else
+#elif (defined(COMPILER_CLANG) || defined(COMPILER_GNU)) && !defined(COMPILER_ENV_VS)
     #define __boundX(x)                                                                            \
         ({                                                                                         \
             auto __x = (x);                                                                        \
-            __x > MAX_X ? MAX_X : (__x < -MAX_X ? -MAX_X : __x);                                   \
+            __x > __MAX_X ? __MAX_X : (__x < -__MAX_X ? -__MAX_X : __x);                           \
         })
     #define __boundY(y)                                                                            \
         ({                                                                                         \
             auto __y = (y);                                                                        \
-            __y > MAX_Y ? MAX_Y : (__y < -MAX_Y ? -MAX_Y : __y);                                   \
+            __y > __MAX_Y ? __MAX_Y : (__y < -__MAX_Y ? -__MAX_Y : __y);                           \
         })
-    #define __boundXUnsafe(x) (x > MAX_X ? MAX_X : (x < -MAX_X ? -MAX_X : x))
-    #define __boundYUnsafe(y) (y > MAX_Y ? MAX_Y : (y < -MAX_Y ? -MAX_Y : y))
 
     #define __boundXMove(x, d)                                                                     \
         ({                                                                                         \
-            float __x2 = (x) + (d);                                                                \
-            __x2 > MAX_X ? MAX_X : (__x2 < -MAX_X ? -MAX_X : __x2);                                \
+            auto __x2 = (x) + (d);                                                                 \
+            __x2 > __MAX_X ? __MAX_X : (__x2 < -__MAX_X ? -__MAX_X : __x2);                        \
         })
 
     #define __boundYMove(y, d)                                                                     \
         ({                                                                                         \
-            float __y2 = (y) + (d);                                                                \
-            __y2 > MAX_X ? MAX_X : (__y2 < -MAX_X ? -MAX_X : __y2);                                \
+            auto __y2 = (y) + (d);                                                                 \
+            __y2 > __MAX_Y ? __MAX_Y : (__y2 < -__MAX_Y ? -__MAX_Y : __y2);                        \
         })
+#else
+static force_inline__ auto __boundX(auto x) {
+    return x > __MAX_X ? __MAX_X : (x < -__MAX_X ? -__MAX_X : x);
+}
+static force_inline__ auto __boundY(auto y) {
+    return y > __MAX_Y ? __MAX_Y : (y < -__MAX_Y ? -__MAX_Y : y);
+}
+static force_inline__ auto __boundXMove(auto x, auto d) {
+    auto x2 = x + d;
+    return x2 > __MAX_X ? __MAX_X : (x2 < -__MAX_X ? -__MAX_X : x2);
+}
+static force_inline__ auto __boundYMove(auto y, auto d) {
+    auto y2 = y + d;
+    return y2 > __MAX_Y ? __MAX_Y : (y2 < -__MAX_Y ? -__MAX_Y : y2);
+}
 #endif
 
 
 class Movable {
 protected:
-    static constexpr float MAX_X = 30000.0f;
-    static constexpr float MAX_Y = 30000.0f;
-
     float direction;
     float size;
     float x;
@@ -128,8 +139,8 @@ public:
         direction{dir - 90.0f},
         size{_size},
         sizeScaled{_size / 100.0f},
-        x{__boundXUnsafe(_x)},
-        y{__boundYUnsafe(_y)},
+        x{__boundX(_x)},
+        y{__boundY(_y)},
         wOrig{w},
         hOrig{h},
         pPointOrig{
@@ -147,8 +158,8 @@ public:
         windowOffsetLTX{WINDOW_CENTER_X - pPointLT.x},
         windowOffsetLTY{WINDOW_CENTER_Y - pPointLT.y},
         pos{
-            .x = windowOffsetLTX + __boundXUnsafe(_x),
-            .y = windowOffsetLTY - __boundYUnsafe(_y),
+            .x = windowOffsetLTX + __boundX(_x),
+            .y = windowOffsetLTY - __boundY(_y),
             .w = w * sizeScaled,
             .h = h * sizeScaled,
         } {
@@ -160,7 +171,7 @@ public:
     */
 
     void setX(float _x) {
-        x = __boundXUnsafe(_x);
+        x = __boundX(_x);
         _x = pos.x;
         pos.x = windowOffsetLTX + x;
 
@@ -168,7 +179,7 @@ public:
     }
 
     void setY(float _y) {
-        y = __boundYUnsafe(_y);
+        y = __boundY(_y);
         _y = pos.y;
         pos.y = windowOffsetLTY - y;
 
@@ -205,11 +216,11 @@ public:
     force_inline__ const SDL_FPoint & getPivotLT() { return pPointLT; }
 
     void goXY(float _x, float _y) {
-        x = __boundXUnsafe(_x);
+        x = __boundX(_x);
         _x = pos.x;
         pos.x = windowOffsetLTX + x;
 
-        y = __boundYUnsafe(_y);
+        y = __boundY(_y);
         _y = pos.y;
         pos.y = windowOffsetLTY - y;
 

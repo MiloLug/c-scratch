@@ -8,10 +8,11 @@
 
 #ifdef USE_VALUE_FLOAT
     typedef float storage_number_t;
-    constexpr int NT_PRECISION_CORRECTION = 0;
+    constexpr auto NT_PRECISION_CORRECTION = 0;
 #else
     typedef double storage_number_t;
-    constexpr int NT_PRECISION_CORRECTION = -1;
+    // the last double's decimal digit is totally unreliable
+    constexpr auto NT_PRECISION_CORRECTION = -1;
 #endif
 
 constexpr auto NT_INF = std::numeric_limits<storage_number_t>::infinity();

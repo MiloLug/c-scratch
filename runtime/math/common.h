@@ -3,7 +3,9 @@
 
 #include <cstdint>
 #include <cfloat>
+#include <cmath>
 #include "runtime/utils.h"
+#include "number_type.h"
 
 
 #define GET_HIGH_WORD(hi, d)                                                                       \
@@ -47,26 +49,23 @@ const constexpr uint32_t INT32_MAX = (1 << (INT32_BITS - 1)) - 1;
 #endif
 
 #ifndef MAX
-force_inline__ auto MAX(NumberT auto a, NumberT auto b) {
-    auto __a = (a);
-    auto __b = (b);
-    return __a > __b ? __a : __b;
-}
+static force_inline__ auto MAX(auto a, auto b) {return a > b ? a : b;}
 #endif
 
 #ifndef MIN
-force_inline__ auto MIN(NumberT auto a, NumberT auto b) {
-    auto __a = (a);
-    auto __b = (b);
-    return __a < __b ? __a : __b;
-}
+static force_inline__ auto MIN(auto a, auto b) {return a < b ? a : b;}
 #endif
 
 #define MAX_UNSAFE(a, b) ((a) > (b) ? (a) : (b))
 #define MIN_UNSAFE(a, b) ((a) < (b) ? (a) : (b))
 
-
 #define DISTANCE0_UNSAFE(x, y) sqrt((x) * (x) + (y) * (y))
 
+static force_inline__ double mFmod(double x, NumberLikeT auto y) {
+    return fmod((double)x, (double)y);
+}
+static force_inline__ float mFmod(float x, NumberLikeT auto y) {
+    return fmod((float)x, (float)y);
+}
 
 #endif

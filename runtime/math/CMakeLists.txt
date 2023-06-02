@@ -3,6 +3,7 @@ target_sources(app PRIVATE
   rand.h
   sign.h
   math.h
+  exp.h
 )
 
 add_subdirectory("fast")

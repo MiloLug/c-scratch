@@ -57,49 +57,31 @@ static constexpr uint64_t operator""_H(const wchar_t * str, size_t) { return fas
 
 /**** Templates Stuff ****/
 
-// remove_deepest_const
-
-template<typename T>
-struct remove_deepest_const_impl {
-    typedef T type;
-};
-template<typename T>
-struct remove_deepest_const_impl<const T> {
-    typedef T type;
-};
-template<typename T>
-struct remove_deepest_const_impl<T *> {
-    typedef typename remove_deepest_const_impl<T>::type * type;
-};
-template<typename T>
-struct remove_deepest_const_impl<T * const> {
-    typedef typename remove_deepest_const_impl<T>::type * const type;
-};
-template<typename T>
-struct remove_deepest_const_impl<T &> {
-    typedef typename remove_deepest_const_impl<T>::type & type;
-};
-template<typename T>
-struct remove_deepest_const_impl<T &&> {
-    typedef typename remove_deepest_const_impl<T>::type && type;
-};
-template<typename T>
-using remove_deepest_const = typename remove_deepest_const_impl<T>::type;
-
-
 // general types
-
-template<typename T>
-concept NumberT = (std::is_floating_point_v<T> || std::is_integral_v<T>) && !std::is_null_pointer_v<T>;
 
 template<typename T>
 concept IntegerT = std::is_integral_v<T> && !std::is_null_pointer_v<T>;
 
-template<typename T, typename U>
-concept MaybeConstT = std::is_same_v<U, remove_deepest_const<T>>;
+template<typename T>
+concept FloatT = std::is_floating_point_v<T> && !std::is_null_pointer_v<T>;
+
+template<typename T>
+concept FloatLikeT = (std::is_convertible_v<T, double> || std::is_convertible_v<T, float>) && !std::is_null_pointer_v<T>;
+
+template<typename T>
+concept IntegerLikeT = (std::is_convertible_v<T, uint64_t> || std::is_convertible_v<T, int64_t>) && !std::is_null_pointer_v<T>;
+
+template<typename T>
+concept NumberT = FloatT<T> || IntegerT<T>;
+
+template<typename T>
+concept NumberLikeT = FloatLikeT<T> || IntegerLikeT<T>;
 
 template<typename T, typename... U>
 concept OneOfT = (std::is_same_v<U, T> || ...);
+
+template<typename T, typename... U>
+concept OneOfLikeT = (std::is_convertible_v<T, U> || ...);
 
 template<typename T, typename... U>
 concept OneOfConvertibleT = (std::is_convertible_v<T, U> || ...);
