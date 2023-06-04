@@ -5,6 +5,7 @@
 #include "math/number_type.h"
 #include "string/string.h"
 #include "utils.h"
+#include <cmath>
 
 #include <cstdint>
 #include <cwchar>
@@ -30,8 +31,9 @@
         return wcscmp(type == Type::NUMBER ? getNumberStr() : string->data, value.data) op 0;      \
     }                                                                                              \
     constexpr bool operator op(NumberT auto value) const {                                         \
-        return type == Type::NUMBER ? number op value                                              \
-                                    : wcscmp(string->data, Const(value).getNumberStr()) op 0;      \
+        return type == Type::NUMBER || string->isNumber                                            \
+            ? number op value                                                                      \
+            : wcscmp(string->data, Const(value).getNumberStr()) op 0;                              \
     }
 
 
@@ -148,6 +150,7 @@ public:
             }
             wcscpy(numberStrTmp, number == NT_INF ? infinityStr : negInfinityStr);
             if (numberStrTmp[0] != L'-') numberStrLen--;
+
             return numberStrTmp;
         }
 
@@ -155,7 +158,7 @@ public:
         uint16_t size = useExpNotation ? swprintf(globalNumStrTmp, 325, NT_FORMAT_EXP, number)
                                        : swprintf(globalNumStrTmp, 325, NT_FORMAT, number);
 
-        // it's important to try this branch first to avoid jumps, sine no-exponential numbers are more common
+        // it's important to try this branch first to avoid jumps, since non-exponential numbers are more common
         if (!useExpNotation) {
             do {
                 size--;
@@ -164,7 +167,6 @@ public:
                 globalNumStrTmp[size] = L'\0';
             else
                 globalNumStrTmp[++size] = L'\0';
-
             size++;
 
             if ((size << 2) > numberStrSize) {
@@ -224,7 +226,6 @@ public:
         }
 
         if (string) {
-            // wprintf(L"wrp addr: %x, c addr: %x\n", string, this);
             delete string;
         }
     }
@@ -292,7 +293,7 @@ public:
             string = new String(value);
         }
 
-        number = (double)value;
+        number = (double)*string;
         type = Type::STRING;
         return *this;
     }
@@ -303,7 +304,7 @@ public:
             string = new String(value);
         }
 
-        number = (double)value;
+        number = (double)*string;
         type = Type::STRING;
         return *this;
     }
@@ -362,8 +363,7 @@ public:
             origin.type == Type::STRING ? new String(*origin.string) : nullptr,
             origin.type
         ),
-        stringCleaning{origin.type == Type::STRING}
-    {
+        stringCleaning{origin.type == Type::STRING} {
         // own the num-to-str cache,
         // so we don't have to generate a new one neither to depend on the origin's state
         if (origin.numberStrTmp) {
@@ -376,9 +376,7 @@ public:
         }
     }
 
-    ArgT(const ArgT & origin):
-        Const(origin.number, origin.string, origin.type)
-    {
+    ArgT(const ArgT & origin): Const(origin.number, origin.string, origin.type) {
         if (origin.numberStrTmp) {
             numberStrTmp = origin.numberStrTmp;
             numberStrSize = origin.numberStrSize;

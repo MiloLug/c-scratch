@@ -1,10 +1,11 @@
 #include "_fig.h"
 
 #include "_lines.h"
+#include "runtime/utils.h"
 
 
 namespace Pen {
-    static inline void draw8Symmetry(int32_t cX, int32_t cY, int32_t x, int32_t y, int32_t color) {
+    static force_inline__ void draw8Symmetry(int32_t cX, int32_t cY, int32_t x, int32_t y, int32_t color) {
         drawPixel(cX + x, cY + y, color);
         drawPixel(cX + x, cY - y, color);
         if (x != 0) {  // No repeating on top/bottom

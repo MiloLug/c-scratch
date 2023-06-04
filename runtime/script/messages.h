@@ -15,7 +15,7 @@
 class Messages {
 public:
     struct Context: public ::Context {
-        uint64_t counter = 0;
+        volatile int32_t counter = 0;
     };
 
     struct Handler {
@@ -23,7 +23,7 @@ public:
         constexpr Handler(Context * _ctx): ctx{_ctx} {}
         constexpr Handler(::Context * _ctx): ctx{(Context *)_ctx} {}
         ~Handler() {
-            if (ctx != nullptr) ctx->counter--;
+            if (ctx != nullptr) ctx->counter = ctx->counter - 1;
         }
     };
 
@@ -40,10 +40,13 @@ public:
 
     static Coroutine broadcastWait(IntegerT auto msgHash) {
         Context ctx;
-        auto running = ScriptManager::triggerScripts(ACTION_MESSAGE | (uint64_t)msgHash, &ctx);
+        int32_t running = ScriptManager::triggerScripts(ACTION_MESSAGE | (uint64_t)msgHash, &ctx);
 
         if (running != 0) {
-            ctx.counter = running;
+            // scripts can end until passing the control to the scripts loop,
+            // so ctx.counter will be decreased before even assigning running scripts number
+            // but if we add this number, then number of ended scripts will be already subtracted
+            ctx.counter = ctx.counter + running;
             wait_until(ctx.counter == 0);
         }
 

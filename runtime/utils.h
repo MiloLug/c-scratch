@@ -41,7 +41,7 @@ static constexpr uint64_t fastHash(const wchar_t * str) {
         do {
             if (i > maxOffset) i = j++;
             res = res ^ ((uint64_t)c << i);
-            i += 4;
+            i += 5;
         } while ((c = *(++str)) != L'\0' && j < maxOffset);
     }
 

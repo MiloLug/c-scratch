@@ -46,7 +46,7 @@ static inline double __parseInfinity(const wchar_t * str, bool * isNumRet) {
 
 static double strToNum(
     const wchar_t * str,
-    uint64_t len,
+    uint32_t len,
     bool * isNumRet = nullptr,
     uint8_t * baseRet = nullptr,
     bool noSpace = false

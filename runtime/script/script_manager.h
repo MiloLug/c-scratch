@@ -30,7 +30,7 @@ protected:
     bool isInitializer = false;
 
 public:
-    static uint64_t triggerScripts(uint64_t action, Context * ctx = nullptr);
+    static uint32_t triggerScripts(uint64_t action, Context * ctx = nullptr);
     static void manageCoroutine(SpriteBase * sprite, Coroutine * coroutine);
     static void bindScripts(const BindingsMap & bindings);
     static void bindScripts(SpriteBase * sprite, const SimpleBindingsMap & bindings);

@@ -19,8 +19,8 @@ constinit ScriptManager::BindingsMap * ScriptManager::scriptBindingsStorage = nu
 * Adds all scripts for the given `action` to the execution queue.
 * Returns: number of scripts activated.
 */
-uint64_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
-    uint64_t i = 0;
+uint32_t ScriptManager::triggerScripts(uint64_t action, Context * ctx) {
+    uint32_t i = 0;
     auto actionBindings = scriptBindingsStorage->find(action);
     if (actionBindings != scriptBindingsStorage->end()) {
         for (auto & [sprite, coros] : actionBindings->second) {

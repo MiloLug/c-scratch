@@ -21,12 +21,12 @@
 
 class Array {
 protected:
-    uint64_t capacity = ARRAY_INITIAL_SIZE + 1;  // how much it can hold
+    int64_t capacity = ARRAY_INITIAL_SIZE + 1;  // how much it can hold
     Var * restrict__ * restrict__ data = NULL;
     Var nullValue = {0, new String(), Const::Type::STRING};
 
 public:
-    uint64_t length = 0;  // how much it actually holds
+    int64_t length = 0;  // how much it actually holds
 
     static Array fromFile(const std::filesystem::path & path) {
         Array arr;

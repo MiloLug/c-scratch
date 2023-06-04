@@ -30,9 +30,19 @@ static inline bool isKeyPressed(uint16_t scanCode) { return keyPressed[scanCode]
 
 
 class BlockWindowUpdates {
+    bool taken = false;
+
 public:
-    BlockWindowUpdates() { screenUpdateLock.take(); }
-    ~BlockWindowUpdates() { screenUpdateLock.release(); }
+    BlockWindowUpdates() { 
+        if (screenUpdateLock.counter < 1) {
+            taken = true;
+            screenUpdateLock.take();
+        }
+    }
+    ~BlockWindowUpdates() {
+        if (taken)
+            screenUpdateLock.release();
+    }
 };
 
 

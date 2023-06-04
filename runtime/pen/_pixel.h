@@ -27,7 +27,7 @@ namespace Pen {
 
     extern SDL_Texture * texture;
     extern volatile bool hasChanges;
-    extern uint32_t volatile pixelBuffer[canvasSize];
+    extern uint32_t pixelBuffer[canvasSize];
     extern Mutex pixels;
 
     static inline void eraseAll() { memset((void *)pixelBuffer, 0x00, canvasSize << 2); }

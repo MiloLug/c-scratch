@@ -71,7 +71,7 @@ static inline String letterOf(auto && s1, uint64_t i) { return letterOf(__str_to
 
 
 static constexpr String operator""_S(const wchar_t * str, size_t size) {
-    if (size != 0) return String(size, (wchar_t *)str, true);
+    if (size != 0 && str[0] != L'\0') return String(size, (wchar_t *)str, true);
     return String();
 }
 

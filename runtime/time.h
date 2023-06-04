@@ -2,6 +2,7 @@
 #define CSCRATCH_TIME_H
 
 #include <chrono>
+#include "utils.h"
 
 
 struct Time {
@@ -10,18 +11,18 @@ struct Time {
     static const int64_t y2kStartTime;
     static const int64_t programStartTime;
 
-    // UNIX timestamp in nanosecs
+    // UNIX timestamp in ns
     volatile mutable int64_t currentTime;
 
     // Time from the program start in ns
     volatile mutable int64_t programTime;
 
     // Current timer's time in nanosecs
-    volatile mutable int64_t timerStartTime;
+    mutable int64_t timerStartTime;
 
     // timestamp from the year 2000 in ns
     volatile mutable int64_t y2kTime;
-    // days from the year 2000 in ns
+    // days from the year 2000
     volatile mutable double y2kDays;
 
     volatile mutable int16_t year;
@@ -42,10 +43,10 @@ struct Time {
     void sync() const volatile;
     
     // Returns current timer's time in seconds
-    constexpr double timer() const volatile {
+    force_inline__ double timer() const volatile {
         return nsToS(programTime - timerStartTime);
     }
-    constexpr void resetTimer() const volatile {
+    force_inline__ void resetTimer() const volatile {
         timerStartTime = programTime;
     }
 };

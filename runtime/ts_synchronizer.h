@@ -14,6 +14,7 @@ protected:
 
 public:
     std::atomic<uint32_t> counter = 0;
+
     // Call take and release on a thread that makes some changes
     void take() {
         inProcessing.take();

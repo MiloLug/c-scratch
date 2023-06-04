@@ -33,5 +33,17 @@
 
 #define cs_pass co_yield Coroutine::NOTHING
 
+template<class Fn>
+class cs_defer {
+protected:
+    Fn deferred;
+
+public:
+    cs_defer(Fn && f): deferred{f} {}
+
+    ~cs_defer() {
+        deferred();
+    }
+};
 
 #endif

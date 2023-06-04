@@ -52,6 +52,12 @@ void ScratchSDLWindow::updateFrameTiming(std::wostream & os, float period) {
 }
 
 void ScratchSDLWindow::loop() {
+#ifdef ENABLE_RENDERING_FPS_LOCK
+    csTime.sync();
+    const int64_t ns_per_frame = Time::sToNS(1) / RENDERING_FPS_LOCK;
+    int64_t previous_time = csTime.currentTime;
+#endif
+
     while (ScriptsShouldRun) {
         csTime.sync();
 
@@ -80,10 +86,14 @@ void ScratchSDLWindow::loop() {
             }
         }
 
+#ifdef ENABLE_RENDERING_FPS_LOCK
+        if ((csTime.currentTime - previous_time) < ns_per_frame) continue;
+        previous_time += ns_per_frame;
+#endif
+
         // IT'S IMPORTANT
         // 1st lock - pixels
         // 2nd lock - screen
-
         bool pixelsTaken = false;
         if ((pixelsTaken = Pen::hasChanges)) {
             Pen::pixels.take();
