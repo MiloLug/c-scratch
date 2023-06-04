@@ -17,7 +17,10 @@
 * So in the turbo mode, main function will say 'im working with the canvas',
 *   then run 10000 operations and say 'the canvas is ready to be shown'.
 */
-#define TURBO_LOCK_WINDOW_CYCLES (1)
+#define TURBO_LOCK_WINDOW_CYCLES 1
+
+#define ENABLE_RENDERING_FPS_LOCK
+#define RENDERING_FPS_LOCK 60
 
 /*
 * Enables a mode in which some threads-syncronization mechanisms will be disabled.
@@ -25,7 +28,7 @@
 *   **in some cases it can do just the opposite**...
 * And, in theory, the app may crash.
 */
-#define ENABLE_UNSAFE_NO_LOCKS
+// #define ENABLE_UNSAFE_NO_LOCKS
 
 /*
 * Disables limits on the sprites coordinates
@@ -49,7 +52,7 @@
 * Enables fast math functions. The only disadvantage is the accuracy
 *   in some functions, but it's enough for almost any calculations
 */
-#define ENABLE_FAST_MATH
+// #define ENABLE_FAST_MATH
 
 /*
 * Make the Const (storage type for strings an number) to use float instead of double.
@@ -59,7 +62,7 @@
 * Also the original scratch is written in JS, where numbers are doubles by default, so it can be
 *   incompatible with some projects in this case
 */
-#define USE_VALUE_FLOAT
+// #define USE_VALUE_FLOAT
 
 /**** DEBUGGING ****/
 // Enables some useful outputs such as "sprite X is initialized"
