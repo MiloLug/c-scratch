@@ -1,4 +1,10 @@
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.21)
+
+# Fix behavior of CMAKE_CXX_STANDARD when targeting macOS.
+if (POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif ()
+
 
 project(c_scratch_project LANGUAGES C CXX)
 
@@ -7,6 +13,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 # Compilers setings and flags
 
 set (CMAKE_CXX_STANDARD 20)
+set (CMAKE_C_STANDARD 17)
+set (CMAKE_CXX_EXTENSIONS OFF)
+set (CMAKE_C_EXTENSIONS OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
