@@ -1,5 +1,7 @@
 #include "pen.h"
 
+#include "string.h"
+
 
 namespace Pen {
     Initializer::Initializer(SDL_Renderer * renderer) {

@@ -3800,6 +3800,7 @@ int thickLineRGBA(SDL_Renderer *renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sint1
 	px[1] = (Sint16)(dx1 - ny);
 	px[2] = (Sint16)(dx2 - ny);
 	px[3] = (Sint16)(dx2 + ny);
+	
 	py[0] = (Sint16)(dy1 - nx);
 	py[1] = (Sint16)(dy1 + nx);
 	py[2] = (Sint16)(dy2 + nx);

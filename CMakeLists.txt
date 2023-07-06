@@ -12,6 +12,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+message("Build type: ${CMAKE_BUILD_TYPE}")
+
 set(COMPILER "")
 set(COMPILER_ENV "")
 
@@ -68,7 +70,7 @@ if (COMPILER_ENV STREQUAL "VS")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message("Using Cmake-CL compiler")
+    message("Using Clang-CL compiler")
 
     set(COMPILER "CLANG")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -83,6 +85,7 @@ else()
   string(CONCAT COMMON_C_FLAGS
     "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
     "-ffast-math "
+    "-fno-finite-math-only "
     "-march=native "
     "-fno-exceptions "
   )
@@ -100,7 +103,7 @@ else()
   )
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message("Using Cmake compiler")
+    message("Using Clang compiler")
 
     set(COMPILER "CLANG")
     

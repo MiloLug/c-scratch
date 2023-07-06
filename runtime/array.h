@@ -62,6 +62,10 @@ public:
     Array() {
         data = (Var **)malloc(capacity * sizeof(Var *));
         data[0] = &nullValue;
+
+        for (int i = 1; i < capacity; i++) {
+            data[i] = new Var();
+        }
     }
 
     template<std::size_t N>
@@ -72,8 +76,12 @@ public:
         data[0] = &nullValue;
         length = N;
 
-        for (int i = 0; i < N; i++) {
-            data[i + 1] = new Var(values[i]);
+        int i = 1;
+        for (; i <= N; i++) {
+            data[i] = new Var(values[i - 1]);
+        }
+        for (; i < capacity; i++) {
+            data[i] = new Var();
         }
     }
 
@@ -88,25 +96,34 @@ public:
     }
 
     void push(auto && value) {
-        if (length == capacity - 1) {
-            capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
-            data = (Var **)realloc((void *)data, capacity * sizeof(Var *));
+        if (length != capacity - 1) {
+            *data[++length] = value;
+            return;
         }
 
-        data[++length] = new Var(value);
+        auto old = capacity;
+        capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
+        data = (Var **)realloc((void *)data, capacity * sizeof(Var *));
+        
+        for (int i = old; i < capacity; i++) {
+            data[i] = new Var();
+        }
+
+        *data[++length] = value;
     }
 
     void pop() {
-        if (length) delete data[length--];
+        if (length) length--;
     }
 
     void remove(int64_t i) {
         if (i == length) return pop();
         if (i < length && i > 0) {
-            delete data[i];
+            auto tmp = data[i];
             for (uint64_t j = i; j < length; j++) {
                 data[j] = data[j + 1];
             }
+            data[length] = tmp;
             length--;
         }
     }
@@ -115,8 +132,13 @@ public:
         if (i == length + 1) return push(value);
         if (i < length && i > 0) {
             if (length == capacity - 1) {
+                auto old = capacity;
                 capacity = (float)ARRAY_AHEAD_ALLOCATION_MULTIPLIER * capacity;
                 data = (Var **)realloc((void *)data, capacity * sizeof(Var *));
+                
+                for (int i = old; i < capacity; i++) {
+                    data[i] = new Var();
+                }
             }
 
             length++;
@@ -124,7 +146,7 @@ public:
                 data[j] = data[j - 1];
             }
 
-            data[i] = new Var(value);
+            data[i] = value;
         }
     }
 
@@ -137,26 +159,26 @@ public:
 
     constexpr bool contains(auto && value) { return indexOf(value) != 0; }
 
-    constexpr void set(const int64_t i, auto && value) {
+    constexpr force_inline__ void set(const int64_t i, auto && value) {
         if (i <= length && i > 0) *data[i] = value;
     }
 
-    constexpr const Var & get(const int64_t i) const { return (i <= length && i > 0) ? *data[i] : nullValue; }
+    constexpr force_inline__ const Var & get(const int64_t i) const { return (i <= length && i > 0) ? *data[i] : nullValue; }
 
     void clean() {
         if (data) {
-            for (uint64_t i = 1; i <= length; i++) {
-                delete data[i];
-            }
+            // for (uint64_t i = 1; i < capacity; i++) {
+            //     delete data[i];
+            // }
 
-            free((void *)data);
+            // free((void *)data);
         }
 
-        capacity = ARRAY_INITIAL_SIZE + 1;
+        // capacity = ARRAY_INITIAL_SIZE + 1;
         length = 0;
 
-        data = (Var **)malloc(capacity * sizeof(Var *));
-        data[0] = &nullValue;
+        // data = (Var **)malloc(capacity * sizeof(Var *));
+        // data[0] = &nullValue;
     }
 
     operator String() {
@@ -189,7 +211,7 @@ public:
 
     ~Array() {
         if (data) {
-            for (uint64_t i = 1; i <= this->length; i++) {
+            for (uint64_t i = 1; i < capacity; i++) {
                 delete data[i];
             }
 

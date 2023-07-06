@@ -13,7 +13,17 @@
 #include <type_traits>
 
 
-#define make_bool_op(op)                                                                           \
+static bool strequal(const wchar_t * s1, const wchar_t *s2) {
+    while (*s1 != L'\0' || *s2 != L'\0') {
+        if (*s1 != *s2) return false;
+        s1++;
+        s2++;
+    }
+    return true;
+}
+
+
+#define __val_make_bool_op(op)                                                                           \
     bool operator op(const Const & value) const {                                                  \
         return value.type == Type::NUMBER                                                          \
             ? type == Type::NUMBER ? number op value.number                                        \
@@ -37,7 +47,7 @@
     }
 
 
-#define make_math_bin_op(op)                                                                       \
+#define __val_make_math_bin_op(op)                                                                       \
     constexpr storage_number_t operator op(NumberT auto value) const { return number op value; }   \
     constexpr storage_number_t operator op(const Const & value) const {                            \
         return number op value.number;                                                             \
@@ -118,16 +128,16 @@ public:
         type{origin.type},
         string{origin.type == Type::STRING ? new String(*origin.string) : nullptr} {}
 
-    make_bool_op(<=);
-    make_bool_op(>=);
-    make_bool_op(<);
-    make_bool_op(>);
-    make_bool_op(==);
+    __val_make_bool_op(<=);
+    __val_make_bool_op(>=);
+    __val_make_bool_op(<);
+    __val_make_bool_op(>);
+    __val_make_bool_op(==);
 
-    make_math_bin_op(-);
-    make_math_bin_op(+);
-    make_math_bin_op(/);
-    make_math_bin_op(*);
+    __val_make_math_bin_op(-);
+    __val_make_math_bin_op(+);
+    __val_make_math_bin_op(/);
+    __val_make_math_bin_op(*);
 
     bool operator!() const { return !number; }
     constexpr operator storage_number_t() const { return number; }
@@ -309,7 +319,7 @@ public:
         return *this;
     }
 
-    Var & operator=(NumberT auto value) {
+    constexpr Var & operator=(NumberT auto value) {
         number = value;
         type = Type::NUMBER;
         return *this;

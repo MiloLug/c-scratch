@@ -28,7 +28,6 @@ protected:
     }
 
 public:
-
     template<typename... Args>
     Thread(std::invocable<Args...> auto &&fn, Args &&... args) {
         auto thrFn = std::bind(fn, args...);

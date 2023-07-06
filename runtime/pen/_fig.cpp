@@ -5,7 +5,7 @@
 
 
 namespace Pen {
-    static force_inline__ void draw8Symmetry(int32_t cX, int32_t cY, int32_t x, int32_t y, int32_t color) {
+    static force_inline__ void draw8Symmetry(int32_t cX, int32_t cY, int32_t x, int32_t y, uint32_t color) {
         drawPixel(cX + x, cY + y, color);
         drawPixel(cX + x, cY - y, color);
         if (x != 0) {  // No repeating on top/bottom
@@ -47,10 +47,10 @@ namespace Pen {
 
             // Draw central filling
             if (i != 0) {
-                drawLine(cX - j + 1, cY + i, cX + j - 1, cY + i, 1, color);
-                drawLine(cX - j + 1, cY - i, cX + j - 1, cY - i, 1, color);
+                drawHorizontalLine1(cX - j + 1, cX + j - 1, cY + i, color);
+                drawHorizontalLine1(cX - j + 1, cX + j - 1, cY - i, color);
             } else
-                drawLine(cX - j + 1, cY + i, cX + j - 1, cY + i, 1, color);
+                drawHorizontalLine1(cX - j + 1, cX + j - 1, cY + i, color);
             i++;
         }
 
@@ -59,8 +59,8 @@ namespace Pen {
             int32_t lineLength = ceil(sqrt(rr - i * i));
 
             if (lineLength) {
-                drawLine(cX - lineLength + 1, cY + i, cX + lineLength - 1, cY + i, 1, color);
-                drawLine(cX - lineLength + 1, cY - i, cX + lineLength - 1, cY - i, 1, color);
+                drawHorizontalLine1(cX - lineLength + 1, cX + lineLength - 1, cY + i, color);
+                drawHorizontalLine1(cX - lineLength + 1, cX + lineLength - 1, cY - i, color);
             }
 
             i++;
