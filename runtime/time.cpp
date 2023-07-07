@@ -87,11 +87,12 @@ namespace CSTime {
     void Time::sync() const volatile {
         const auto zonedTime = zonedNow();
         const auto localTime = zonedTime.getLocalTime();
-        const auto localDay = std::chrono::floor<days>(castTimePoint<default_clock, system_clock>(localTime));
+        const auto localTimeSystem = castTimePoint<default_clock, system_clock>(localTime);
+        const auto localDay = std::chrono::floor<days>(localTimeSystem);
 
         year_month_day ymd{localDay};
         weekday wd{localDay};
-        hh_mm_ss hms{std::chrono::floor<seconds>(localTime - localDay)};
+        hh_mm_ss hms{std::chrono::floor<seconds>(localTimeSystem - localDay)};
 
         currentTime = toNS(localTime.time_since_epoch());
         programTime = currentTime - programStartTime;
