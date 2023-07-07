@@ -15,9 +15,9 @@ namespace CSTime {
 
     template<typename SrcT, typename DstT>
     auto castTimePoint(const auto tp) {
-        const auto src_now = SrcT::now();
-        const auto dst_now = DstT::now();
-        return dst_now + (tp - src_now);
+        static const auto srcNow = SrcT::now();
+        static const auto dstNow = DstT::now();
+        return dstNow + (tp - srcNow);
     }
 
     /**** TimeZone ****/
@@ -57,10 +57,10 @@ namespace CSTime {
 
     ZonedTime::ZonedTime(const TimeZone * _tz, auto _timePoint): tz{_tz}, timePoint{_timePoint} {}
 
-    auto ZonedTime::getLocalTime() const {
+    time_point ZonedTime::getLocalTime() const {
         return tz->toLocal(timePoint);
     }
-    auto ZonedTime::getSystemTime() const {
+    time_point ZonedTime::getSystemTime() const {
         return timePoint;
     }
 
@@ -86,8 +86,8 @@ namespace CSTime {
 
     void Time::sync() const volatile {
         const auto zonedTime = zonedNow();
-        const auto localTime = castTimePoint<default_clock, system_clock>(zonedTime.getLocalTime());
-        const auto localDay = std::chrono::floor<days>(localTime);
+        const auto localTime = zonedTime.getLocalTime();
+        const auto localDay = std::chrono::floor<days>(castTimePoint<default_clock, system_clock>(localTime));
 
         year_month_day ymd{localDay};
         weekday wd{localDay};

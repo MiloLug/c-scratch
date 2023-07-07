@@ -28,8 +28,8 @@ namespace CSTime {
 
         ZonedTime(const TimeZone * _tz, auto _timePoint);
 
-        auto getLocalTime() const;
-        auto getSystemTime() const;
+        time_point getLocalTime() const;
+        time_point getSystemTime() const;
     };
 
     struct Time {

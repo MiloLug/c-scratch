@@ -47,7 +47,7 @@ public:
             // so ctx.counter will be decreased before even assigning running scripts number
             // but if we add this number, then number of ended scripts will be already subtracted
             ctx.counter = ctx.counter + running;
-            wait_until(ctx.counter == 0);
+            cs_wait_until(ctx.counter == 0);
         }
 
         co_return;

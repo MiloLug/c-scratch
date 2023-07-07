@@ -75,7 +75,7 @@ There is an example of some bindings and coroutines:
 // Well, it was to hard to store both context and context-less coroutines in the bindings.
 // So just add it and don't care unless you don't need it.
 Coroutine testCoro(Context * ctx) {
-    forever {
+    cs_forever {
         wprintf(L"testCoro runs now\n");
 
         // Just add yield to your loops, so they don't block other coroutines
@@ -126,7 +126,7 @@ Coroutine onSomeMessage(Context * ctx) {
     // You may need this for things like waiting for all the handlers to stop.
     Messages::Handler handler(ctx);
 
-    forever {
+    cs_forever {
         wprintf(L"onSomeMessage runs now\n");
         cs_pass;
     }
