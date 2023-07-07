@@ -157,7 +157,7 @@ namespace NS_sprite {
                 v_i = v_light_position;
                 v_sin = degSin(fmod(v_frame * 45.83662439235437 - 90.0, 360.0)) * 12.0;
 
-                repeat (v_light_size) {
+                cs_repeat (v_light_size) {
                     v_i += 1.0;
 
                     l_waveHeight_red.set(v_i, v_sin);
@@ -170,7 +170,7 @@ namespace NS_sprite {
 
             v_i = 0;
 
-            repeat (v_size_100_2) {
+            cs_repeat (v_size_100_2) {
                 v_i += 1.0;
 
                 l_waveHeight_red.set(v_i, l_waveHeight_red.get(v_i) + l_waveVelocity_red.get(v_i));
@@ -187,7 +187,7 @@ namespace NS_sprite {
             v_up = v_size_100 * -1.0;
             v_down = v_size_100;
 
-            repeat (v_size_2) {
+            cs_repeat (v_size_2) {
                 spriteProcedure_loop_unrolling_10000();
 
                 cs_pass;
@@ -206,11 +206,11 @@ namespace NS_sprite {
 
             v_i = 0;
 
-            repeat (v_size_100) {
+            cs_repeat (v_size_100) {
                 sprite.setY(v_size_100 / 2.0);
                 sprite.penDown();
 
-                repeat (v_size_100) {
+                cs_repeat (v_size_100) {
                     v_i += 1.0;
 
                     spriteProcedure_math_min(l_accumulatedLight_red.get(v_i), 1.0);
@@ -291,10 +291,10 @@ namespace NS_sprite {
             v_light_size = v_size_100 / 6.0;
             v_light_position = floor(v_size_100 / 5.0) * v_size_100 + floor(v_size_100 / 5.0);
             
-            repeat (v_size_100) {
+            cs_repeat (v_size_100) {
                 v_j = 0;
 
-                repeat (v_size_100) {
+                cs_repeat (v_size_100) {
                     l_waveHeight_red.push(0);
                     l_waveHeight_green.push(0);
                     l_waveHeight_blue.push(0);
@@ -323,7 +323,7 @@ namespace NS_sprite {
                 cs_pass;
             }
 
-            forever {
+            cs_forever {
                 cs_wait spriteProcedure_calculate();
                 cs_wait spriteProcedure_calculate();
                 cs_wait spriteProcedure_calculate();
@@ -344,8 +344,8 @@ namespace NS_sprite {
         }
 
         static Coroutine spriteStartScript2(Context * ctx) {
-            forever {
-                wait_until(v_tick == 100);
+            cs_forever {
+                cs_wait_until(v_tick == 100);
                 v_timer = csTime.timer();
                 v_tick = 0;
 

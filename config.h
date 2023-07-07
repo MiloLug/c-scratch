@@ -52,7 +52,7 @@
 * Enables fast math functions. The only disadvantage is the accuracy
 *   in some functions, but it's enough for almost any calculations
 */
-// #define ENABLE_FAST_MATH
+#define ENABLE_FAST_MATH
 
 /*
 * Make the Const (storage type for strings an number) to use float instead of double.
@@ -62,7 +62,7 @@
 * Also the original scratch is written in JS, where numbers are doubles by default, so it can be
 *   incompatible with some projects in this case
 */
-// #define USE_VALUE_FLOAT
+#define USE_VALUE_FLOAT
 
 /**** DEBUGGING ****/
 // Enables some useful outputs such as "sprite X is initialized"
