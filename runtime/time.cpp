@@ -3,22 +3,15 @@
 #include <chrono>
 #include <ctime>
 
-
-using std::chrono::duration;
-using std::chrono::duration_cast;
-using std::chrono::high_resolution_clock;
-using std::chrono::milliseconds;
-using std::chrono::nanoseconds;
-using std::chrono::seconds;
-using std::chrono::zoned_time;
-using time_point = high_resolution_clock::time_point;
-using std::chrono::days;
-using std::chrono::hh_mm_ss;
-using std::chrono::weekday;
-using std::chrono::year_month_day;
-
-
 namespace CSTime {
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::nanoseconds;
+    using std::chrono::days;
+    using std::chrono::hh_mm_ss;
+    using std::chrono::weekday;
+    using std::chrono::year_month_day;
+
     /**** TimeZone ****/
 
     TimeZone::TimeZone() {
