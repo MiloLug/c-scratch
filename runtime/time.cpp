@@ -11,6 +11,14 @@ namespace CSTime {
     using std::chrono::hh_mm_ss;
     using std::chrono::weekday;
     using std::chrono::year_month_day;
+    using std::chrono::system_clock;
+
+    template<typename SrcT, typename DstT>
+    auto castTimePoint(const auto tp) {
+        const auto src_now = SrcT::now();
+        const auto dst_now = DstT::now();
+        return dst_now + (tp - src_now);
+    }
 
     /**** TimeZone ****/
 
@@ -41,7 +49,7 @@ namespace CSTime {
         localOffset = seconds{sDiff};
     }
 
-    auto TimeZone::toLocal(const time_point timePoint) const {
+    time_point TimeZone::toLocal(const time_point timePoint) const {
         return isLocalOffsetNegative ? timePoint - localOffset : timePoint + localOffset;
     }
 
@@ -65,7 +73,7 @@ namespace CSTime {
     constexpr int64_t toNS(auto t) { return duration_cast<nanoseconds>(t).count(); }
     constexpr double toDays(auto t) { return duration<double, days::period>(t).count(); }
     static inline auto zonedNow() {
-        return ZonedTime{&Time::currentZone, high_resolution_clock::now()};
+        return ZonedTime{&Time::currentZone, default_clock::now()};
     }
 
     const int64_t Time::y2kStartTime = toNS(y2kTimePoint.time_since_epoch());
@@ -78,7 +86,7 @@ namespace CSTime {
 
     void Time::sync() const volatile {
         const auto zonedTime = zonedNow();
-        const auto localTime = zonedTime.getLocalTime();
+        const auto localTime = castTimePoint<default_clock, system_clock>(zonedTime.getLocalTime());
         const auto localDay = std::chrono::floor<days>(localTime);
 
         year_month_day ymd{localDay};

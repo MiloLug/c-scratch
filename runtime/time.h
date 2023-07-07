@@ -10,15 +10,16 @@
 namespace CSTime {
     using std::chrono::duration;
     using std::chrono::seconds;
-    using std::chrono::high_resolution_clock;
-    using time_point = high_resolution_clock::time_point;
+    using default_clock = std::chrono::high_resolution_clock;
+    using time_point = default_clock::time_point;
+    using clock_duration = default_clock::duration;
 
     struct TimeZone {
-        duration<double, seconds::period> localOffset;
+        clock_duration localOffset;
         bool isLocalOffsetNegative;
 
         TimeZone();
-        auto toLocal(const time_point timePoint) const;
+        time_point toLocal(const time_point timePoint) const;
     };
 
     struct ZonedTime {
