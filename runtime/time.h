@@ -1,57 +1,82 @@
 #ifndef CSCRATCH_TIME_H
 #define CSCRATCH_TIME_H
 
-#include <chrono>
 #include "utils.h"
 
+#include <chrono>
+#include <ctime>
 
-struct Time {
-    static const std::chrono::time_zone * currentZone;
-    // timestamp of the year 2000 in ns
-    static const int64_t y2kStartTime;
-    static const int64_t programStartTime;
 
-    // UNIX timestamp in ns
-    volatile mutable int64_t currentTime;
+namespace CSTime {
+    using std::chrono::duration;
+    using std::chrono::seconds;
+    using std::chrono::high_resolution_clock;
+    using time_point = high_resolution_clock::time_point;
 
-    // Time from the program start in ns
-    volatile mutable int64_t programTime;
+    struct TimeZone {
+        duration<double, seconds::period> localOffset;
+        bool isLocalOffsetNegative;
 
-    // Current timer's time in nanosecs
-    mutable int64_t timerStartTime;
+        TimeZone();
+        auto toLocal(const time_point timePoint) const;
+    };
 
-    // timestamp from the year 2000 in ns
-    volatile mutable int64_t y2kTime;
-    // days from the year 2000
-    volatile mutable double y2kDays;
+    struct ZonedTime {
+        const TimeZone * const tz;
+        const time_point timePoint;
 
-    volatile mutable int16_t year;
-    volatile mutable int8_t month;
-    volatile mutable int8_t date;
-    // 1-based week day
-    volatile mutable int8_t weekDay;
-    // 24-based hour of current day
-    volatile mutable int8_t hour;
-    volatile mutable int8_t minute;
-    volatile mutable int8_t second;
+        ZonedTime(const TimeZone * _tz, auto _timePoint);
 
-    static constexpr int64_t sToNS(double x) {return x * 1e9;}
-    static constexpr double nsToS(int64_t x) {return (double)x / 1e9;}
+        auto getLocalTime() const;
+        auto getSystemTime() const;
+    };
 
-    Time();
+    struct Time {
+        static const TimeZone currentZone;
+        
+        // timestamp of the year 2000 in ns
+        static const int64_t y2kStartTime;
+        static const int64_t programStartTime;
 
-    void sync() const volatile;
-    
-    // Returns current timer's time in seconds
-    force_inline__ double timer() const volatile {
-        return nsToS(programTime - timerStartTime);
-    }
-    force_inline__ void resetTimer() const volatile {
-        timerStartTime = programTime;
-    }
-};
+        // UNIX timestamp in ns
+        volatile mutable int64_t currentTime;
 
-extern const volatile Time csTime;
+        // Time from the program start in ns
+        volatile mutable int64_t programTime;
+
+        // Current timer's time in nanosecs
+        mutable int64_t timerStartTime;
+
+        // timestamp from the year 2000 in ns
+        volatile mutable int64_t y2kTime;
+        // days from the year 2000
+        volatile mutable double y2kDays;
+
+        volatile mutable int16_t year;
+        volatile mutable int8_t month;
+        volatile mutable int8_t date;
+        // 1-based week day
+        volatile mutable int8_t weekDay;
+        // 24-based hour of current day
+        volatile mutable int8_t hour;
+        volatile mutable int8_t minute;
+        volatile mutable int8_t second;
+
+        static constexpr int64_t sToNS(double x) { return x * 1e9; }
+        static constexpr double nsToS(int64_t x) { return (double)x / 1e9; }
+
+        Time();
+
+        void sync() const volatile;
+
+        // Returns current timer's time in seconds
+        force_inline__ double timer() const volatile { return nsToS(programTime - timerStartTime); }
+        force_inline__ void resetTimer() const volatile { timerStartTime = programTime; }
+    };
+}
+
+extern const volatile CSTime::Time csTime;
+using CSTime::Time;
 
 
 #endif
