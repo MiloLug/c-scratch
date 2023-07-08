@@ -29,20 +29,17 @@ namespace CSTime {
         const std::tm localTime = *std::localtime(&someTime);
         const std::tm globalTime = *std::gmtime(&someTime);
 
-        int32_t hDiff, mDiff, sDiff;
+        int32_t hDiff, sDiff;
 
         if (localTime.tm_yday > globalTime.tm_yday) {
             hDiff = localTime.tm_hour + (24 - globalTime.tm_hour);
-            mDiff = localTime.tm_min - globalTime.tm_min;
         } else if (localTime.tm_yday < globalTime.tm_yday) {
             hDiff = - (globalTime.tm_hour + (24 - localTime.tm_hour));
-            mDiff = globalTime.tm_min - localTime.tm_min;
         } else {
             hDiff = localTime.tm_hour - globalTime.tm_hour;
-            mDiff = localTime.tm_min - globalTime.tm_min;
         }
 
-        sDiff = hDiff * 60 * 60 + mDiff * 60;
+        sDiff = hDiff * 60 * 60 + localTime.tm_min * 60;
         if ((isLocalOffsetNegative = sDiff < 0)) {
             sDiff = -sDiff;
         }
