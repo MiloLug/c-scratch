@@ -7,6 +7,10 @@
 #include <memory>
 
 
+constexpr auto CHAR_SIZE = sizeof(wchar_t);
+constexpr auto CHAR_SIZE_POWER = CHAR_SIZE / 2;
+
+
 #if defined(COMPILER_CLANG)
     #define restrict__ __restrict
 #elif defined(COMPILER_GCC)

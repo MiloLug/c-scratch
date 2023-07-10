@@ -37,11 +37,12 @@ ScratchSDLWindow::ScratchSDLWindow(const char * name) {
 
 void ScratchSDLWindow::updateFrameTiming(std::wostream & os, float period) {
     static unsigned int frames = 0;
-    frames++;
-    static auto start = std::chrono::steady_clock::now();
-    auto end = std::chrono::steady_clock::now();
+    static auto start = csTime.currentTime;
+    auto end = csTime.currentTime;
 
-    auto seconds = std::chrono::duration<float>(end - start).count();
+    frames++;
+
+    auto seconds = Time::nsToS(end - start);
     if (seconds >= period) {
         os << frames << L" frames in " << std::setprecision(1) << std::fixed << seconds
            << L" seconds | " << std::setprecision(1) << std::fixed << frames / seconds << L" FPS ("

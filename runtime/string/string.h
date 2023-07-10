@@ -37,13 +37,13 @@ public:
     const bool & isNumber = mIsNumber;
 
     /*Create an empty string*/
-    constexpr String(): mLength{0}, mData{(wchar_t *)emptyString}, mSize{1 << 2}, isWrapper{true} {}
+    constexpr String(): mLength{0}, mData{(wchar_t *)emptyString}, mSize{1 << CHAR_SIZE_POWER}, isWrapper{true} {}
 
     /*Create a string repeating the symbol from `sym`*/
     String(wchar_t sym, uint32_t _length):
         mLength{_length},
-        mData{(wchar_t *)malloc((_length + 1) << 2)},
-        mSize{(_length + 1) << 2} {
+        mData{(wchar_t *)malloc((_length + 1) << CHAR_SIZE_POWER)},
+        mSize{(_length + 1) << CHAR_SIZE_POWER} {
         if (_length == 1)
             mData[0] = sym;
         else
@@ -56,19 +56,19 @@ public:
     constexpr String(uint32_t _length, const wchar_t * _data, bool _isWrapper = false):
         mLength(_length),
         mData((wchar_t *)_data),
-        mSize((_length + 1) << 2),
+        mSize((_length + 1) << CHAR_SIZE_POWER),
         isWrapper(_isWrapper) {}
 
     constexpr String(const wchar_t * _data, bool _isWrapper):
         mLength(std::char_traits<wchar_t>::length(_data)),
         mData((wchar_t *)_data),
         isWrapper(_isWrapper) {
-            mSize = (mLength + 1) << 2;
+            mSize = (mLength + 1) << CHAR_SIZE_POWER;
         }
 
     String(OneOfT<const wchar_t> auto * restrict__ _data) {
         mLength = wcslen(_data);
-        mSize = (mLength + 1) << 2;
+        mSize = (mLength + 1) << CHAR_SIZE_POWER;
         mData = (wchar_t *)malloc(mSize);
         memcpy(mData, _data, mSize);
     }
@@ -117,7 +117,7 @@ public:
     }
     String & operator=(OneOfT<const wchar_t> auto * restrict__ value) {
         mLength = wcslen(value);
-        mSize = (mLength + 1) << 2;
+        mSize = (mLength + 1) << CHAR_SIZE_POWER;
         mIsNumber = false;
 
         if (isWrapper) mData = nullptr;

@@ -45,6 +45,13 @@
 */
 #define ARRAY_AHEAD_ALLOCATION_MULTIPLIER 1.5
 #define ARRAY_INITIAL_SIZE 4
+/*
+* How much times to use full array cleaning (deleting all the items)
+* befor switching to an optimized algorithm (just making the length = 0 and preserving the memory)
+* -1 = always use full cleaning
+* 0  = always use optimized one
+*/
+#define ARRAY_MAX_FULL_CLEANS_NUMBER 8
 
 
 /**** MATH ****/
@@ -52,7 +59,7 @@
 * Enables fast math functions. The only disadvantage is the accuracy
 *   in some functions, but it's enough for almost any calculations
 */
-#define ENABLE_FAST_MATH
+// #define ENABLE_FAST_MATH
 
 /*
 * Make the Const (storage type for strings an number) to use float instead of double.
@@ -62,7 +69,7 @@
 * Also the original scratch is written in JS, where numbers are doubles by default, so it can be
 *   incompatible with some projects in this case
 */
-#define USE_VALUE_FLOAT
+// #define USE_VALUE_FLOAT
 
 /**** DEBUGGING ****/
 // Enables some useful outputs such as "sprite X is initialized"

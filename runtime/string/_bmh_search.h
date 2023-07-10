@@ -6,6 +6,8 @@
 #include <cwchar>
 #include <vector>
 
+#include "runtime/utils.h"
+
 
 namespace BMHSearch {
     typedef std::vector<uint64_t> occTable_t;
@@ -39,16 +41,16 @@ namespace BMHSearch {
             return hsLength;
         }
 
-        auto occTable = createOccTable((const unsigned char *)needle, ndLength << 2);
+        auto occTable = createOccTable((const unsigned char *)needle, ndLength << CHAR_SIZE_POWER);
         return (
             searchInHorspool(
                 (const unsigned char *)haystack,
-                hsLength << 2,
+                hsLength << CHAR_SIZE_POWER,
                 occTable,
                 (const unsigned char *)needle,
-                ndLength << 2
+                ndLength << CHAR_SIZE_POWER
             )
-            >> 2
+            >> CHAR_SIZE_POWER
         );
     }
 }

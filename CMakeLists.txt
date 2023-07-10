@@ -92,7 +92,6 @@ if (COMPILER_ENV STREQUAL "VS")
 
 else()
   string(CONCAT COMMON_C_FLAGS
-    "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
     "-ffast-math "
     "-fno-finite-math-only "
     "-march=native "
@@ -105,10 +104,6 @@ else()
 
   string(CONCAT RELEASE_FLAGS
     "-Ofast "
-    "-fmodulo-sched "
-    "-fgcse-sm "
-    "-fgcse-las "
-    "-fno-inline-small-functions "
   )
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -125,7 +120,6 @@ else()
 
     string(CONCAT COMMON_C_FLAGS
       "${COMMON_C_FLAGS}"
-      "-Wno-ignored-optimization-argument "
       "-Wno-unused-command-line-argument "
     )
 
@@ -141,6 +135,10 @@ else()
 
     set(COMPILER "GCC")
 
+    string(CONCAT COMMON_C_FLAGS
+      "-fno-reorder-blocks "  # reordering blocks generates bad code sometimes
+    )
+
     string(CONCAT COMMON_CXX_FLAGS
       "${COMMON_CXX_FLAGS}"
       "-fcoroutines "
@@ -149,6 +147,10 @@ else()
 
     string(CONCAT RELEASE_FLAGS
       "${RELEASE_FLAGS}"
+      "-fmodulo-sched "
+      "-fgcse-sm "
+      "-fgcse-las "
+      "-fno-inline-small-functions "
       "-flto=2 "
       "-fgcse-lm "
       "-fira-region=all "

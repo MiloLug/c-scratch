@@ -46,7 +46,7 @@ void printDebugInfo(ScratchSDLWindow & window) {
         if (!SDL_GetRenderDriverInfo(i, &info)) {
             wprintf(L"    Name: %hs\n", info.name);
             wprintf(
-                L"    Accelerated: ls\n", info.flags & SDL_RENDERER_ACCELERATED ? L"YES" : L"NO"
+                L"    Accelerated: %ls\n", info.flags & SDL_RENDERER_ACCELERATED ? L"YES" : L"NO"
             );
         } else {
             wprintf(L"    No driver info available\n");

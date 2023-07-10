@@ -1057,15 +1057,15 @@ It prints working C code that you can paste to the project later
 */
 void printSinTable(int64_t tableSize) {
     int i;
-    printf("static int32_t sin90[TABLE_SIZE+1] = {\n  ");
+    wprintf(L"static int32_t sin90[TABLE_SIZE+1] = {\n  ");
     for (i = 0; i < tableSize; i++) {
-        printf(
-            "0x%04x%s",
+        wprintf(
+            L"0x%04x%ls",
             (int32_t)(sin((M_PI / 2.0) / tableSize * i) / Q31),
-            (i % 8 != 7) ? "," : ",\n  "
+            (i % 8 != 7) ? L"," : L",\n  "
         );
     }
-    printf("0x7fffffff\n};\n");
+    wprintf(L"0x7fffffff\n};\n");
 }
 
 

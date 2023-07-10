@@ -13,16 +13,6 @@
 #include <type_traits>
 
 
-static bool strequal(const wchar_t * s1, const wchar_t *s2) {
-    while (*s1 != L'\0' || *s2 != L'\0') {
-        if (*s1 != *s2) return false;
-        s1++;
-        s2++;
-    }
-    return true;
-}
-
-
 #define __val_make_bool_op(op)                                                                           \
     bool operator op(const Const & value) const {                                                  \
         return value.type == Type::NUMBER                                                          \

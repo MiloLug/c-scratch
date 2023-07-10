@@ -18,12 +18,17 @@
     #define ARRAY_INITIAL_SIZE 4
 #endif
 
+#ifndef ARRAY_MAX_FULL_CLEANS_NUMBER
+    #define ARRAY_MAX_FULL_CLEANS_NUMBER 8
+#endif
+
 
 class Array {
 protected:
     int64_t capacity = ARRAY_INITIAL_SIZE + 1;  // how much it can hold
     Var * restrict__ * restrict__ data = NULL;
     Var nullValue = {0, new String(), Const::Type::STRING};
+    int8_t cleansNumber = 0;
 
 public:
     int64_t length = 0;  // how much it actually holds
@@ -166,19 +171,33 @@ public:
     constexpr force_inline__ const Var & get(const int64_t i) const { return (i <= length && i > 0) ? *data[i] : nullValue; }
 
     void clean() {
-        if (data) {
-            // for (uint64_t i = 1; i < capacity; i++) {
-            //     delete data[i];
-            // }
-
-            // free((void *)data);
+        if constexpr (ARRAY_MAX_FULL_CLEANS_NUMBER > -1) {
+            if (cleansNumber >= ARRAY_MAX_FULL_CLEANS_NUMBER) {
+                // in this case, it's an often cleaned array, so it's better to just reuse the memory
+                length = 0;
+                return;
+            }
         }
 
-        // capacity = ARRAY_INITIAL_SIZE + 1;
+        cleansNumber++;
+        
+        if (data) {
+            for (uint64_t i = 1; i < capacity; i++) {
+                delete data[i];
+            }
+
+            free((void *)data);
+        }
+
+        capacity = ARRAY_INITIAL_SIZE + 1;
         length = 0;
 
-        // data = (Var **)malloc(capacity * sizeof(Var *));
-        // data[0] = &nullValue;
+        data = (Var **)malloc(capacity * sizeof(Var *));
+        data[0] = &nullValue;
+        
+        for (int i = 1; i < capacity; i++) {
+            data[i] = new Var();
+        }
     }
 
     operator String() {
@@ -188,6 +207,7 @@ public:
         uint64_t offset = 0;
         wchar_t *restrict__ str, tmpStr;
 
+        // accumulate the resulting string's length
         for (uint64_t i = 1; i <= length; i++) {
             auto & tmp = data[i];
             strLen +=
@@ -195,7 +215,7 @@ public:
         }
         strLen += length;  // for the spaces between items
 
-        str = (wchar_t *)malloc(strLen << 2);
+        str = (wchar_t *)malloc(strLen << CHAR_SIZE_POWER);
 
         for (uint64_t i = 1; i <= length; i++) {
             auto tmpStr = data[i]->toString();
@@ -210,13 +230,13 @@ public:
     }
 
     ~Array() {
-        if (data) {
-            for (uint64_t i = 1; i < capacity; i++) {
-                delete data[i];
-            }
+        if (!data) return;
 
-            free((void *)data);
+        for (uint64_t i = 1; i < capacity; i++) {
+            delete data[i];
         }
+
+        free((void *)data);
         data = nullptr;
     }
 };

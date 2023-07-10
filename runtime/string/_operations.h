@@ -49,7 +49,7 @@ __str_make_bool_op(<=);
 
 
 static String join(const String & s1, const String & s2) {
-    wchar_t * res = (wchar_t *)malloc((s1.length + s2.length + 1) << 2);
+    wchar_t * res = (wchar_t *)malloc((s1.length + s2.length + 1) << CHAR_SIZE_POWER);
     memcpy(res, s1.data, s1.size);
     memcpy(res + s1.length, s2.data, s2.size);
 
