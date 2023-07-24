@@ -6,8 +6,11 @@
 #include "_pixel.h"
 #include "runtime/math/common.h"
 
-#include <emmintrin.h>
-#include <immintrin.h>
+#ifdef __x86_64__
+    #include <emmintrin.h>
+    #include <immintrin.h>
+#endif
+
 #include <math.h>
 
 
