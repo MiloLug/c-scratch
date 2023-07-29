@@ -145,6 +145,7 @@ void SpriteManager::staticInit() {
 }
 
 Sprite * SpriteManager::getTouchingXY(float x, float y) {
+    // go from top to bottom layers
     for (auto iter = spriteStorage.rbegin(), end = spriteStorage.rend(); iter != end; iter++) {
         auto sprite = *iter;
         if (sprite->visible && sprite->isTouchingXY(x, y)) {
@@ -165,7 +166,7 @@ Coroutine SpriteManager::sendClickXYCoro(float x, float y) {
         }
     }
 
-    co_return;
+    cs_stop;
 }
 
 void SpriteManager::sendClickXY(float x, float y) {
@@ -184,7 +185,8 @@ SpriteManager::SpriteManager(Sprite * sprite) {
 }
 SpriteManager::SpriteManager(Backdrop * _backdrop) { backdrop = _backdrop; }
 SpriteManager::~SpriteManager() {
-    if (isInitializer && waitingForInit != nullptr)
+    if (isInitializer && waitingForInit != nullptr) {
         delete waitingForInit;
-    waitingForInit = nullptr;
+        waitingForInit = nullptr;
+    }
 }

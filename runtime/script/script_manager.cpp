@@ -48,36 +48,32 @@ void ScriptManager::manageCoroutine(SpriteBase * sprite, Coroutine * coroutine) 
 */
 void ScriptManager::bindScripts(const BindingsMap & bindings) {
     for (auto & [action, actionSprites] : bindings) {
-        auto globalActionBindings = scriptBindingsStorage->find(action);
-        if (globalActionBindings != scriptBindingsStorage->end()) {
-            auto & globalActionSprites = (*globalActionBindings).second;
+        auto & globalSprites = (*scriptBindingsStorage)[action];
 
-            for (auto & sprite : actionSprites) {
-                globalActionSprites.push_back(sprite);
-            }
-        } else {
-            (*scriptBindingsStorage)[action] = actionSprites;
+        for (auto & [sprite, scripts] : actionSprites) {
+            auto & globalScripts = globalSprites[sprite];
+            globalScripts.insert(std::end(globalScripts), std::begin(scripts), std::end(scripts));
         }
     }
 }
 
-void ScriptManager::bindScripts(SpriteBase * sprite, const SimpleBindingsMap & bindings) {
-    for (auto & [action, actionScripts] : bindings) {
-        auto globalActionBindings = scriptBindingsStorage->find(action);
-        if (globalActionBindings != scriptBindingsStorage->end()) {
-            auto & globalActionSprites = (*globalActionBindings).second;
+void ScriptManager::bindScripts(const SimpleBindingsList & bindings) {
+    for (auto & [sprite, action, coro] : bindings) {
+        (*scriptBindingsStorage)[action][sprite].push_back(coro);
+    }
+}
 
-            globalActionSprites.push_back({sprite, actionScripts});
-        } else {
-            (*scriptBindingsStorage)[action] = {{sprite, actionScripts}};
-        }
+void ScriptManager::bindScripts(SpriteBase * sprite, const SimpleBindingsMap & bindings) {
+    for (auto & [action, scripts] : bindings) {
+        auto & globalScripts = (*scriptBindingsStorage)[action][sprite];
+        globalScripts.insert(std::end(globalScripts), std::begin(scripts), std::end(scripts));
     }
 }
 
 void ScriptManager::bindScripts(
     SpriteBase * sprite, uint64_t action, const CoroFunction & function
 ) {
-    bindScripts(sprite, {{action, {function}}});
+    bindScripts({{sprite, action, function}});
 }
 
 static void stopOtherScripts(
@@ -186,9 +182,9 @@ ScriptManager::ScriptManager(const BindingsMap & bindings) {
     staticInit();
     bindScripts(bindings);
 }
-ScriptManager::ScriptManager(SpriteBase * sprite, const SimpleBindingsMap & bindings) {
+ScriptManager::ScriptManager(const SimpleBindingsList & bindings) {
     staticInit();
-    bindScripts(sprite, bindings);
+    bindScripts(bindings);
 }
 ScriptManager::ScriptManager(SpriteBase * sprite, uint64_t action, const CoroFunction & function) {
     staticInit();
@@ -196,7 +192,8 @@ ScriptManager::ScriptManager(SpriteBase * sprite, uint64_t action, const CoroFun
 }
 
 ScriptManager::~ScriptManager() {
-    if (isInitializer && scriptBindingsStorage != nullptr)
+    if (isInitializer && scriptBindingsStorage != nullptr) {
         delete scriptBindingsStorage;
-    scriptBindingsStorage = nullptr;
+        scriptBindingsStorage = nullptr;
+    }
 }

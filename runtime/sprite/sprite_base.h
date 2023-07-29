@@ -75,31 +75,43 @@ static force_inline__ auto __boundYMove(auto y, auto d) {
 class Movable {
 protected:
     float direction;
-    float size;
-    float x;
+    float size;  // size in %
+    float x;  // 0-center bases coordinates
     float y;
 
-    float sizeScaled;
-    float wOrig;
+    // LT means Left-Top coordinate system or left-top corner
+
+    float sizeMultiplier;  // basically (size / 100)
+    float wOrig;  // original dimensions (before scaling etc)
     float hOrig;
-    SDL_FPoint pPointOrig;
-    SDL_FPoint pPoint;
-    SDL_FPoint pPointLT;
-    SDL_FPoint pRotationOffset;  // offset for the surface rotation
-    SDL_FPoint pUnrotatedPoint;  // pivot with rotation offset cancellation
-    float centerOffsetLTX;
-    float centerOffsetLTY;
+    SDL_FPoint pPointOrig;  // original pivot point
+    SDL_FPoint pPoint;  // pivot point after scaling
+    SDL_FPoint pPointLT;  // pivot relative to sprite's left-top corner (for renderer)
+
+    /*
+    * Rotating and object around some pivot, we rotate it around its real center and then offset
+    *   pRotationOffset represents this offset after rotation.
+    * pUnrotatedPoint represents the pivot with rotation offset applied. It's useful
+    *   for calculating coordinates inside a rotated sprite related to the global coordinates
+    */
+    SDL_FPoint pRotationOffset;
+    SDL_FPoint pUnrotatedPoint;
+
+    /*
+    * Offset of the sprite's LT corner relative to the window's corner for x=y=0
+    * It simplifies sprite LT coordinates calculations in many places
+    */
     float windowOffsetLTX;
     float windowOffsetLTY;
 
-    SDL_FRect pos;
+    SDL_FRect pos;  // sprites scaled rect (for renderer)
 
     double transformCacheVersion = DBL_MIN + 1;
     bool draggingEnabled = false;
 
     bool isPenDown = false;
     float penSize = 1;
-    uint32_t penColor = 0xFFAF9F3F;
+    uint32_t penColor = 0xFFAF9F3F;  // RGBA color
 
 
     force_inline__ void updateRotationOffset() {
@@ -117,11 +129,11 @@ protected:
     * This function updates everything related to scaling and pivot position
     */
     force_inline__ void updateOffsetsAndPoints() {
-        sizeScaled = size / 100.0f;
-        pos.w = wOrig * sizeScaled;
-        pos.h = hOrig * sizeScaled;
-        pPoint.x = pPointOrig.x * sizeScaled;
-        pPoint.y = pPointOrig.y * sizeScaled;
+        sizeMultiplier = size / 100.0f;
+        pos.w = wOrig * sizeMultiplier;
+        pos.h = hOrig * sizeMultiplier;
+        pPoint.x = pPointOrig.x * sizeMultiplier;
+        pPoint.y = pPointOrig.y * sizeMultiplier;
         pPointLT.x = pos.w / 2.0f + pPoint.x;
         pPointLT.y = pos.h / 2.0f - pPoint.y;
         windowOffsetLTX = WINDOW_CENTER_X - pPointLT.x;
@@ -138,7 +150,7 @@ public:
     ):
         direction{dir - 90.0f},
         size{_size},
-        sizeScaled{_size / 100.0f},
+        sizeMultiplier{_size / 100.0f},
         x{__boundX(_x)},
         y{__boundY(_y)},
         wOrig{w},
@@ -148,20 +160,20 @@ public:
             .y = pivotY,
         },
         pPoint{
-            .x = pivotX * sizeScaled,
-            .y = pivotY * sizeScaled,
+            .x = pivotX * sizeMultiplier,
+            .y = pivotY * sizeMultiplier,
         },
         pPointLT{
-            .x = (w * sizeScaled) / 2.0f + pPoint.x,
-            .y = (h * sizeScaled) / 2.0f - pPoint.y,
+            .x = (w * sizeMultiplier) / 2.0f + pPoint.x,
+            .y = (h * sizeMultiplier) / 2.0f - pPoint.y,
         },
         windowOffsetLTX{WINDOW_CENTER_X - pPointLT.x},
         windowOffsetLTY{WINDOW_CENTER_Y - pPointLT.y},
         pos{
             .x = windowOffsetLTX + __boundX(_x),
             .y = windowOffsetLTY - __boundY(_y),
-            .w = w * sizeScaled,
-            .h = h * sizeScaled,
+            .w = w * sizeMultiplier,
+            .h = h * sizeMultiplier,
         } {
         updateRotationOffset();
     }
@@ -256,6 +268,10 @@ public:
         if (sprite && sprite != this) goToSprite(sprite);
     }
 
+    force_inline__ void goToSprite(Arg spriteName) {
+        goToSprite(spriteName.toString());
+    }
+
     Coroutine startDragging() {
         float xOffset = mouseState.x - x;
         float yOffset = mouseState.y - y;
@@ -265,7 +281,59 @@ public:
             cs_pass;
         }
 
-        co_return;
+        cs_stop;
+    }
+
+    /// @param time in seconds 
+    Coroutine glideXY(double time, float _x, float _y) {
+        auto dX = _x - x, dY = _y - y;
+        _x = x;
+        _y = y;
+
+        time = csTime.sToNS(time);
+        double startTime = csTime.currentTime, endTime = csTime.currentTime + time, currentTime = 0,
+               step = 0;
+
+        while ((currentTime = csTime.currentTime) < endTime) {
+            step = (currentTime - startTime) / time;
+            goXY(_x + dX * step, _y + dY * step);
+            cs_pass;
+        }
+
+        goXY(_x + dX, _y + dY);  // just in case
+        cs_stop;
+    }
+
+    /// @param time in seconds 
+    force_inline__ Coroutine glideToRandomPosition(double time) {
+        return glideXY(
+            time,
+            randInRange(-WINDOW_CENTER_X, WINDOW_CENTER_X),
+            randInRange(-WINDOW_CENTER_Y, WINDOW_CENTER_Y)
+        );
+    }
+
+    /// @param time in seconds 
+    force_inline__ Coroutine glideToPointer(double time) {
+        return glideXY(time, mouseState.x, mouseState.y);
+    }
+
+    /// @param time in seconds 
+    force_inline__ Coroutine glideToSprite(double time, Movable * sprite) {
+        return glideXY(time, sprite->x, sprite->y);
+    }
+
+    /// @param time in seconds 
+    /// @param spriteName you can use either sprite name or it's hash: (L"my sprite"_H)
+    Coroutine glideToSprite(double time, OneOfT<const wchar_t *, uint64_t> auto spriteName) {
+        Movable * sprite = (Movable *)SpriteManager::getByName(spriteName);
+        if (sprite && sprite != this) cs_wait glideXY(time, sprite->x, sprite->y);
+        cs_stop;
+    }
+
+    /// @param time in seconds 
+    Coroutine glideToSprite(double time, Arg spriteName) {
+        return glideToSprite(time, spriteName.toString());
     }
 
     force_inline__ bool isDraggingEnabled() { return draggingEnabled; }
@@ -315,40 +383,56 @@ public:
         transformCacheVersion++;
     }
 
+    /// @param spriteName you can use either sprite name or it's hash: (L"my sprite"_H)
     void pointTowardsSprite(OneOfT<const wchar_t *, uint64_t> auto spriteName) {
-        Movable * sprite = SpriteManager::getByName(spriteName);
+        Movable * sprite = (Movable *)SpriteManager::getByName(spriteName);
         if (sprite && sprite != this) pointTowardsSprite(sprite);
+    }
+
+    force_inline__ void pointTowardsSprite(Arg spriteName) {
+        pointTowardsSprite(spriteName.toString());
     }
 
     force_inline__ float getDirection() const { return fmod(direction + 90.0, 360.0); }
 
-    force_inline__ const float & getDirectionLT() { return direction; }
+    force_inline__ const float & getDirectionLT() const { return direction; }
 
     /*
     * Sensing
     */
 
-    float getPointerDistance() {
+    float getPointerDistance() const {
         const auto xDiff = mouseState.x - pos.x;
         const auto yDiff = mouseState.y - pos.y;
         return sqrt(xDiff * xDiff + yDiff * yDiff);
     }
 
-    float getSpriteDistance(Movable * sprite) {
+    float getSpriteDistance(Movable * sprite) const {
         const auto xDiff = sprite->x - pos.x;
         const auto yDiff = sprite->y - pos.y;
         return sqrt(xDiff * xDiff + yDiff * yDiff);
     }
 
-    bool isTouchingXY(float x1, float y1);
+    /// @param spriteName you can use either sprite name or it's hash: (L"my sprite"_H)
+    float getSpriteDistance(OneOfT<const wchar_t *, uint64_t> auto spriteName) const {
+        auto sprite = (Movable *)SpriteManager::getByName(spriteName);
+        if (sprite && sprite != this) return getSpriteDistance(sprite);
+        return 0;
+    }
 
-    force_inline__ bool isTouchingPointer() { return isTouchingXY(mouseState.x, mouseState.y); }
+    float getSpriteDistance(Arg spriteName) const {
+        return getSpriteDistance(spriteName.toString());
+    }
+
+    bool isTouchingXY(float x1, float y1) const;
+
+    force_inline__ bool isTouchingPointer() const { return isTouchingXY(mouseState.x, mouseState.y); }
 
     /*
     * Dimensions
     */
 
-    force_inline__ const SDL_FRect & getRectLT() { return pos; }
+    force_inline__ const SDL_FRect & getRectLT() const { return pos; }
 
     void setDim(float w, float h) {
         wOrig = w;
@@ -381,6 +465,7 @@ public:
 
     void penStamp();
 
+    /// @param color ARGB 32 bit color
     force_inline__ void penSetColor(uint32_t color) {
         penColor = color << 8 | ((color >> 24) == 0 ? 0xFF : color >> 24);
     }
@@ -498,7 +583,7 @@ public:
     * First it tries to switch using names (even if you pass a number).
     * Then it tries to use the number as a sprite index.
     */
-    void switchCostumeTo(const Const & value) {
+    void switchCostumeTo(Arg value) {
         costumeIndex = findOr(
             costumeIndexes,
             fastHash(value.toString()),
@@ -506,20 +591,6 @@ public:
         );
 
         onCostumeSwitch();
-    }
-    void switchCostumeTo(String && str) {
-        auto found = costumeIndexes.find(fastHash(str.data));
-        if (found != costumeIndexes.end()) {
-            costumeIndex = found->second;
-        } else {
-            auto num = strToNum(str, str.length);
-            if (num > 0 && num <= costumesNumber) costumeIndex = num - 1;
-        }
-
-        onCostumeSwitch();
-    }
-    void switchCostumeTo(const wchar_t * str) {
-        switchCostumeTo(String(wcslen(str), (wchar_t *)str, true));
     }
 
     void switchCostumeByIndex(uint64_t index) {

@@ -52,7 +52,6 @@ public:
         return findOr(spritesByName, fastHash(name), nullptr);
     }
     static Sprite * getByName(uint64_t nameHash) {
-        findOr(managedSprites, (Sprite *)nullptr, nullptr);
         return findOr(spritesByName, nameHash, nullptr);
     }
 

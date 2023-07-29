@@ -91,7 +91,7 @@ namespace CSTime {
         weekday wd{localDay};
         hh_mm_ss hms{std::chrono::floor<seconds>(localTimeSystem - localDay)};
 
-        currentTime = toNS(localTime.time_since_epoch());
+        currentTime = toNS(zonedTime.getSystemTime().time_since_epoch());
         programTime = currentTime - programStartTime;
         year = (int)ymd.year();
         month = (unsigned int)ymd.month();

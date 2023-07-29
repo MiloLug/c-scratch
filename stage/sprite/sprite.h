@@ -16,6 +16,4 @@ namespace NS_sprite {
             {L"Costume 1", L"costume1.png", 0, 0, 95, 100},
         },
     });
-
-    SpriteManager manageSprite(&sprite);
 }

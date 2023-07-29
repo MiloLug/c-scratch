@@ -50,7 +50,7 @@ namespace CSTime {
 
         // timestamp from the year 2000 in ns
         volatile mutable int64_t y2kTime;
-        // days from the year 2000
+        // days since the year 2000
         volatile mutable double y2kDays;
 
         volatile mutable int16_t year;

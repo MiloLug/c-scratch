@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <map>
+#include <tuple>
 #include <memory>
 #include <vector>
 
@@ -19,9 +20,10 @@ class ScriptManager {
 public:
     typedef Coroutine (*CoroFunction)(Context *);
     typedef std::pair<SpriteBase *, Coroutine *> CoroContainer;
-    typedef std::pair<SpriteBase *, std::vector<CoroFunction>> SpriteScripts;
-    typedef std::map<uint64_t, std::vector<SpriteScripts>> BindingsMap;
+    typedef std::map<SpriteBase *, std::vector<CoroFunction>> SpriteScripts;
+    typedef std::map<uint64_t, SpriteScripts> BindingsMap;
     typedef std::map<uint64_t, std::vector<CoroFunction>> SimpleBindingsMap;
+    typedef std::vector<std::tuple<SpriteBase *, uint64_t, CoroFunction>> SimpleBindingsList;
 
 protected:
     static ThreadSafeQueue<CoroContainer> newActiveCoros;
@@ -33,6 +35,7 @@ public:
     static uint32_t triggerScripts(uint64_t action, Context * ctx = nullptr);
     static void manageCoroutine(SpriteBase * sprite, Coroutine * coroutine);
     static void bindScripts(const BindingsMap & bindings);
+    static void bindScripts(const SimpleBindingsList & bindings);
     static void bindScripts(SpriteBase * sprite, const SimpleBindingsMap & bindings);
     static void bindScripts(SpriteBase * sprite, uint64_t action, const CoroFunction & function);
     static void startScriptsLoop();
@@ -41,6 +44,7 @@ public:
 
     ScriptManager();
     ScriptManager(const BindingsMap & bindings);
+    ScriptManager(const SimpleBindingsList & bindings);
     ScriptManager(SpriteBase * sprite, const SimpleBindingsMap & bindings);
     ScriptManager(SpriteBase * sprite, uint64_t action, const CoroFunction & function);
     ~ScriptManager();

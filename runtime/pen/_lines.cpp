@@ -389,6 +389,13 @@ namespace Pen {
         );
     }
 
+    /// @brief common function for drawing lines
+    /// @param x1 start X
+    /// @param y1 start Y
+    /// @param x2 end X
+    /// @param y2 end Y
+    /// @param thickness thickness in pixels
+    /// @param color RGBA color
     void drawLine(int64_t x1, int64_t y1, int64_t x2, int64_t y2, uint64_t thickness, uint32_t color) {
         if (!thickness) return;
 

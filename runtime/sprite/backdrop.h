@@ -13,7 +13,9 @@ struct BackdropDeclaration {
 class Backdrop: public SpriteBase {
 public:
     Backdrop(const BackdropDeclaration & decl):
-        SpriteBase(ASSETS_BASE_DIR / L"backdrop", decl.costumeIndex, decl.costumes) {}
+        SpriteBase(ASSETS_BASE_DIR / L"backdrop", decl.costumeIndex, decl.costumes) {
+            SpriteManager manage(this);
+        }
 };
 
 

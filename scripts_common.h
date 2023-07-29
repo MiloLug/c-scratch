@@ -13,6 +13,7 @@
 #include "runtime/utils.h"
 #include "runtime/debug.h"
 #include "runtime/script/script_manager.h"
+#include "runtime/script/scripts_base.h"
 
 #include "stage/sprites.h"
 #include "stage/scripts.h"

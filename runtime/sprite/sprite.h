@@ -70,9 +70,11 @@ public:
         visible{decl.visible},
         layerOrder{decl.layerOrder - 1},
         id{fastHash(decl.name)},
-        actionId{id & ~ACTION_ID_MASK} {}
+        actionId{id & ~ACTION_ID_MASK} {
+            SpriteManager manage(this);
+        }
 
-    bool isTouchingXY(float x1, float y1) {
+    bool isTouchingXY(float x1, float y1) const {
         const auto tmpSurface = getCostumeTransformedSurface();
 
         x1 = (float)tmpSurface->w / 2.0 + (x1 - x) + pUnrotatedPoint.x - 1.0f;
@@ -85,7 +87,7 @@ public:
             != 0;
     }
 
-    SDL_Surface * getCostumeTransformedSurface() {
+    SDL_Surface * getCostumeTransformedSurface() const {
         if (
             transformCacheVersion == currentCostume->transformCacheVersion
             && currentCostume->surfaceCache != nullptr

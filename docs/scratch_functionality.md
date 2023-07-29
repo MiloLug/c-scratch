@@ -61,8 +61,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
     `sprite.goToPointer()`
 
 - [`go to (sprite)`]
-
-    `sprite.goToSprite(sprite)` - where `sprite` is a pointer to a Sprite object, `L"Sprite Name"` or hashed sprite name - `L"Sprite Name"_H` (including variables etc.)
+  - general case - `sprite.goToSprite(sprite-name or variable)`
+  - possible optimizations:
+    - when you've just selected a name from the dropdown:
+      - `sprite.goToSprite(L"selected name"_H)`
+      - `sprite.goToSprite(&NS_sprite_name::sprite)` where `NS_sprite_name` is the sprite's namespace
 
 - [`go to x: (X) y: (Y)`]
 
@@ -70,19 +73,22 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`glide (T) secs to (random position)`]
 
-    `cs_wait sprite.glideToRandomPosition(T)` NOT IMPLEMENTED
+    `cs_wait sprite.glideToRandomPosition(T)`
 
 - [`glide (T) secs to (mouse-pointer)`]
 
-    `cs_wait sprite.glideToPointer(T)` NOT IMPLEMENTED
+    `cs_wait sprite.glideToPointer(T)`
 
 - [`glide (T) secs to (sprite)`]
-
-    `cs_wait sprite.glideToSprite(&sprite)` NOT IMPLEMENTED
+  - general case - `sprite.glideToSprite(T, sprite-name or variable)`
+  - possible optimizations:
+    - when you've just selected a name from the dropdown:
+      - `sprite.glideToSprite(T, L"selected name"_H)`
+      - `sprite.glideToSprite(T, &NS_sprite_name::sprite)` where `NS_sprite_name` is the sprite's namespace
 
 - [`glide (T) secs to x: (X) y: (Y)`]
 
-    `cs_wait sprite.glideXY(T, X, Y)` NOT IMPLEMENTED
+    `cs_wait sprite.glideXY(T, X, Y)`
 
 - [`point in direction (X)`]
 
@@ -93,8 +99,11 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
     `sprite.pointTowardsPointer()`
 
 - [`point towards (sprite)`]
-
-    `sprite.pointTowardsSprite(sprite)` - where `sprite` is a pointer to a Sprite object, `L"Sprite Name"` or hashed sprite name - `L"Sprite Name"_H` (including variables etc.)
+  - general case - `sprite.pointTowardsSprite(sprite-name or variable)`
+  - possible optimizations:
+    - when you've just selected a name from the dropdown:
+      - `sprite.pointTowardsSprite(L"selected name"_H)`
+      - `sprite.pointTowardsSprite(&NS_sprite_name::sprite)` where `NS_sprite_name` is the sprite's namespace
 
 - [`change x by (N)`]
 
@@ -156,9 +165,8 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
 - [`switch costume to (X)`]
   - general case - `sprite.switchCostumeTo(X)`
-  - optimizations:
+  - possible optimizations:
     - when you've just selected a name from the dropdown:
-
       - `sprite.switchCostumeByNameHash(L"selected costume name"_H)`
       - `sprite.switchCostumeByIndex(costume's X index)` where the index starts from 1
 
@@ -269,15 +277,13 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
   - general case - `Messages::broadcast(X)`
   - optimizations:
     - when you've just selected a name from the dropdown:
-
-      `sprite.broadcast(L"selected action name"_A)`
+      - `sprite.broadcast(L"selected action name"_A)`
 
 - [`broadcast (X) and wait`]
   - general case - `cs_wait Messages::broadcastWait(X)`
   - optimizations:
     - when you've just selected a name from the dropdown:
-
-      `cs_wait Messages::broadcastWait(L"selected action name"_A)`
+      - `cs_wait Messages::broadcastWait(L"selected action name"_A)`
 
 ### Control
 
@@ -317,7 +323,7 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
 
     `...` NOT IMPLEMENTED
 
-- [since`create clone of (X)`]
+- [`create clone of (X)`]
 
     `...` NOT IMPLEMENTED
 
@@ -340,19 +346,20 @@ Coroutine sprite_onFlagClicked(Context * ctx) {
     `sprite.isTouchingSprite(&sprite)` NOT IMPLEMENTED
 
 - (`distance to (mouse-pointer)`)
-
     `sprite.getPointerDistance()`
 
-- (`distance to (sprite)`)
-
-    `sprite.getSpriteDistance(&sprite)`
+- (`distance to (sprite name)`)
+  - general case - `sprite.getSpriteDistance(sprite-name or variable)`
+  - possible optimizations:
+    - when you've just selected a name from the dropdown:
+      - `sprite.getSpriteDistance(L"selected name"_H)`
+      - `sprite.getSpriteDistance(&NS_sprite_name::sprite)` where `NS_sprite_name` is the sprite's namespace
 
 - <`key (KEY) pressed?`>
   - general case - `isKeyPressed(X)` where `X` is a name, variable or SDL scan-code
   - optimizations:
     - when you've just selected a key from the dropdown:
-
-    `keyPressed[SDL_SCANCODE_KEY]`
+      - `keyPressed[SDL_SCANCODE_KEY]`
 
 - <`mouse down?`>
 

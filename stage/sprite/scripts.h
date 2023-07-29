@@ -42,15 +42,142 @@ namespace NS_sprite {
     Array l_waveVelocity_green;
     Array l_waveVelocity_red;
 
-
-    class Scripts {
+    class Scripts: public ScriptsBase {
     public:
+        Scripts(): ScriptsBase(&sprite) {
+            // on(ACTION_START, [](Context * ctx) -> Coroutine {
+            //     sprite.goXY(0, 0);
+            //     sprite.penSetColor(0xff000000);
+            //     sprite.penDown();
+
+            //     cs_wait sprite.glideXY(1, 50, 50);
+            //     cs_wait sprite.glideXY(1, 50, 100);
+            //     cs_wait sprite.glideXY(1, 0, 0);
+            //     cs_wait sprite.glideXY(1, -50, -50);
+            //     cs_wait sprite.glideXY(1, -50, -100);
+            //     cs_wait sprite.glideXY(1, 0, 0);
+
+            //     cs_repeat (1000) {
+            //         sprite.penSetColor(0xff000000 + __i * 16);
+            //         cs_wait sprite.glideToRandomPosition(0.04);
+            //     }
+
+            //     Var spriteGG = L"Sprite 2";
+            //     cs_wait sprite.glideToSprite(2, spriteGG);
+
+            //     cs_stop;
+            // });
+
+            on(ACTION_START, [](Context * ctx) -> Coroutine {
+                cs_forever {
+                    cs_wait_until(v_tick == 100);
+                    v_timer = csTime.timer();
+                    v_tick = 0;
+
+                    // don't have graphical output rn, so it's just like this
+                    wprintf(L"timer = %ls\n", v_timer.toString());
+
+                    cs_pass;
+                }
+                
+                cs_stop;
+            });
+
+            on(ACTION_START, [](Context * ctx) -> Coroutine {
+                l_imgData_blue.clean();
+                l_imgData_green.clean();
+                l_imgData_red.clean();
+                l_waveHeight_red.clean();
+                l_waveHeight_green.clean();
+                l_waveHeight_blue.clean();
+                l_waveVelocity_red.clean();
+                l_waveVelocity_green.clean();
+                l_waveVelocity_blue.clean();
+                l_accumulatedLight_red.clean();
+                l_accumulatedLight_green.clean();
+                l_accumulatedLight_blue.clean();
+                l_pixelMass.clean();
+
+                l_GLASS_COLORS.clean();
+                l_GLASS_COLORS.push(50.0);
+                l_GLASS_COLORS.push(60.0);
+                l_GLASS_COLORS.push(70.0);
+
+                l_COLOR_SHIFT.clean();
+                l_COLOR_SHIFT.push(0.06);
+                l_COLOR_SHIFT.push(0);
+                l_COLOR_SHIFT.push(-0.06);
+
+                v_ACCUMULATED_EXPOSURE = 0.0005;
+                v_frame = 0;
+                v_i = 0;
+                v_tick = 0;
+                v_size_2 = v_size * v_size;
+                v_size_100 = v_size * 100.0;
+                v_size_100_2 = v_size_100 * v_size_100;
+
+                v_light_size = v_size_100 / 6.0;
+                v_light_position = floor(v_size_100 / 5.0) * v_size_100 + floor(v_size_100 / 5.0);
+                
+                cs_repeat (v_size_100) {
+                    v_j = 0;
+
+                    cs_repeat (v_size_100) {
+                        l_waveHeight_red.push(0);
+                        l_waveHeight_green.push(0);
+                        l_waveHeight_blue.push(0);
+                        l_waveVelocity_red.push(0);
+                        l_waveVelocity_green.push(0);
+                        l_waveVelocity_blue.push(0);
+                        l_accumulatedLight_red.push(0);
+                        l_accumulatedLight_green.push(0);
+                        l_accumulatedLight_blue.push(0);
+                        l_imgData_red.push(0);
+                        l_imgData_green.push(0);
+                        l_imgData_blue.push(0);
+                        l_pixelMass.push(1.0);
+
+                        if (sqrt((v_i - v_size_100 / 2.0) * (v_i - v_size_100 / 2.0) + (v_j - v_size_100 / 2.0) * (v_j - v_size_100 / 2.0)) < (v_size_100 / 4.0)) {
+                            l_pixelMass.set(v_i * v_size_100 + v_j + 1.0, 3.0 / 4.0);
+                        }
+
+                        v_j += 1.0;
+
+                        cs_pass;
+                    }
+
+                    v_i += 1.0;
+
+                    cs_pass;
+                }
+
+                cs_forever {
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_calculate();
+                    cs_wait spriteProcedure_render();
+                    v_tick += 1;
+
+                    cs_pass;
+                }
+
+                cs_stop;
+            });
+        }
+
         static void spriteProcedure_math_min(Arg arg_1, Arg arg_2) {
             if (arg_1 > arg_2) {
                 v_math_min = arg_2;
             } else {
                 v_math_min = arg_1;
-		}
+		    }
         }
 
         static void spriteProcedure_loop_unrolling_1() {
@@ -254,118 +381,7 @@ namespace NS_sprite {
 
             co_return;
         }
-
-        static Coroutine spriteStartScript1(Context * ctx) {
-            l_imgData_blue.clean();
-            l_imgData_green.clean();
-            l_imgData_red.clean();
-            l_waveHeight_red.clean();
-            l_waveHeight_green.clean();
-            l_waveHeight_blue.clean();
-            l_waveVelocity_red.clean();
-            l_waveVelocity_green.clean();
-            l_waveVelocity_blue.clean();
-            l_accumulatedLight_red.clean();
-            l_accumulatedLight_green.clean();
-            l_accumulatedLight_blue.clean();
-            l_pixelMass.clean();
-
-            l_GLASS_COLORS.clean();
-            l_GLASS_COLORS.push(50.0);
-            l_GLASS_COLORS.push(60.0);
-            l_GLASS_COLORS.push(70.0);
-
-            l_COLOR_SHIFT.clean();
-            l_COLOR_SHIFT.push(0.06);
-            l_COLOR_SHIFT.push(0);
-            l_COLOR_SHIFT.push(-0.06);
-
-            v_ACCUMULATED_EXPOSURE = 0.0005;
-            v_frame = 0;
-            v_i = 0;
-            v_tick = 0;
-            v_size_2 = v_size * v_size;
-            v_size_100 = v_size * 100.0;
-            v_size_100_2 = v_size_100 * v_size_100;
-
-            v_light_size = v_size_100 / 6.0;
-            v_light_position = floor(v_size_100 / 5.0) * v_size_100 + floor(v_size_100 / 5.0);
-            
-            cs_repeat (v_size_100) {
-                v_j = 0;
-
-                cs_repeat (v_size_100) {
-                    l_waveHeight_red.push(0);
-                    l_waveHeight_green.push(0);
-                    l_waveHeight_blue.push(0);
-                    l_waveVelocity_red.push(0);
-                    l_waveVelocity_green.push(0);
-                    l_waveVelocity_blue.push(0);
-                    l_accumulatedLight_red.push(0);
-                    l_accumulatedLight_green.push(0);
-                    l_accumulatedLight_blue.push(0);
-                    l_imgData_red.push(0);
-                    l_imgData_green.push(0);
-                    l_imgData_blue.push(0);
-                    l_pixelMass.push(1.0);
-
-                    if (sqrt((v_i - v_size_100 / 2.0) * (v_i - v_size_100 / 2.0) + (v_j - v_size_100 / 2.0) * (v_j - v_size_100 / 2.0)) < (v_size_100 / 4.0)) {
-                        l_pixelMass.set(v_i * v_size_100 + v_j + 1.0, 3.0 / 4.0);
-                    }
-
-                    v_j += 1.0;
-
-                    cs_pass;
-                }
-
-                v_i += 1.0;
-
-                cs_pass;
-            }
-
-            cs_forever {
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_calculate();
-                cs_wait spriteProcedure_render();
-                v_tick += 1;
-
-                cs_pass;
-            }
-
-            co_return;
-        }
-
-        static Coroutine spriteStartScript2(Context * ctx) {
-            cs_forever {
-                cs_wait_until(v_tick == 100);
-                v_timer = csTime.timer();
-                v_tick = 0;
-
-                // don't have graphical output rn, so it's just like this
-                wprintf(L"timer = %ls\n", v_timer.toString());
-
-                cs_pass;
-            }
-            
-            co_return;
-        }
     };
 
-
-    ScriptManager bindScripts({
-        {ACTION_START, {
-            {&sprite, {
-                Scripts::spriteStartScript1,
-                Scripts::spriteStartScript2,
-            }},
-        }}
-    });
+    Scripts scripts;
 }

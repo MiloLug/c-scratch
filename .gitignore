@@ -70,3 +70,6 @@ zip_npm_tmp
 __scripts
 
 !/libs/**/*
+
+# MAC
+.DS_Store
