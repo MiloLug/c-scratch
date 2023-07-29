@@ -45,29 +45,6 @@ namespace NS_sprite {
     class Scripts: public ScriptsBase {
     public:
         Scripts(): ScriptsBase(&sprite) {
-            // on(ACTION_START, [](Context * ctx) -> Coroutine {
-            //     sprite.goXY(0, 0);
-            //     sprite.penSetColor(0xff000000);
-            //     sprite.penDown();
-
-            //     cs_wait sprite.glideXY(1, 50, 50);
-            //     cs_wait sprite.glideXY(1, 50, 100);
-            //     cs_wait sprite.glideXY(1, 0, 0);
-            //     cs_wait sprite.glideXY(1, -50, -50);
-            //     cs_wait sprite.glideXY(1, -50, -100);
-            //     cs_wait sprite.glideXY(1, 0, 0);
-
-            //     cs_repeat (1000) {
-            //         sprite.penSetColor(0xff000000 + __i * 16);
-            //         cs_wait sprite.glideToRandomPosition(0.04);
-            //     }
-
-            //     Var spriteGG = L"Sprite 2";
-            //     cs_wait sprite.glideToSprite(2, spriteGG);
-
-            //     cs_stop;
-            // });
-
             on(ACTION_START, [](Context * ctx) -> Coroutine {
                 cs_forever {
                     cs_wait_until(v_tick == 100);

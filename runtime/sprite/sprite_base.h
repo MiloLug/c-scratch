@@ -264,7 +264,7 @@ public:
     void goToSprite(Movable * sprite) { goXY(sprite->x, sprite->y); }
 
     void goToSprite(OneOfT<const wchar_t *, uint64_t> auto spriteName) {
-        Movable * sprite = SpriteManager::getByName(spriteName);
+        auto sprite = (Movable *)SpriteManager::getByName(spriteName);
         if (sprite && sprite != this) goToSprite(sprite);
     }
 

@@ -95,7 +95,8 @@ namespace Pen {
             auto tmp = y1;
             y1 = y2;
             y2 = tmp;
-        }
+        } 
+
         y1 = MIN(MAX_UNSAFE(y1, 0), canvasHeight - 1);
         y2 = MIN_UNSAFE(y2, canvasHeight - 1);
 
@@ -103,7 +104,12 @@ namespace Pen {
         auto rowEnd = pixelBuffer + canvasWidth * y2 + x;
         const uint32_t alpha = color & 0xFF;
 
-        for (; rowStart < rowEnd; rowStart += canvasWidth) {
+        if (alpha == 0xFF) {
+            for (; rowStart <= rowEnd; rowStart += canvasWidth) *rowStart = color;
+            return;
+        }
+
+        for (; rowStart <= rowEnd; rowStart += canvasWidth) {
             __Pen_drawPixelOnPointer_unsafe(rowStart, color, alpha);
         }
     }
@@ -128,70 +134,133 @@ namespace Pen {
         auto rowEnd = pixelBuffer + canvasWidth * y + x2;
         const uint32_t srcA = color & 0xFF;
 
-#if defined(__AVX2__)
-        __m256i colorVec = _mm256_set1_epi32(color);
-        __m256i alphaVec = _mm256_set1_epi32(srcA);
-        __m256i t = _mm256_set1_epi32(0xFF);
+        if (srcA == 0xFF) {
+            for (; rowStart <= rowEnd; rowStart++) *rowStart = color;
+            return;
+        }
 
-        while (rowStart + 8 <= rowEnd) {
+#if defined(__AVX2__)
+        if (rowStart + 8 <= rowEnd) {
+            __m256i colorVec = _mm256_set1_epi32(color);
+            __m256i alphaVec = _mm256_set1_epi32(srcA);
+            __m256i t = _mm256_set1_epi32(0xFF);
             __m256i rbMask = _mm256_set1_epi32(0x00FF00FF);
             __m256i gMask = _mm256_set1_epi32(0x00FF0000);
             __m256i aMask = _mm256_set1_epi32(0x000000FF);
 
-            __m256i bgColorVec = _mm256_loadu_si256((__m256i *)(rowStart));
-            __m256i resAVec = _mm256_add_epi32(
-                alphaVec,
-                _mm256_srli_epi32(_mm256_mullo_epi32(bgColorVec & aMask, t - alphaVec), 8)
-            );
+            while (rowStart + 8 <= rowEnd) {
+                __m256i bgColorVec = _mm256_loadu_si256((__m256i *)(rowStart));
+                __m256i resAVec = _mm256_add_epi32(
+                    alphaVec,
+                    _mm256_srli_epi32(_mm256_mullo_epi32(bgColorVec & aMask, t - alphaVec), 8)
+                );
 
-            __m256i rbVec = (bgColorVec >> 8) & rbMask;
-            __m256i gVec = bgColorVec & gMask;
+                __m256i rbVec = (bgColorVec >> 8) & rbMask;
+                __m256i gVec = bgColorVec & gMask;
 
-            rbVec += _mm256_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
-            gVec += _mm256_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
+                rbVec += _mm256_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
+                gVec += _mm256_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
 
-            _mm256_storeu_si256(
-                (__m256i *)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec
-            );
+                _mm256_storeu_si256(
+                    (__m256i *)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec
+                );
 
-            rowStart += 8;
+                rowStart += 8;
+            }
         }
 #elif defined(__AVX__)
-        __m128i colorVec = _mm_set1_epi32(color);
-        __m128i alphaVec = _mm_set1_epi32(srcA);
-        __m128i t = _mm_set1_epi32(0xFF);
-
-        while (rowStart + 4 <= rowEnd) {
+        if (rowStart + 4 <= rowEnd) {
+            __m128i colorVec = _mm_set1_epi32(color);
+            __m128i alphaVec = _mm_set1_epi32(srcA);
+            __m128i t = _mm_set1_epi32(0xFF);
             __m128i rbMask = _mm_set1_epi32(0x00FF00FF);
             __m128i gMask = _mm_set1_epi32(0x00FF0000);
             __m128i aMask = _mm_set1_epi32(0x000000FF);
 
-            __m128i bgColorVec = _mm_loadu_si128((__m128i *)(rowStart));
-            __m128i resAVec = _mm_add_epi32(
-                alphaVec, _mm_srli_epi32(_mm_mullo_epi32(bgColorVec & aMask, t - alphaVec), 8)
-            );
+            while (rowStart + 4 <= rowEnd) {
+                __m128i bgColorVec = _mm_loadu_si128((__m128i *)(rowStart));
+                __m128i resAVec = _mm_add_epi32(
+                    alphaVec, _mm_srli_epi32(_mm_mullo_epi32(bgColorVec & aMask, t - alphaVec), 8)
+                );
 
-            __m128i rbVec = (bgColorVec >> 8) & rbMask;
-            __m128i gVec = bgColorVec & gMask;
+                __m128i rbVec = (bgColorVec >> 8) & rbMask;
+                __m128i gVec = bgColorVec & gMask;
 
-            rbVec += _mm_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
-            gVec += _mm_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
+                rbVec += _mm_mullo_epi32((colorVec >> 8 & rbMask) - rbVec, alphaVec) >> 8;
+                gVec += _mm_mullo_epi32((colorVec & gMask) - gVec, alphaVec) >> 8;
 
-            _mm_storeu_si128(
-                (__m128i *)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec
-            );
+                _mm_storeu_si128(
+                    (__m128i *)(rowStart), (rbVec & rbMask) << 8 | (gVec & gMask) | resAVec
+                );
 
-            rowStart += 4;
+                rowStart += 4;
+            }
+        }
+#elif defined(__ARM_NEON__)
+        constexpr uint32_t tRbMask = 0x00FF00FF, tGMask = 0x00FF0000, tAMask = 0x000000FF;
+
+        if (rowStart + 16 <= rowEnd) {
+            uint32x4_t colorVec = vld1q_dup_u32(&color);
+            uint32x4_t alphaVec = vld1q_dup_u32(&srcA);
+            
+            uint32x4_t rbMask = vld1q_dup_u32(&tRbMask);
+            uint32x4_t gMask = vld1q_dup_u32(&tGMask);
+            uint32x4_t aMask = vld1q_dup_u32(&tAMask);
+
+            while (rowStart + 16 <= rowEnd) {
+                uint32x4x4_t bgColorVec = vld1q_u32_x4(rowStart);
+
+                for (int i = 0; i < 4; i++) {
+                    auto & tmpBgVec = bgColorVec.val[i];
+
+                    uint32x4_t resAVec = vaddq_u32(
+                        alphaVec,
+                        vshrq_n_u32(
+                            vmulq_u32(vandq_u32(tmpBgVec, aMask), vsubq_u32(aMask, alphaVec)),
+                            8
+                        )
+                    );
+
+                    uint32x4_t rbVec = vandq_u32(vshrq_n_u32(tmpBgVec, 8), rbMask);
+                    uint32x4_t gVec = vandq_u32(tmpBgVec, gMask);
+
+                    rbVec = vaddq_u32(
+                        rbVec,
+                        vshrq_n_u32(
+                            vmulq_u32(
+                                vsubq_u32(vandq_u32(vshrq_n_u32(colorVec, 8), rbMask), rbVec),
+                                alphaVec
+                            ),
+                            8
+                        )
+                    );
+                    gVec = vaddq_u32(
+                        gVec,
+                        vshrq_n_u32(
+                            vmulq_u32(vsubq_u32(vandq_u32(colorVec, gMask), gVec), alphaVec),
+                            8
+                        )
+                    );
+
+                    tmpBgVec = vorrq_u32(
+                        vshlq_n_u32(vandq_u32(rbVec, rbMask), 8),
+                        vorrq_u32(
+                            vandq_u32(gVec, gMask),
+                            resAVec
+                        )
+                    );
+                }
+
+                vst1q_u32_x4(rowStart, bgColorVec);
+
+                rowStart += 16;
+            }
         }
 #endif
 
         if (rowStart <= rowEnd) {
-            if (srcA == 0xFF) {
-                for (; rowStart <= rowEnd; rowStart++) *rowStart = color;
-            } else {
-                for (; rowStart <= rowEnd; rowStart++) {
-                    __Pen_drawPixelOnPointer_unsafe(rowStart, color, srcA);
-                }
+            for (; rowStart <= rowEnd; rowStart++) {
+                __Pen_drawPixelOnPointer_unsafe(rowStart, color, srcA);
             }
         }
     }
