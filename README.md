@@ -23,6 +23,8 @@
 
 ## Compilation
 
+Clone the repo with `git clone https://github.com/MiloLug/c-scratch.git`.
+
 ### Windows
 ...
 
@@ -34,6 +36,7 @@
 1. Install homebrew: https://brew.sh/ (don't forget to reboot).
 2. Now install SDL2 and SD2 Image with `brew install sdl2 sd2_image`.
 3. Check your clang version: `clang --version`. If it's below 16, install llvm and it's toolchain with `brew install llvm`.
+4. Now you can go to the project directory in the terminal: `cd c-scratch`.
 
 #### If you want just cmake and make (no xcode)
 1. If you've installed Cmake with brew, you have to configure the compiler path for the project when running cmake:
