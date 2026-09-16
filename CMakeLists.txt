@@ -168,12 +168,6 @@ set(CMAKE_C_FLAGS_RELEASE "${COMMON_C_FLAGS} ${RELEASE_FLAGS}")
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
-if (COMPILER_ENV STREQUAL "VS")
-  set(CMAKE_PREFIX_PATH libs/windows/msvc)
-elseif (COMPILER_ENV STREQUAL "MINGW")
-  set(CMAKE_PREFIX_PATH libs/windows/mingw)
-endif()
-
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
