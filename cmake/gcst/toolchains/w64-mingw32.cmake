@@ -1,0 +1,13 @@
+message(STATUS "Toolchain loaded: w64-mingw32.cmake")
+if(EXISTS "${CMAKE_SOURCE_DIR}/build/conan_toolchain.cmake")
+    include("${CMAKE_SOURCE_DIR}/build/conan_toolchain.cmake")
+endif()
+
+if (WIN32)
+    if (NOT DEFINED MINGW_LIB_SET)
+        message(STATUS "Set MinGW runtime")
+        set(MINGW_LIB_SET 1)
+        set(CMAKE_C_FLAGS "--target=x86_64-w64-mingw32 ${CMAKE_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "--target=x86_64-w64-mingw32 ${CMAKE_CXX_FLAGS}")
+    endif()
+endif()

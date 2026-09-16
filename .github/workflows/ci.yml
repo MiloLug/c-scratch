@@ -1,0 +1,153 @@
+name: CI
+on:
+  push:
+    branches:
+    - master
+    - stable
+  pull_request:
+  workflow_dispatch:
+jobs:
+  build:
+    env:
+      GCST_WERROR: ON
+      PYTHONPATH: ${{ github.workspace }}/.gcst
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - preset: unix-clang-libc++
+          os: ubuntu-latest
+          build: sh build.sh
+        - preset: unix-clang-libstdc++
+          os: ubuntu-latest
+          build: sh build.sh
+        - preset: win64-clang-libstdc++
+          os: windows-latest
+          build: ./build.bat
+        - preset: win64-clang-msvc
+          os: windows-latest
+          build: ./build.bat
+        - preset: unix-gcc-libstdc++
+          os: ubuntu-latest
+          build: sh build.sh
+        - preset: win64-gcc-libstdc++
+          os: windows-latest
+          build: ./build.bat
+        - preset: win64-msvc-msvcstl
+          os: windows-latest
+          build: ./build.bat
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - run: pip install conan ruamel.yaml
+    - uses: actions/checkout@v4
+    - run: conan profile detect --force
+    - run: python .gcst/scripts/configure.py
+    - run: git diff --exit-code .github/workflows/ci.yml
+    - if: ${{ matrix.preset == 'unix-clang-libc++' }}
+      run: |+
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 22
+        sudo apt update
+        sudo apt install -y libc++-22-dev libc++abi-22-dev
+
+        sudo update-alternatives --install /usr/bin/clang   clang   /usr/bin/clang-22   1000
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 1000
+        sudo update-alternatives --set clang   /usr/bin/clang-22
+        sudo update-alternatives --set clang++ /usr/bin/clang++-22
+        clang --version
+
+    - if: ${{ matrix.preset == 'unix-clang-libstdc++' }}
+      run: |+
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 22
+        sudo apt update
+        sudo apt install -y libc++-22-dev libc++abi-22-dev
+
+        sudo update-alternatives --install /usr/bin/clang   clang   /usr/bin/clang-22   1000
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 1000
+        sudo update-alternatives --set clang   /usr/bin/clang-22
+        sudo update-alternatives --set clang++ /usr/bin/clang++-22
+        clang --version
+
+        sudo apt update
+        sudo apt install -y g++-14
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+
+    - uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: '20'
+      if: ${{ matrix.preset == 'win64-clang-libstdc++' }}
+    - shell: pwsh
+      if: ${{ matrix.preset == 'win64-clang-libstdc++' }}
+      run: |+
+        choco install mingw --version=14.2.0 -y
+        echo "C:\ProgramData\mingw64\mingw64\bin" >> $env:GITHUB_PATH
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: ${{ matrix.preset == 'win64-clang-msvc' }}
+    - uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: '20'
+      if: ${{ matrix.preset == 'win64-clang-msvc' }}
+    - if: ${{ matrix.preset == 'unix-gcc-libstdc++' }}
+      run: |+
+        sudo apt update
+        sudo apt install -y g++-14
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+
+    - shell: pwsh
+      if: ${{ matrix.preset == 'win64-gcc-libstdc++' }}
+      run: |+
+        choco install mingw --version=14.2.0 -y
+        echo "C:\ProgramData\mingw64\mingw64\bin" >> $env:GITHUB_PATH
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: ${{ matrix.preset == 'win64-msvc-msvcstl' }}
+    - name: Build
+      run: ${{ matrix.build }} --preset ${{ matrix.preset }}
+    - name: Log results
+      if: always()
+      shell: bash
+      run: echo "${{ matrix.preset }} ${{ job.status }}" > r-${{ matrix.preset 
+        }}.txt
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ci-result-${{ matrix.preset }}
+        path: r-${{ matrix.preset }}.txt
+  notes:
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: ci-result-*
+        merge-multiple: true
+        path: results
+    - name: Record notes
+      run: |
+        { printf '\n— Builds with:\n'
+          cat results/*.txt | tr -d '\r' | sort \
+            | awk '{ printf " - %-24s %s\n", $1, ($2=="success" ? "✓" : ($2=="failure" ? "✗" : "? ("$2")")) }'
+        } > verdict.txt
+        ls -la results/
+        echo "--- collected ---"
+        cat results/*.txt
+        echo "--- verdict ---"
+        cat verdict.txt
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        git fetch origin "refs/notes/ci:refs/notes/ci" || true
+        git notes --ref=ci add -f --no-stripspace -F verdict.txt ${{ github.sha }}
+        git push origin refs/notes/ci
