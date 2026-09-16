@@ -27,7 +27,7 @@
             "uses": "actions/cache/restore@v4",
             "with": {
                 "path": "conan-cache.tgz",
-                "key": "conan-${{ matrix.preset }}-${{ hashFiles('conanfile.py', format('conan/profiles/{0}', matrix.preset)) }}",
+                "key": "conan-${{ matrix.preset }}-${{ hashFiles('conanfile.py', format('conan/profiles/{0}', matrix.preset), 'recipes/**') }}",
                 "restore-keys": "conan-${{ matrix.preset }}"
             }
         },

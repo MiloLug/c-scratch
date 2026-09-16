@@ -186,6 +186,10 @@ if (COMPILER STREQUAL "GCC")
   target_link_libraries(app stdc++ stdc++fs)
 endif()
 
+if (COMPILER_ENV STREQUAL "MINGW")
+  target_link_options(app PRIVATE -Wl,-u,WinMain)
+endif()
+
 if (NOT COMPILER_ENV STREQUAL "VS")
   target_link_libraries(app m)
 endif()

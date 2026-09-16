@@ -52,7 +52,7 @@ jobs:
       with:
         path: conan-cache.tgz
         key: conan-${{ matrix.preset }}-${{ hashFiles('conanfile.py', 
-          format('conan/profiles/{0}', matrix.preset)) }}
+          format('conan/profiles/{0}', matrix.preset), 'recipes/**') }}
         restore-keys: conan-${{ matrix.preset }}
     - name: Unpack Conan cache
       if: steps.conan-cache.outputs.cache-matched-key != ''

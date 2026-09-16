@@ -1,6 +1,7 @@
 import os
 import sys
 import gcst
+import json
 import shutil
 import argparse
 import subprocess
@@ -70,6 +71,37 @@ def gcst_configure():
 
     return subprocess.run(command, check = False)
 
+def conan_find_version(lib_name, dict_responce = None):
+    if not dict_responce:
+        command = ["conan", "inspect", gcst.paths.repo, "--format=json"]
+        text_responce = subprocess.check_output(command, text = True).strip()
+        dict_responce = json.loads(text_responce)
+
+    for lib in dict_responce["requires"]:
+        pos_slash = lib["ref"].find("/")
+        if lib["ref"][:pos_slash] == lib_name:
+            return lib["ref"][pos_slash+1:]
+
+def conan_export_recipes():
+    recipes = gcst.paths.repo/"recipes"
+    if not recipes.is_dir():
+        return 0
+    
+    result = None
+    command = ["conan", "inspect", gcst.paths.repo, "--format=json"]
+    dict_inspect = json.loads(subprocess.check_output(command, text = True).strip())
+
+    for rec in recipes.iterdir():
+        version = conan_find_version(rec.name, dict_responce = dict_inspect)
+        if version == None:
+            continue
+        
+        command = ["conan", "export", rec.resolve(), f"--version={version}"]
+        result = subprocess.run(command, check = False)
+        if result.returncode != 0:
+            break
+
+    return result
     
 def conan_install(profile):
     command = [
@@ -128,22 +160,29 @@ def main():
             return 3
 
         setDefaultPreset(preset)
+
+        result = conan_export_recipes()
+        if result not in [None, 0] and result.returncode != 0:
+            print(f"Conan export recepies failed with code {result.returncode}")
+            print("Executed command:\n", *result.args)
+            return 4
+
         result = conan_install(conan_profile)
         if result.returncode != 0:
             print(f"Conan install failed with code {result.returncode}")
             print("Executed command:\n", *result.args)
-            return 4
+            return 5
 
     if not args.no_cmake:
         result = cmake(preset)
         if result.returncode != 0:
             print("Executed command:\n", *result.args)
-            return 5
+            return 6
         
         result = cmake_build()
         if result.returncode != 0:
             print("Executed command:\n", *result.args)
-            return 6
+            return 7
 
     return 0
 

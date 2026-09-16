@@ -21,20 +21,29 @@ install_and_update = [
     "cmake/gcst/warnings.cmake",
     "cmake/gcst/toolchains/w64-mingw32.cmake",
  
+    "scripts/.gcstu-install-only",
     "scripts/gcst_update.py",
 
     ".gitignore",
     "build.bat",
     "build.sh",
-]
 
-install_only = [
     "conanfile.py",
     "CMakeLists.txt",
 ]
 
+install_only = []
+
 SRC = gcst.paths.repo
 DEST = gcst.paths.srepo
+
+def get_install_only():
+    global install_and_update, install_only
+    with open(Path(__file__).parent/".gcstu-install-only", 'a+', encoding = 'utf-8') as gio_file:
+        gio_file.seek(0)
+        install_only = [line.strip() for line in gio_file.readlines()]
+
+    install_and_update = [file for file in install_and_update if file not in install_only]
 
 def get_updating_files():
     all_files = []
@@ -68,6 +77,7 @@ def main():
             print("The gcstemplate is not a submodule of any repo. Merging impossible")
             return 1
 
+    get_install_only()
     mismatches = get_updating_files()
     if (mismatches == []):
         print("Everything is up-to-date")

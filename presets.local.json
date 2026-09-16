@@ -1,0 +1,12 @@
+{
+    ".import": ".*",
+
+    "win64-msvc-msvcstl": {
+        ".merge": true,
+        "conan": {
+            "conf": {
+                "sdl_image/*:tools.cmake.cmaketoolchain:generator": "NMake Makefiles"
+            }
+        }
+    }
+}
