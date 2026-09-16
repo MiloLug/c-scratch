@@ -46,6 +46,17 @@ jobs:
     - run: conan profile detect --force
     - run: python .gcst/scripts/configure.py
     - run: git diff --exit-code .github/workflows/ci.yml
+    - name: Restore Conan cache
+      id: conan-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: conan-cache.tgz
+        key: conan-${{ matrix.preset }}-${{ hashFiles('conanfile.py', 
+          format('conan/profiles/{0}', matrix.preset)) }}
+        restore-keys: conan-${{ matrix.preset }}
+    - name: Unpack Conan cache
+      if: steps.conan-cache.outputs.cache-matched-key != ''
+      run: conan cache restore conan-cache.tgz
     - if: ${{ matrix.preset == 'unix-clang-libc++' }}
       run: |+
         wget https://apt.llvm.org/llvm.sh
@@ -122,6 +133,17 @@ jobs:
       with:
         name: ci-result-${{ matrix.preset }}
         path: r-${{ matrix.preset }}.txt
+    - name: Pack Conan cache
+      if: "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake')
+        != ''"
+      run: conan cache save '*:*' --file=conan-cache.tgz
+    - name: Save Conan cache
+      if: "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake')
+        != ''"
+      uses: actions/cache/save@v4
+      with:
+        path: conan-cache.tgz
+        key: ${{ steps.conan-cache.outputs.cache-primary-key }}
   notes:
     needs: build
     if: always()

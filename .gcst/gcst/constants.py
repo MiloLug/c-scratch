@@ -3,7 +3,7 @@ from functools import cached_property
 import subprocess
 from pathlib import Path
 
-name = "CMakeAutoBuild"
+name = "gcstemplate"
 
 class _Paths:
     defaultPresetFilename = ".default"
