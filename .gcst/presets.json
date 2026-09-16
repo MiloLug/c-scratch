@@ -59,6 +59,11 @@
                 "compiler.version": "22",
                 "compiler.libcxx": "libc++",
                 "build_type": "Release"
+            },
+            "conf": {
+                "tools.build:exelinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:sharedlinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:compiler_executables": "{\"c\": \"clang\", \"cpp\": \"clang++\"}"
             }
         },
         "github_ci": [
@@ -89,6 +94,8 @@
                 "build_type": "Release"
             },
             "conf": {
+                "tools.build:exelinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:sharedlinkflags": "[\"-fuse-ld=lld\"]",
                 "tools.build:compiler_executables": "{\"c\": \"clang\", \"cpp\": \"clang++\"}"
             }
         },
@@ -121,6 +128,8 @@
                 "build_type": "Release"
             },
             "conf": {
+                "tools.build:exelinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:sharedlinkflags": "[\"-fuse-ld=lld\"]",
                 "tools.build:compiler_executables": "{\"c\": \"clang\", \"cpp\": \"clang++\"}"
             }
         },

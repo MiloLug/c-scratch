@@ -86,7 +86,7 @@ def conan_install(profile):
 
     
 def cmake(preset):
-    command = ["cmake"]
+    command = ["cmake", "--debug-find-pkg=SDL2,SDL2_image"]
     if preset == ".default":
         command.extend(["-B", gcst.paths.build_dir, "-S", gcst.paths.repo])
     else:

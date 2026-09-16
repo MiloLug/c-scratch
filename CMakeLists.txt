@@ -8,8 +8,6 @@ endif ()
 
 project(c_scratch_project LANGUAGES C CXX)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
-
 # Compilers setings and flags
 
 set (CMAKE_CXX_STANDARD 20)
@@ -200,9 +198,9 @@ endif()
 
 target_link_libraries(app
   Threads::Threads
-  SDL2::Main
-  SDL2::Core
-  SDL2::Image
+  SDL2::SDL2main
+  SDL2::SDL2
+  SDL2_image::SDL2_image
 )
 
 # Some variables for the code
