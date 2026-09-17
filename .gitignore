@@ -1,75 +1,27 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+# Ignore object files, libs and executable files
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
+*.so
 *.exe
-*.out
-*.app
+*.sh
+*.pyc
 
-# CMake
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-app
-app.exe
-app.elf
+# Ignore bin, build and 3rdparty directories
+bin/
+build/
 
-*.vcxproj
-*.vcxproj.*
-*.sln
+# Ignore configured conan and CMake presets
+conan/
+CMakePresets.json
+CMakeUserPresets.json
+.gcst/.default
+.gcst/.temp
 
-# vscode|vs
-.vscode
-/build
-.vs
-/x64
-/app.dir
-/out
+# Ignore my own .md
+*.md
+!docs/*.md
+!*README.md
 
-# valgrind
-/vgcore.*
-/*.out.*
-
-# automation
-zip_npm_tmp
-
-# dev
-__scripts
-
-!/libs/**/*
-
-# MAC
-.DS_Store
+# Don't ignore build-scripts
+!build.sh
+!.github/workflows/scripts/**

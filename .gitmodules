@@ -1,0 +1,3 @@
+[submodule "gcstemplate"]
+	path = gcstemplate
+	url = git@github.com:Gaymocoder/gcstemplate.git

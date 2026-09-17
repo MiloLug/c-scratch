@@ -1,0 +1,309 @@
+{
+    ".common-pre": [
+        {
+            "uses": "actions/setup-python@v5",
+            "with": {
+                "python-version": "3.12"
+            }
+        },
+        {
+            "run": "pip install conan ruamel.yaml"
+        },
+        {
+            "uses": "actions/checkout@v4"
+        },
+        {
+            "run": "conan profile detect --force"
+        },
+        {
+            "run": "python .gcst/scripts/configure.py"
+        },
+        {
+            "run": "git diff --exit-code .github/workflows/ci.yml"
+        },
+        {
+            "name": "Restore Conan cache",
+            "id": "conan-cache",
+            "uses": "actions/cache/restore@v4",
+            "with": {
+                "path": "conan-cache.tgz",
+                "key": "conan2-${{ matrix.preset }}-${{ hashFiles('conanfile.py', format('conan/profiles/{0}', matrix.preset), 'recipes/**') }}",
+                "restore-keys": "conan2-${{ matrix.preset }}"
+            }
+        },
+        {
+            "name": "Unpack Conan cache",
+            "if": "steps.conan-cache.outputs.cache-matched-key != ''",
+            "run": "conan cache restore conan-cache.tgz"
+        }
+    ],
+
+    ".common-post": [
+        {
+            "name": "Log results",
+            "if": "always()",
+            "shell": "bash",
+            "run": "echo \"${{ matrix.preset }} ${{ job.status }}\" > r-${{ matrix.preset }}.txt"
+        },
+        {
+            "uses": "actions/upload-artifact@v4",
+            "if": "always()",
+            "with": {
+                "name": "ci-result-${{ matrix.preset }}",
+                "path": "r-${{ matrix.preset }}.txt"
+            }
+        },
+        {
+            "name": "Pack Conan cache",
+            "if": "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake') != ''",
+            "run": "conan list --graph=build/graph.json --format=json --out-file=pkglist.json && conan cache save --list=pkglist.json --file=conan-cache.tgz"
+        },
+        {
+            "name": "Save Conan cache",
+            "if": "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake') != ''",
+            "uses": "actions/cache/save@v4",
+            "with": {
+                "path": "conan-cache.tgz",
+                "key": "${{ steps.conan-cache.outputs.cache-primary-key }}"
+            }
+        }
+    ],
+
+    "unix-clang-libc++": {
+        "cmake": {
+            "description": "Clang + LLVM libc++",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Linux",
+                "arch": "x86_64",
+                "compiler": "clang",
+                "compiler.version": "22",
+                "compiler.libcxx": "libc++",
+                "build_type": "Release"
+            },
+            "conf": {
+                "tools.build:exelinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:sharedlinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:compiler_executables": "{\"c\": \"clang\", \"cpp\": \"clang++\"}"
+            }
+        },
+        "github_ci": [
+            {
+                "run-files": ["clang.sh"]
+            }
+        ]
+    },
+    
+    "unix-clang-libstdc++": {
+        "cmake": {
+            "description": "Clang + GCC libstdc++",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Linux",
+                "arch": "x86_64",
+                "compiler": "clang",
+                "compiler.version": "22",
+                "compiler.libcxx": "libstdc++11",
+                "build_type": "Release"
+            },
+            "conf": {
+                "tools.build:exelinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:sharedlinkflags": "[\"-fuse-ld=lld\"]",
+                "tools.build:compiler_executables": "{\"c\": \"clang\", \"cpp\": \"clang++\"}"
+            }
+        },
+        "github_ci": [
+            {
+                "run-files": ["clang.sh", "g++.sh"]
+            }
+        ]
+    },
+    
+    "win64-clang-libstdc++": {
+        "cmake": {
+            "description": "Clang + MinGW libstdc++",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Windows",
+                "arch": "x86_64",
+                "compiler": "clang",
+                "compiler.version": "20",
+                "compiler.libcxx": "libstdc++11",
+                "build_type": "Release"
+            },
+            "conf": {
+                "tools.build:cflags": "[\"--target=x86_64-w64-mingw32\"]",
+                "tools.build:cxxflags": "[\"--target=x86_64-w64-mingw32\"]",
+                "tools.build:exelinkflags": "[\"-fuse-ld=lld\", \"--target=x86_64-w64-mingw32\"]",
+                "tools.build:sharedlinkflags": "[\"-fuse-ld=lld\", \"--target=x86_64-w64-mingw32\"]",
+                "tools.build:compiler_executables": "{\"c\": \"clang\", \"cpp\": \"clang++\"}"
+            }
+        },
+        "github_ci": [
+            {
+                "uses": "KyleMayes/install-llvm-action@v2",
+                "with": {
+                    "version": "20"
+                }
+            },
+            {
+                "run-files": ["mingw32.bat"],
+                "shell": "pwsh"
+            }
+        ]
+    },
+    
+    "win64-clang-msvc": {
+        "cmake": {
+            "description": "Clang + MSVC++",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Windows",
+                "arch": "x86_64",
+                "compiler": "clang",
+                "compiler.version": "20",
+                "compiler.runtime": "dynamic",
+                "compiler.runtime_type": "Release",
+                "compiler.runtime_version": "v145",
+                "build_type": "Release"
+            }
+        },
+        "github_ci": [
+            {
+                "uses": "ilammy/msvc-dev-cmd@v1"
+            },
+            {
+                "uses": "KyleMayes/install-llvm-action@v2",
+                "with": {
+                    "version": "20"
+                }
+            }
+        ]
+    },
+
+    "unix-gcc-libstdc++": {
+        "cmake": {
+            "description": "GNU C Compiler for Unix Makefiles",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Linux",
+                "arch": "x86_64",
+                "compiler": "gcc",
+                "compiler.version": "14",
+                "compiler.libcxx": "libstdc++11",
+                "build_type": "Release"
+            }
+        },
+        "github_ci": [
+            {
+                "run-files": ["g++.sh"]
+            }
+        ]
+    },
+    
+    "win64-gcc-libstdc++": {
+        "cmake": {
+            "description": "MinGW32",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Windows",
+                "arch": "x86_64",
+                "compiler": "gcc",
+                "compiler.version": "14",
+                "compiler.libcxx": "libstdc++11",
+                "build_type": "Release"
+            },
+            "conf": {
+                "tools.build:compiler_executables": "{\"c\": \"x86_64-w64-mingw32-gcc\", \"cpp\": \"x86_64-w64-mingw32-g++\"}"
+            }
+        },
+        "github_ci": [
+            {
+                "run-files": ["mingw32.bat"],
+                "shell": "pwsh"
+            }
+        ]
+    },
+    
+    "win64-msvc-msvcstl": {
+        "cmake": {
+            "description": "MSVC++",
+            "generator": "Visual Studio 18 2026",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/conan_toolchain.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        "conan": {
+            "settings": {
+                "os": "Windows",
+                "arch": "x86_64",
+                "compiler": "msvc",
+                "compiler.version": "195",
+                "compiler.runtime": "dynamic",
+                "compiler.runtime_type": "Release",
+                "build_type": "Release"
+            }
+        },
+        "github_ci": [
+            {
+                "uses": "ilammy/msvc-dev-cmd@v1"
+            }
+        ]
+    }
+}

@@ -8,8 +8,6 @@ endif ()
 
 project(c_scratch_project LANGUAGES C CXX)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
-
 # Compilers setings and flags
 
 set (CMAKE_CXX_STANDARD 20)
@@ -170,12 +168,6 @@ set(CMAKE_C_FLAGS_RELEASE "${COMMON_C_FLAGS} ${RELEASE_FLAGS}")
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
-if (COMPILER_ENV STREQUAL "VS")
-  set(CMAKE_PREFIX_PATH libs/windows/msvc)
-elseif (COMPILER_ENV STREQUAL "MINGW")
-  set(CMAKE_PREFIX_PATH libs/windows/mingw)
-endif()
-
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
@@ -194,15 +186,19 @@ if (COMPILER STREQUAL "GCC")
   target_link_libraries(app stdc++ stdc++fs)
 endif()
 
+if (COMPILER_ENV STREQUAL "MINGW")
+  target_link_options(app PRIVATE -Wl,-u,WinMain)
+endif()
+
 if (NOT COMPILER_ENV STREQUAL "VS")
   target_link_libraries(app m)
 endif()
 
 target_link_libraries(app
   Threads::Threads
-  SDL2::Main
-  SDL2::Core
-  SDL2::Image
+  SDL2::SDL2main
+  SDL2::SDL2
+  SDL2_image::SDL2_image
 )
 
 # Some variables for the code
