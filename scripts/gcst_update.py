@@ -39,7 +39,11 @@ DEST = gcst.paths.srepo
 
 def get_install_only():
     global install_and_update, install_only
-    with open(Path(__file__).parent/".gcstu-install-only", 'a+', encoding = 'utf-8') as gio_file:
+    gio_filepath = gcst.paths.srepo/"scripts"/".gcstu-install-only"
+    if not gio_filepath.is_file():
+        gio_filepath = gcst.paths.repo/"scripts"/".gcstu-install-only"
+
+    with open(gio_filepath) as gio_file:
         gio_file.seek(0)
         install_only = [line.strip() for line in gio_file.readlines()]
 
@@ -86,7 +90,7 @@ def main():
     files_list = ''.join(f'  .{os.sep}{p}\n' for p in mismatches)
     print(f"WARNING! The gcstemplate files will replace these files in your root repo directory:\n{files_list}")
     confirm = input("Make sure you've backuped all important edits from the files before updating them\nDo you want to continue? [Y/n] ")
-    if confirm.lower() != "y":
+    if confirm.lower() not in ["y", ""]:
         print("Aborted.")
         return 0
 
@@ -99,4 +103,4 @@ def main():
         shutil.copy(ifile, ofile)
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

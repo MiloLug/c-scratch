@@ -33,7 +33,8 @@ class _Paths:
         for sm in submodules:
             data = sm.split()
             if data[1].find(f'Gaymocoder/{name}') != -1:
-                return Path(data[0][len('submodule.'):-len('.url')]).absolute()
+                submodule = data[0][len('submodule.'):-len('.url')]
+                return self.repo / submodule
         return ''
 
     @cached_property

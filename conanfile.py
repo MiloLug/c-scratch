@@ -8,6 +8,21 @@ class gcstConan(ConanFile):
         "sdl_image/2.8.12"
     )
 
+    default_options = {
+        "sdl/*:pulse": False,
+        "sdl/*:alsa": False,
+        "sdl/*:wayland": False,
+        "sdl/*:libunwind": False,
+        "sdl/*:iconv": False,
+        "sdl_image/*:with_libtiff": False,
+        "sdl_image/*:with_libwebp": False,
+        "sdl_image/*:with_libjpeg": False,
+    }
+
+    def requirements(self):
+        if self.settings.os == "Linux":
+            self.requires("xorg/system")
+
     def generate(self):
         CMakeToolchain(self).generate()
         CMakeDeps(self).generate()
