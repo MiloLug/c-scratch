@@ -19,6 +19,7 @@ CMakeUserPresets.json
 
 # Ignore my own .md
 *.md
+!docs/*.md
 !*README.md
 
 # Don't ignore build-scripts

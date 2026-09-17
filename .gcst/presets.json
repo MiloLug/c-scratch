@@ -72,6 +72,7 @@
     "unix-clang-libc++": {
         "cmake": {
             "description": "Clang + LLVM libc++",
+            "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
@@ -105,6 +106,7 @@
     "unix-clang-libstdc++": {
         "cmake": {
             "description": "Clang + GCC libstdc++",
+            "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
