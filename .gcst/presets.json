@@ -27,8 +27,8 @@
             "uses": "actions/cache/restore@v4",
             "with": {
                 "path": "conan-cache.tgz",
-                "key": "conan-${{ matrix.preset }}-${{ hashFiles('conanfile.py', format('conan/profiles/{0}', matrix.preset), 'recipes/**') }}",
-                "restore-keys": "conan-${{ matrix.preset }}"
+                "key": "conan2-${{ matrix.preset }}-${{ hashFiles('conanfile.py', format('conan/profiles/{0}', matrix.preset), 'recipes/**') }}",
+                "restore-keys": "conan2-${{ matrix.preset }}"
             }
         },
         {
@@ -56,7 +56,7 @@
         {
             "name": "Pack Conan cache",
             "if": "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake') != ''",
-            "run": "conan cache save '*:*' --file=conan-cache.tgz"
+            "run": "conan list --graph=build/graph.json --format=json --out-file=pkglist.json && conan cache save --list=pkglist.json --file=conan-cache.tgz"
         },
         {
             "name": "Save Conan cache",

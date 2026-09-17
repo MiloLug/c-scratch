@@ -108,8 +108,10 @@ def conan_install(profile):
         "conan",
         "install",
         gcst.paths.repo,
+        "--format=json",
         f"--profile={profile}",
         f"--output-folder={gcst.paths.build_dir}",
+        f"--out-file={gcst.paths.build_dir / 'graph.json'}",
         "--build=missing",
         "-c tools.system.package_manager:mode=install",
         "-c tools.system.package_manager:sudo=True"
